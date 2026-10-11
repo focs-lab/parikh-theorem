@@ -5,8 +5,8 @@ The forward Parikh theorem and exact finite witness existence are proved for
 Mathlib grammars and context-free languages. The derivation-tree proof includes
 grammar/tree semantics, insertion and activation, bounded-family finiteness,
 exact decomposition, and the exact component union. Converse and equal-image
-regular realization are also proved. Regular-language specialization, executable
-construction, and quantitative bounds remain in progress.
+regular realization and regular-language specialization are also proved. Executable
+construction and quantitative bounds remain in progress.
 Read the complete reference, including appendices, alongside the
 statements; source labels below refer to `reference/parikh_theorem.tex`.
 
@@ -24,10 +24,14 @@ statements; source labels below refer to `reference/parikh_theorem.tex`.
    multiplicities, their tree realization, and the proved exact component formula.
    `FiniteRepresentation.lean` specializes bounded-tree finiteness to the base and
    cycle families and proves semilinearity of their activatable-component union.
+   `GrammarImage.lean` supplies shared exact-equality/semilinearity support while
+   preserving the existing public declarations in `Statements.lean`.
 5. `Parikh/RegularRealization.lean`: representative words and explicit finite
    regular expressions; representative counting, exact images, DFA regularity, and
    the converse are proved. `WordBlockAutomata.lean` supplies specialized prefix
-   operations and reuses Mathlib NFA determinization.
+   operations and reuses Mathlib NFA determinization. `DFAGrammar.lean` proves
+   exact DFA-to-Mathlib-grammar language equality; the shared forward proof then
+   gives the regular specialization.
 6. `Parikh/Construction.lean`: finite encoded input, algorithm interfaces, and all
    four size bounds plus the numerical bit budget.
 7. `PROOF_STATUS.md` and `CONTRACT_CHECKS.md`: what is incomplete and how acceptance
@@ -57,6 +61,7 @@ flowchart TD
   Main --> Compiler
   Compiler --> Bounds[Compiler bounds and bit budget]
   Main --> Regular[Regular-language specialization]
+  DFAGrammar[Exact finite DFA to Mathlib grammar bridge] --> Regular
 ```
 
 These are intended dependencies for the remaining proof. The four counting/witness
@@ -66,8 +71,8 @@ now have complete proofs, as do `bounded_open_finite`, `bounded_cut`, `decomposi
 and `treeRepresentation_eq`. `grammar_image`, `grammar_witness`, and
 `contextFree_image` now complete the forward theorem. Representative counting
 and both inclusions of the expression-image construction are also proved, as are
-DFA regularity, `witnessExpression_correct`, `converse`, and `regular_realization`.
-The remaining 4 theorem bodies
+DFA regularity, `witnessExpression_correct`, `converse`, `regular_realization`, and
+`regular_image`. The remaining 3 theorem bodies
 are still `sorry`. No forward proof depends on the converse,
 trace theory, a grammar normal form, or Presburger elimination. The finite-witness
 bridge to Mathlib is separate from the derivation-tree proof.
@@ -106,7 +111,7 @@ and algorithm values are pending.
 | `sec:example`, `eq:example-target` | `scripts/SkeletonExamples.lean` | The required order is C then E; E alone is disabled | Small support checks pass; full example grammar is deferred |
 | `eq:representative` | `AlphabetOrder`, `representative`, `representative_counts` | Explicit exhaustive, repetition-free alphabet list | Mathlib list counting and the alphabet occurrence law; proved |
 | `lem:linear-regular`, `thm:converse`, `eq:regular-construction` | `componentExpression`, `witnessExpression`, `componentExpression_image`, `witnessExpression_image`, `witnessExpression_correct`, `converse` | Finite alphabet; exact image and Mathlib DFA regularity | Exact images, finite continuation NFA, Mathlib determinization, and finite regular union; all proved |
-| regular specialization of `thm:parikh-statement` | `regular_image` | Any Mathlib DFA-regular language | Future thin DFA-to-CFG adapter, or direct finite-path specialization; pending |
+| regular specialization of `thm:parikh-statement` | `regular_image` | Any Mathlib DFA-regular language | Exact DFA-to-Mathlib-grammar bridge and shared forward theorem; proved |
 | `lem:activation-test` | `ActivationTest` | Finite operation data with decidable equality | Finite enabled-operation search; algorithm value pending |
 | `sec:effective` | `EncodedGrammar.decode`, `BoundedEnumeration`, `Compiler` | Numeric finite syntax; no classical-choice compiler value | Enumeration, activation test, exact tree formula; implementation pending |
 | `eq:bound-defs`, `lem:count-trees` | `GrammarSize`, `grammarSize`, `bounded_family_bounds` | `n` is active cardinality, `b ≥ 1`, `M = ∑ᵢ₌₀ⁿ⁺¹ bⁱ`, `K = (1+d+n+p)^M` | Injection into bounded position records; pending |
@@ -256,6 +261,17 @@ prove `periodExpressions_regular`, `componentExpression_regular`, and
 exact-witness bridge prove `converse`, and the forward theorem gives
 `regular_realization`. The automata argument is semantic existence, not an
 executable compiler. No finite ambient-nonterminal restriction is introduced.
+
+`DFAGrammar.lean` specializes Mathlib's existing grammar and DFA types. A transition
+becomes a right-linear production; acceptance becomes an empty production.
+The state-indexed `dfaGrammar_derives_iff` proves both directions using an exact
+terminal-prefix/state invariant and input-word induction. `dfaGrammar_language`
+gives equality of word languages, so `regular_image` specializes the shared
+forward proof in `GrammarImage.lean`. No earlier theorem moves: the existing
+`treeRepresentation_eq` and `grammar_image` are projections in `Statements.lean`.
+The shared support module imports `FiniteRepresentation`, not `Statements` or
+`RegularRealization`, keeping dependencies acyclic. This is semantic existence;
+executable construction is still required separately.
 
 ## After review
 

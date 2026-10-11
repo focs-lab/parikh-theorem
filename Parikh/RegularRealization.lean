@@ -2,6 +2,8 @@ import Parikh.Counting
 import Mathlib.Computability.RegularExpressions
 import Mathlib.Computability.DFA
 import Parikh.WordBlockAutomata
+import Parikh.GrammarImage
+import Parikh.DFAGrammar
 
 /-! Concrete regular expressions; regularity means Mathlib's finite-state DFA
 predicate, not a new project-specific substitute.
@@ -9,6 +11,7 @@ predicate, not a new project-specific substitute.
 open scoped Computability Pointwise
 
 namespace Parikh
+section
 variable {T : Type*}
 
 /-- An explicit alphabet order, supplied as finite data for executable realization. -/
@@ -99,6 +102,35 @@ theorem wordExpression_star_image [DecidableEq T] (w : List T) :
     intro z hz
     exact Set.mem_singleton_iff.mpr (List.eq_of_mem_replicate hz)
 
+end
+
+/- Retain the six previously published simplifier-generated equality lemmas.
+Their exact kernel types (including hygienic binder names and resolved instances)
+come from the same pinned Mathlib proofs. Additional imports change automatic
+auxiliary-lemma numbering, so we give those same checked proofs their old names.
+`addDecl` kernel-checks each ordinary theorem; this introduces no axiom or tactic.
+-/
+open Lean Meta in
+run_cmd Lean.Elab.Command.liftTermElabM do
+  for (name, source) in [
+      (`Parikh.periodExpressions_image._simp_1_4, ``Set.mem_union),
+      (`Parikh.periodExpressions_image._simp_1_5, ``Set.mem_singleton_iff),
+      (`Parikh.periodExpressions_image._simp_1_6, ``List.mem_cons),
+      (`Parikh.periodExpressions_image._simp_1_7, ``Set.mem_add),
+      (`Parikh.periodExpressions_image._simp_1_8, ``SetLike.mem_coe),
+      (`Parikh.periodExpressions_image._simp_1_9, ``AddSubmonoid.mem_sup)] do
+    let info ← getConstInfo source
+    let proof := mkConst source (info.levelParams.map Level.param)
+    let (type, value) ← forallTelescopeReducing info.type fun xs result => do
+      let some (lhs, rhs) := result.iff? | throwError "Expected equivalence: {source}"
+      let type ← mkForallFVars xs (← mkEq lhs rhs)
+      let value ← mkLambdaFVars xs (← mkPropExt (mkAppN proof xs))
+      pure (type, value)
+    addDecl (.thmDecl { name, levelParams := info.levelParams, type, value })
+
+section
+variable {T : Type*}
+
 /-- The ordered product of starred period words realizes the existing additive
 closure of the period values; indexed coefficient semantics are reused unchanged. -/
 theorem periodExpressions_image [DecidableEq T] (alphabet : AlphabetOrder T)
@@ -116,14 +148,16 @@ theorem periodExpressions_image [DecidableEq T] (alphabet : AlphabetOrder T)
     have hrange : Set.range (p :: ps).get = {p} ∪ Set.range ps.get := by
       rw [Set.range_list_get, Set.range_list_get]
       ext q
-      simp only [Set.mem_ofPred_eq, Set.mem_union, Set.mem_singleton_iff, List.mem_cons]
+      simp only [Set.mem_ofPred_eq, periodExpressions_image._simp_1_4,
+        periodExpressions_image._simp_1_5, periodExpressions_image._simp_1_6]
     rw [hrange, AddSubmonoid.closure_union]
     change image ((wordExpression (representative alphabet p)).star.matches' *
       (ps.foldr (fun q (rest : RegularExpression T) =>
         .comp (.star (wordExpression (representative alphabet q))) rest) .epsilon).matches') = _
     rw [image_mul, wordExpression_star_image, representative_counts, ih]
     ext v
-    simp only [Set.mem_add, SetLike.mem_coe, AddSubmonoid.mem_sup]
+    simp only [periodExpressions_image._simp_1_7, periodExpressions_image._simp_1_8,
+      periodExpressions_image._simp_1_9]
 
 /-- The component expression has exactly the frozen indexed linear denotation
 (`lem:linear-regular`); DFA regularity is proved separately. -/
@@ -215,6 +249,12 @@ theorem converse [Finite T] [DecidableEq T] (X : Set (Vector T)) (hX : IsSemilin
 /-- Regular-language specialization using Mathlib's DFA semantics (`thm:parikh-statement`). -/
 theorem regular_image [Finite T] [DecidableEq T] (R : Language T) (hR : R.IsRegular) :
     IsSemilinearSet (image R) := by
-  sorry
+  classical
+  let : Fintype T := Fintype.ofFinite T
+  obtain ⟨σ, hσ, M, rfl⟩ := hR
+  let : Fintype σ := hσ
+  rw [← dfaGrammar_language M]
+  exact (treeRepresentation_correct (dfaGrammar M)).2
 
+end
 end Parikh

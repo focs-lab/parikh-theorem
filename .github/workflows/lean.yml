@@ -1,0 +1,32 @@
+name: Lean skeleton
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+      - name: Install elan and the pinned Lean toolchain
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/leanprover/elan/v4.2.4/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain none --no-modify-path
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          "$HOME/.elan/bin/elan" toolchain install "$(cat lean-toolchain)"
+      - name: Fetch pinned dependencies and selected Mathlib cache
+        run: |
+          lake exe cache get Mathlib.Computability.ContextFreeGrammar Mathlib.Computability.RegularExpressions Mathlib.Computability.DFA Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Defs Mathlib.Data.Nat.Log
+      - name: Build the skeleton
+        env:
+          LEAN_NUM_THREADS: 4
+        run: lake build
+      - name: Check contracts and explicit proof obligations
+        env:
+          CONTRACT_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: python3 scripts/check-contracts.py
+      - name: Check small semantic examples
+        run: lake env lean scripts/SkeletonExamples.lean

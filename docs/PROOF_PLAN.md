@@ -56,7 +56,8 @@ flowchart TD
 These are intended dependencies for the remaining proof. The four counting/witness
 contracts, grammar/tree equivalence, plugging/insertion, the two abstract activation laws,
 sequence/tree realization, `one_linear`, active support, and simple-tree height
-now have complete proofs, as do `bounded_open_finite` and `bounded_cut`. The remaining 13 theorem bodies
+now have complete proofs, as do `bounded_open_finite`, `bounded_cut`, and `decomposition`.
+The remaining 12 theorem bodies
 are still `sorry`. No forward proof depends on the converse,
 trace theory, a grammar normal form, or Presburger elimination. The finite-witness
 bridge to Mathlib is separate from the derivation-tree proof.
@@ -82,7 +83,7 @@ and algorithm values are pending.
 | `lem:simple-height`, `def:families`, `def:statistics` | `ParseTree.Simple`, `ParseTree.labelPath_subset_support`, `ParseTree.exists_labelPath_height`, `simple_height`, `IsBase`, `IsBoundedCycle` | Active nonterminals replace an unnecessarily finite ambient type; repeated siblings are allowed | Longest label path, path-label distinctness, active support, and Mathlib finite-set cardinality; height bound proved, family predicates concrete |
 | `lem:finite`, `def:statistics` | `activeNonterminals`, `Valid.support_active`, `complete_support_active`, `bounded_open_finite`, `BoundedEnumeration` | Finite terminals; holes restricted to active symbols for the general grammar | Active-support containment and bounded-family finiteness proved; executable enumerator pending |
 | `lem:cut` | `bounded_cut`, `Complete.exists_minimal_nonsimple_subtree`, `ParseTree.exists_root_mem_child_support`, `ParseTree.height_le_height_plug`, `ParseTree.productionSize_subtree_bound`, `ParseTree.subtree_replacement` | Non-simple complete tree; strict decrease in production count | Descent to simple children, repeated root, bounded context, indexed reversible surgery; proved |
-| `thm:decomposition`, `eq:decomposition`, `cor:finite-generation` | `decomposition` | Exact tree reconstruction for every complete tree/root | Strong induction using bounded cut; pending |
+| `thm:decomposition`, `eq:decomposition`, `cor:finite-generation` | `decomposition`, `InsertionSequence.append` | Exact tree reconstruction for every complete tree/root | Mathlib natural strong induction using bounded cut, followed by sequence concatenation; proved |
 | `def:activation`, `eq:activation` | `ActivationOrder`, `Activatable`, `ContextsActivatable` | Operations retain their identities and require previously present labels | Concrete definitions; arbitrary support sets in the abstract interface |
 | `lem:activation-realize`, `eq:activated-wt`, `eq:activated-supp` | `activationOrder_iff_insertionSequence`, `ContextsActivatable.realize` | Matching cycle list; introduce each selected context once, with exact accounting and all selected contexts enabled afterwards | Insertion enabledness and sequence accounting; proved |
 | `lem:first-occurrence` | `first_occurrences` | Any enabled list of operations | Filter later repeats whose added support is already present; proved |
@@ -186,6 +187,17 @@ plugging bound the context. Proper-subtree production counts and exact plugging
 accounting prove strict decrease. Reversible indexed replacement preserves the
 selected position and reconstructs the whole tree by reinsertion, including all
 side branches and their order. No definition or frozen statement is changed.
+
+`decomposition` uses Mathlib's `Nat.strong_induction_on`, quantified over all
+complete trees with the given production count. A simple tree is its own base
+with an empty context list. Otherwise `bounded_cut` gives a strictly smaller
+complete tree with the same root. The induction hypothesis decomposes that tree;
+`InsertionSequence.append` concatenates its reconstruction with the final
+reinsertion. List membership preserves the bounded-cycle property of every
+context. The new sequence adapter is a direct induction on the existing relation,
+without changing its constructors or introducing another reconstruction relation.
+No finite alphabet or nonterminal assumption is needed. The proof is semantic
+existence; executable decomposition remains separate work.
 
 ## After review
 

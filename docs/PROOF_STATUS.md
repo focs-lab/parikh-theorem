@@ -1,61 +1,51 @@
-# Proof status: bounded removable-context extraction
+# Proof status: exact tree decomposition
 
 The owner accepted the reviewed skeleton in [PR #2](https://github.com/focs-lab/parikh-theorem/pull/2)
 on 2026-10-11. The immutable baseline remains the reviewed head
 `6bff9679d7ea03e5401815b80c5a3dc1300f9d36`, including the requested `ParseTree`
 rename. Its pointer and all previous contract fingerprints remain unchanged.
-All proof increments through [PR #11](https://github.com/focs-lab/parikh-theorem/pull/11)
+All proof increments through [PR #12](https://github.com/focs-lab/parikh-theorem/pull/12)
 have merged, with CI passing.
 
-Current milestone: [PR #12](https://github.com/focs-lab/parikh-theorem/pull/12),
-bounded removable-context extraction, branch `codex/bounded-cut`, based on merged
-`main` (`0d25dff22496b4b96c3e43ce8fd1cb5ba6473956`). CI evidence is recorded in the PR.
-There are **13 direct `sorry` obligations**, zero project axioms, and 13 declarations
-transitively dependent on `sorryAx`, down from 14. Parikh's theorem is not yet proved.
+Current milestone: [PR #13](https://github.com/focs-lab/parikh-theorem/pull/13),
+exact tree decomposition, branch `codex/decomposition`, based on merged
+`main` (`a69e23943c3226ba1a178cdb0c201466f669b4be`). CI evidence is recorded in the PR.
+There are **12 direct `sorry` obligations**, zero project axioms, and 12 declarations
+transitively dependent on `sorryAx`, down from 13. Parikh's theorem is not yet proved.
 
 ## Completed in this milestone
 
-`Parikh.bounded_cut` (`lem:cut`) now extracts a bounded removable cycle context
-from every non-simple complete tree. The result includes a smaller complete tree
-with the same root, exact occurrence-based reinsertion reconstructing the original
-tree, and strict decrease in production-node count. Its existing statement is
-unchanged and removed from both unresolved allowlists. It introduces no finite
-terminal or ambient nonterminal hypothesis.
+`Parikh.decomposition` (`thm:decomposition`, `eq:decomposition`) now reconstructs
+every complete tree exactly from a simple complete base with the same root and
+a finite ordered list of bounded cycle contexts. Its existing statement is
+unchanged and removed from both unresolved allowlists. There is no restriction
+to the grammar's start symbol, finite terminals, or finite ambient nonterminals.
 
-Five supporting lemmas in `BoundedCutSupport.lean` are proved immediately:
+The proof uses Mathlib's `Nat.strong_induction_on`, quantified over all complete
+trees of the given production count. A simple tree is its own base with no
+contexts. Otherwise the already proved `bounded_cut` gives a smaller complete
+tree with the same root and a bounded context whose reinsertion recovers the
+original tree. Apply the induction hypothesis to the smaller tree, append that
+final context, and retain boundedness for every entry by list membership.
+Strict decrease is in production-node count, so silent unit cycles and empty
+productions remain supported.
 
-| Declaration (namespace `Parikh`) | Role |
-| --- | --- |
-| `Complete.exists_minimal_nonsimple_subtree` | Descend through non-simple children to an occurrence whose children are all simple. |
-| `ParseTree.exists_root_mem_child_support` | With simple children, a repeated path must include the root label, which therefore occurs in a child. |
-| `ParseTree.height_le_height_plug` | Filling holes cannot decrease production height. |
-| `ParseTree.productionSize_subtree_bound` | A proper subtree has strictly fewer production nodes. |
-| `ParseTree.subtree_replacement` | Replacing a selected occurrence retains its position and can be undone exactly. |
+The one new adapter, `Parikh.InsertionSequence.append`, concatenates existing
+insertion sequences while preserving their context order. It is proved directly
+by induction on the existing constructors; no new tree or reconstruction
+relation is introduced. The decomposition keeps actual context syntax and
+occurrence-based insertion witnesses, rather than just terminal-count equality.
 
-The source's minimal-subtree argument needs simple side branches. Structural
-descent supplies precisely that property. `simple_height` bounds the selected
-node by the active cardinality plus one. The support/subtree bridge locates a
-proper descendant with the same root. The existing `Complete.subtree_context`
-extracts its one-hole context; height monotonicity bounds that context, while
-strict subtree size and `productionSize_plug` show it has a positive production
-count. The outer context replaces the selected node by its matching descendant.
-Reversible indexed replacement certifies reinsertion at the same position,
-preserving every production label, child order, and side branch. Exact size
-accounting proves strict decrease even when the removed context has zero weight.
+Both audited declarations depend only on standard Lean foundations:
+`propext`, `Classical.choice`, and `Quot.sound`. Neither depends on `sorryAx`
+or a project axiom. All existing definitions, instances, syntax, statistics,
+and previously completed proofs are retained.
 
-All six audited declarations depend only on standard Lean foundations:
-`propext`, `Classical.choice`, and `Quot.sound` (the replacement adapter needs
-only `propext` and `Quot.sound`). None depends on `sorryAx` or a project axiom.
-All existing syntax, statistics, definitions, instances, and previously completed
-proofs are retained.
-
-All **501 prior contract entries** are preserved exactly. The five proved
-adapters and 14 generated equation/proof/simplification declarations extend the
-manifest to **520 entries**, including the generated equation for the existing
-`ParseTree.Simple` predicate. No previous declaration is deleted or moved.
-The checker, immutable baseline, existing signatures and definition meanings,
-instances, and Lean/Mathlib pins are unchanged. No additional Mathlib import or
-cache dependency is required.
+All **520 prior contract entries** are preserved exactly. The single proved
+sequence adapter extends the manifest to **521 entries**. No previous declaration
+is deleted or moved. The checker, immutable baseline, existing signatures and
+definition meanings, instances, and Lean/Mathlib pins are unchanged. No additional
+Mathlib import or cache dependency is required.
 
 This is a semantic existence proof. Executable decomposition, enumeration, and
 compiler implementations remain separate work.
@@ -72,6 +62,8 @@ compiler implementations remain separate work.
 - [PR #10](https://github.com/focs-lab/parikh-theorem/pull/10): `complete_support_active`, `simple_height`, `Valid.support_active`, `ParseTree.labelPath_subset_support`, and `ParseTree.exists_labelPath_height` (`def:statistics`, `lem:simple-height`).
 - [PR #11](https://github.com/focs-lab/parikh-theorem/pull/11): `bounded_open_finite`, with finite-list and explicit-height adapters kept inside its proof (`lem:finite`).
 
+- [PR #12](https://github.com/focs-lab/parikh-theorem/pull/12): `bounded_cut` and five structural adapters for minimal non-simple subtrees, height, production count, and reversible indexed replacement (`lem:cut`).
+
 Their statements and proofs are unchanged here. The grammar/tree bridge supports
 arbitrary derivation order and nonterminal types. Witness existence and tree
 semantics are semantic proofs, not executable compiler implementations.
@@ -83,7 +75,6 @@ allowlists in `contracts/obligations.json` are authoritative for CI.
 
 | Module | Outstanding declarations |
 | --- | --- |
-| Decomposition | `decomposition` |
 | RegularRealization | `representative_counts`, `witnessExpression_correct`, `converse`, `regular_image` |
 | Construction | `bounded_family_bounds`, `bounded_witness`, `witness_bit_bound` |
 | Statements | `treeRepresentation_eq`, `grammar_image`, `grammar_witness`, `contextFree_image`, `regular_realization` |
@@ -94,15 +85,15 @@ correctness fields are requirements, not assumed theorems.
 
 ## Validation
 
-- Affected modules and full `lake build` pass, with only expected theorem-hole warnings in the 13 remaining obligations.
-- `lake env lean scripts/SkeletonExamples.lean` passes. A new example has two deep, repeated-label siblings over infinite nonterminals: the original height is 5, above the active bound of 3, but the extracted context is bounded and reinsertion is exact. Both the smaller tree and context have zero terminal weight, while production count strictly decreases. Existing empty-alphabet, empty-production, positional-sibling, and finiteness checks still pass.
-- `python3 scripts/check-contracts.py` checks 520 declarations against the accepted skeleton and merged `main`, preserving all 501 earlier contracts. The checker and baseline pointer are unchanged.
-- `#print axioms` for `bounded_cut` and its five supporting lemmas reports only standard foundations, with no unresolved dependencies.
+- Affected modules and full `lake build` pass, with only expected theorem-hole warnings in the 12 remaining obligations.
+- `lake env lean scripts/SkeletonExamples.lean` passes. The new decomposition example has infinite ambient nonterminals and a non-start-rooted silent unit chain. It obtains a simple zero-weight base, a nonempty bounded-context list, exact ordered reconstruction, and the production-count identity. Existing empty-alphabet, empty-production, positional-sibling, activation, finiteness, and bounded-cut checks still pass.
+- `python3 scripts/check-contracts.py` checks 521 declarations against the accepted skeleton and merged `main`, preserving all 520 earlier contracts. The checker and baseline pointer are unchanged.
+- `#print axioms` for `decomposition` and `InsertionSequence.append` reports only standard foundations, with no unresolved dependencies.
 - `git diff --check` passes.
-- `python3 scripts/check-contracts.py --final` correctly rejects the 13 outstanding holes. This milestone does not complete Parikh's theorem.
-- Cloud Lean 4.34.1 / Lake 5.0.0, the pinned Mathlib checkout, and GitHub authentication/read/push access were verified. The merged finiteness branch was removed locally and remotely after ancestry and head checks. CI results are reported in the PR separately from local validation.
+- `python3 scripts/check-contracts.py --final` correctly rejects the 12 outstanding holes. This milestone does not complete Parikh's theorem.
+- Cloud Lean 4.34.1 / Lake 5.0.0 and GitHub authentication/read/push access were verified. The existing pinned dependencies and selected Mathlib cache were reused. CI results are reported in the PR separately from local validation.
 
-Next eligible milestone: `decomposition` (`thm:decomposition`), using strong
-induction on production count and exact reinsertion to obtain a simple complete
-base plus a sequence of bounded cycle contexts. Keep each increment in a new PR
-with the accepted contracts unchanged.
+Next eligible milestone: `treeRepresentation_eq` (`thm:main`), combining exact
+decomposition, activation, `one_linear`, and the grammar/tree semantics bridge.
+Then prove the forward semilinearity and exact-witness contracts using bounded
+family finiteness. Keep each increment in a new PR with accepted contracts unchanged.

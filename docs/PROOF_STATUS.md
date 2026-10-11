@@ -7,10 +7,10 @@ rename. Its pointer and all previous contract fingerprints remain unchanged.
 All proof increments through [PR #13](https://github.com/focs-lab/parikh-theorem/pull/13)
 have merged, with CI passing.
 
-Current milestone: exact tree-representation equality, branch
-`codex/tree-representation-equality`, based on merged `main`
-(`cdf98728a37fac9910a8fd9f3babe22e3df8e74c`). Publication and CI evidence will
-be recorded in the PR.
+Current milestone: [PR #14](https://github.com/focs-lab/parikh-theorem/pull/14),
+exact tree-representation equality, branch `codex/tree-representation-equality`,
+based on merged `main` (`cdf98728a37fac9910a8fd9f3babe22e3df8e74c`).
+CI evidence is recorded in the PR.
 There are **11 direct `sorry` obligations**, zero project axioms, and 11 declarations
 transitively dependent on `sorryAx`, down from 12. The forward semilinearity and
 finite-witness contracts remain unproved.

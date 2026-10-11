@@ -11,7 +11,9 @@ fix in PR #21 have also merged.
 Current milestone: exact bounded semilinear witness existence (`thm:size-bound`),
 branch `codex/bounded-witness`, based on merged `main`
 (`f2bab08d401a50c7c4ea0632e1b6753214d947a7`).
-Publication pending.
+Published as [PR #25](https://github.com/focs-lab/parikh-theorem/pull/25);
+the PR's [checks](https://github.com/focs-lab/parikh-theorem/pull/25/checks)
+record CI evidence for the submitted head.
 There is **1 direct `sorry` obligation**, zero project axioms, and 1 declaration
 transitively dependent on `sorryAx`. This milestone removes `bounded_witness`
 from both unresolved lists. All qualitative Parikh results, bounded-family

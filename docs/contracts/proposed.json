@@ -5302,6 +5302,18 @@
       "unsafe": false,
       "value": null
     },
+    "Parikh.componentExpression_regular": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "7bb0d6cdd917adb985b74c85636b3e074c444806098fe71f6eb15230fad7de71",
+      "unsafe": false,
+      "value": null
+    },
     "Parikh.component_isLinearSet": {
       "instance": false,
       "kind": "theorem",
@@ -5762,6 +5774,152 @@
       "unsafe": false,
       "value": "0be7937f5a8b37604f7a976a99587530e29b3066509bc2f8a4aa94a5896dfc32"
     },
+    "Parikh.isRegular_of_finite_language_cover": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "5663632daf9f12c430e1dfb5c708e99a0a26d18ca991817186982cf0a99cd146",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.isRegular_one": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "710c8c32ddd390672bda9c2fe867f834c454d017c0c15038e26f8bfa24f889fa",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.isRegular_one._simp_1_1": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "00cc3372f73035105cb76266a54faf44ebfe726d30c818bd6e447a63f73bb19a",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.isRegular_one._simp_1_2": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "c09756d942726e9f912d98ca3704f24fe50b649ea481d71b8a5759f7a1964df5",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.isRegular_word_mul": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "bd4056382f147eb31ec3fa3056fffe1dac9d67a179bdb5a56a6294b6f4a08c6b",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.isRegular_word_mul._simp_1_1": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u",
+        "v"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "a573e8e2cc30dd839e4bef627347379bde9ee6e5ba0d1f42e92748036dd23d45",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.isRegular_word_star_mul": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "51985281f78b1d24457cfdc37d12eb5fdc7fede867d0f0df664b00b10815d658",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.isRegular_word_star_mul._simp_1_1": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u",
+        "v"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "a573e8e2cc30dd839e4bef627347379bde9ee6e5ba0d1f42e92748036dd23d45",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.isRegular_zero": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "62905e7bd2f92c0fb61d914a2a20d82f0f34f4d9cce766fc8c15e418cc3f7b90",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.mem_word_mul_cons": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "3632ee1b4389b60c1780e9c20ffad02de3f378ddffba22b422803453d2c90590",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.mem_word_mul_cons._simp_1_1": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "aad26cfc0f4dfb75efae8f790e46af77205606ecd1420e13d26d66b33290c450",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.mem_word_mul_cons._simp_1_2": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "615b594812a4e858c819a520c497a3ae2a396dd64baff590d1f18fe1dc030ddc",
+      "unsafe": false,
+      "value": null
+    },
     "Parikh.norm": {
       "instance": false,
       "kind": "definition",
@@ -5892,6 +6050,18 @@
       "partial": false,
       "reducibility": "opaque",
       "type": "c3e237a69c423d7b3a4ccdc480578b23427d6b7aa4ffeb51121bd3f95b098082",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.periodExpressions_regular": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "1e36d8e4758282ec49d840c82cb4578c5c19ebc68553430429beefe976b57bcf",
       "unsafe": false,
       "value": null
     },
@@ -6147,6 +6317,18 @@
       "partial": false,
       "reducibility": "opaque",
       "type": "136f2471452ee5f7b2aadf312f32b5860f2af5bc69bc7376102b07c96968c02e",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.witnessExpression_regular": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "2ca1ffcc23046ce1899b2f2096a4612f85c7ece9cd503f56a45b11791290ae6c",
       "unsafe": false,
       "value": null
     },

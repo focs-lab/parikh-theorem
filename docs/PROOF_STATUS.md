@@ -1,71 +1,85 @@
-# Proof status: exact images of the witness expressions
+# Proof status: DFA regularity and converse realization
 
 The owner accepted the reviewed skeleton in [PR #2](https://github.com/focs-lab/parikh-theorem/pull/2)
 on 2026-10-11. The immutable baseline remains the reviewed head
 `6bff9679d7ea03e5401815b80c5a3dc1300f9d36`, including the requested `ParseTree`
 rename. Its pointer and all previous contract fingerprints remain unchanged.
-All proof increments through [PR #15](https://github.com/focs-lab/parikh-theorem/pull/15)
+All proof increments through [PR #16](https://github.com/focs-lab/parikh-theorem/pull/16)
 have merged, with CI passing.
 
-Current milestone: [PR #16](https://github.com/focs-lab/parikh-theorem/pull/16),
-representative counting and exact expression images,
-branch `codex/witness-expression-image`, based on merged `main`
-(`481c029f74539db64bbc1d7bcc3a9db3126d46a0`).
+Current milestone: [PR #17](https://github.com/focs-lab/parikh-theorem/pull/17),
+DFA regularity of witness expressions and converse realization,
+branch `codex/witness-dfa-regularity`, based on merged `main`
+(`827f731822028459f17b6f83b448ae86ba27affc`).
 CI evidence is recorded in the PR.
-There are **7 direct `sorry` obligations**, zero project axioms, and 7 declarations
-transitively dependent on `sorryAx`, down from 8. The forward theorem is proved.
-Expression-image correctness is now proved; DFA regularity, the converse,
-regular specialization, executable construction, and quantitative bounds remain.
+There are **4 direct `sorry` obligations**, zero project axioms, and 4 declarations
+transitively dependent on `sorryAx`, down from 7. The forward theorem, exact finite
+witness existence, converse, and equal-image regular realization are proved.
+Regular-language specialization, executable construction, and quantitative bounds remain.
 
 ## Completed in this milestone
 
-The accepted `representative_counts` contract now has a checked proof
-(`eq:representative`). For each letter, Mathlib's `List.count_flatten`,
-`List.count_replicate`, and `List.sum_map_eq_nsmul_single` reduce the count to the
-alphabet list's one occurrence of that letter. Exhaustiveness and `Nodup` supply
-that occurrence. The empty terminal alphabet needs no special assumption.
+Three accepted public contracts now have complete proofs:
 
-Six new, immediately proved adapters in `RegularRealization.lean` establish
-both inclusions of the exact-image construction:
+| Declaration (namespace `Parikh`) | Result |
+| --- | --- |
+| `witnessExpression_correct` | The expression has exactly the indexed witness image and is regular according to Mathlib's finite-state DFA predicate (`thm:converse`). |
+| `converse` | Every semilinear set over a finite terminal alphabet is the exact Parikh image of a DFA-regular language (`thm:converse`). |
+| `regular_realization` | Every Mathlib grammar has a DFA-regular language with the same Parikh image (`thm:parikh-statement`). |
+
+Their signatures and all referenced meanings are unchanged. They are removed
+from both unresolved allowlists. The grammar theorem still permits arbitrary
+ambient nonterminal types.
+
+Six immediately proved adapters in the new `WordBlockAutomata.lean` module
+supply the specialized regularity operations required by this construction:
 
 | Declaration (namespace `Parikh`) | Role |
 | --- | --- |
-| `wordExpression_matches` | A literal-word expression accepts exactly its word. |
-| `image_mul` | Concatenation of languages becomes pointwise addition of their Parikh images. |
-| `wordExpression_star_image` | The star of a literal word realizes the additive closure of its count vector, including zero repetitions and the empty word. |
-| `periodExpressions_image` | The ordered product of starred period words realizes the additive closure of the period values. |
-| `componentExpression_image` | Each component expression has exactly its accepted indexed linear denotation (`lem:linear-regular`). |
-| `witnessExpression_image` | The finite union expression has exactly the witness denotation (`eq:regular-construction`, `thm:converse`). |
+| `isRegular_of_finite_language_cover` | A finite family of continuation languages covering every one-letter continuation gives a sound and complete finite NFA; Mathlib's subset construction gives its DFA. |
+| `isRegular_zero` | A rejecting NFA realizes the empty language. |
+| `isRegular_one` | An accepting NFA with no transitions realizes epsilon. |
+| `mem_word_mul_cons` | Reading the head of a literal-word prefix leaves the tail as the prefix. |
+| `isRegular_word_mul` | Prepending a fixed word preserves DFA regularity. |
+| `isRegular_word_star_mul` | Prepending any number of copies of a fixed word preserves DFA regularity, including an empty repeated word. |
 
-The period proof reuses Mathlib's `AddSubmonoid.closure_union` and `mem_sup`.
-The existing `Component.denotation_eq_vadd_closure` identifies this closure with
-independent natural coefficients at every period-list position. No replacement
-coefficient semantics, permutation closure, or language datatype is introduced.
-Zero and repeated periods, an empty period list, an empty witness, and an empty
-alphabet are all covered.
+The NFA states are an existing finite subtype of languages. A transition from
+`K` to `J` on `a` requires every word in `J` to continue to a word of `K` after
+reading `a`; the cover hypothesis gives a successor for every accepted
+continuation. Induction on the input word proves the NFA accepts exactly the
+starting language. `NFA.toDFA_correct` and `Language.isRegular_iff` supply
+finite-state DFA regularity without new determinization infrastructure.
 
-The frozen `witnessExpression_correct` theorem is retained with exactly its
-original signature. Its first conjunct now uses `witnessExpression_image`;
-**only its DFA-regularity conjunct remains a hole**. Neither this combined theorem
-nor `converse`, `regular_realization`, or `regular_image` is claimed as completed.
-The pinned Mathlib provides regex semantics but explicitly lacks general
-regex-to-DFA equivalence; `DFA.lean` also has no concatenation/star regularity
-lemmas. The next milestone should prove DFA regularity of these constructed
-finite unions of word-block products, reusing existing automata conversion.
-A general regex-equivalence development is unnecessary.
+For a fixed-word prefix, the finite family consists of all continuation-DFA
+state languages together with the prefixed word's finitely many suffixes followed
+by that continuation. For a starred-word prefix, suffix states instead lead
+back to the same starred prefix. Mathlib's Kleene-star unfolding law allows a
+choice between starting another copy and entering the continuation DFA. The
+empty repeated word simplifies using `kstar_one`, without epsilon-loop reasoning.
+No general regex-to-DFA equivalence, generic concatenation/star closure, new
+language semantics, global data definitions, or instances are introduced.
 
-All seven completed declarations depend only on standard Lean foundations:
-`propext`, `Classical.choice`, and `Quot.sound` (a subset suffices for `image_mul`).
-None depends on `sorryAx` or a project axiom. All existing definitions, instances,
-and previously completed proofs are retained.
+Three proved adapters in `RegularRealization.lean` combine these operations:
+`periodExpressions_regular`, `componentExpression_regular`, and
+`witnessExpression_regular`. The last reuses Mathlib's regular finite-union law.
+The existing image proof completes `witnessExpression_correct`. Classical
+finite alphabet ordering and `exists_witness` give `converse`; the already
+proved forward theorem gives `regular_realization`.
 
-All **530 prior contract entries** are preserved exactly. The six proved
-adapters and twelve generated equation/simplification declarations extend the
-manifest to **548 entries**, including equations for the existing `image` and
-`witnessExpression` definitions. No previous declaration is deleted or moved.
-The checker, immutable baseline, existing signatures and definition meanings,
-instances, Lean/Mathlib pins, imports, and cache targets are unchanged.
-Only `representative_counts` is removed from both unresolved allowlists.
+All twelve completed public/support declarations depend only on standard Lean
+foundations: `propext`, `Classical.choice`, and `Quot.sound` (a subset suffices for
+`mem_word_mul_cons`). None depends on `sorryAx` or a project axiom.
+All **548 prior contract entries** are preserved exactly. Nine proved helpers
+and six generated simplification declarations extend the manifest to **563 entries**.
+No earlier declaration is deleted or moved. The checker, immutable baseline,
+existing signatures and definition meanings, instances, and Lean/Mathlib pins
+are unchanged. The new module imports Mathlib NFA and finite-range infrastructure;
+NFA is added to the documented and CI cache selections. All existing cache
+selections remain.
+
+These regularity and converse proofs establish semantic existence. The finite
+state family and transitions use classical language equality and inclusion;
+this is not an executable grammar compiler or a new compiler implementation.
 
 ## Previously completed
 
@@ -87,6 +101,8 @@ Only `representative_counts` is removed from both unresolved allowlists.
 
 - [PR #15](https://github.com/focs-lab/parikh-theorem/pull/15): `bases_finite`, `bounded_cycles_finite`, `treeRepresentation_isSemilinearSet`, `grammar_image`, `grammar_witness`, and `contextFree_image`, completing forward semilinearity and exact finite witness existence (`thm:main`, `thm:parikh-statement`).
 
+- [PR #16](https://github.com/focs-lab/parikh-theorem/pull/16): `representative_counts` and six expression-image adapters, including `componentExpression_image` and `witnessExpression_image`, proving both inclusions of the constructed expression images (`eq:representative`, `lem:linear-regular`, `eq:regular-construction`).
+
 Their statements and proofs are unchanged here. The grammar/tree bridge supports
 arbitrary derivation order and nonterminal types. Witness existence and tree
 semantics are semantic proofs, not executable compiler implementations.
@@ -98,28 +114,28 @@ allowlists in `contracts/obligations.json` are authoritative for CI.
 
 | Module | Outstanding declarations |
 | --- | --- |
-| RegularRealization | `witnessExpression_correct` (DFA clause only), `converse`, `regular_image` |
+| RegularRealization | `regular_image` |
 | Construction | `bounded_family_bounds`, `bounded_witness`, `witness_bit_bound` |
-| Statements | `regular_realization` |
 
 `ActivationTest`, `BoundedEnumeration`, and `Compiler` remain concrete structures
 specifying future finite algorithms, with no implementing values yet. Their
-correctness fields are requirements, not assumed theorems. The existing exact
-finite grammar witness is classical existence, not an executable compiler.
+correctness fields are requirements, not assumed theorems. The exact finite
+grammar witness and regular-language realization are classical existence proofs.
+The small remaining theorem-hole count does not account for those unimplemented
+algorithm values.
 
 ## Validation
 
-- Affected module and full `lake build` pass, with only expected theorem-hole warnings in the 7 remaining obligations.
-- `lake env lean scripts/SkeletonExamples.lean` passes. New examples distinguish an empty witness from epsilon over an empty alphabet, check a singleton component with no periods, and exercise zero and duplicate periods with independent coefficients. An equal-count word in a different letter order is excluded from the expression language while its vector belongs to the exact image. Earlier grammar, tree, activation, decomposition, and witness examples still pass.
-- `python3 scripts/check-contracts.py` checks 548 declarations against the accepted skeleton and merged `main`, preserving all 530 earlier contracts. The checker and baseline pointer are unchanged.
-- `#print axioms` for the seven completed declarations reports only standard foundations, with no unresolved dependencies. The combined `witnessExpression_correct` still reports `sorryAx`, as recorded above.
+- Affected modules and full `lake build` pass, with only expected theorem-hole warnings in the 4 remaining obligations.
+- `lake env lean scripts/SkeletonExamples.lean` passes. New examples distinguish an empty union from epsilon over an empty alphabet, exhibit a finite DFA accepting the ordered repeated-word language while rejecting an equal-count permutation, and show that equal-image realization of an unproductive grammar is actually empty despite infinite ambient nonterminals. All previous semantic examples still pass.
+- `python3 scripts/check-contracts.py` checks 563 declarations against the accepted skeleton and merged `main`, preserving all 548 earlier contracts. The checker and baseline pointer are unchanged.
+- `#print axioms` for the twelve completed declarations reports only standard foundations, with no unresolved dependencies.
 - `git diff --check` passes.
-- `python3 scripts/check-contracts.py --final` correctly rejects the 7 outstanding holes. Full project completion still requires DFA regularity, the converse and regular specialization, algorithms, and bounds.
-- Cloud Lean 4.34.1 / Lake 5.0.0, pinned dependency access and selected Mathlib cache, and GitHub authentication/read/push access were verified. CI results are reported in the PR separately from local validation.
+- `python3 scripts/check-contracts.py --final` correctly rejects the 4 outstanding holes. Full project completion still requires regular specialization, executable algorithms with checked correctness, and bounds.
+- Cloud Lean 4.34.1 / Lake 5.0.0, pinned dependency access, the newly selected NFA cache, and GitHub authentication/read/push access were verified. CI results are reported in the PR separately from local validation.
 
-Next eligible work: DFA regularity of the constructed expressions, completing
-`witnessExpression_correct`, then `converse` and `regular_realization`.
-`regular_image` requires the separate Mathlib DFA-to-grammar bridge or finite-path
-specialization. Executable algorithms with checked correctness and quantitative
-bounds remain separately tracked. Keep accepted contracts unchanged and publish
+Next eligible work: `regular_image`, using a thin Mathlib DFA-to-grammar bridge
+or finite-path specialization. Then supply executable activation and bounded
+syntax enumeration, assemble the exact compiler with correctness proofs, and
+prove the quantitative bounds. Keep accepted contracts unchanged and publish
 each coherent increment as a new PR.

@@ -1,7 +1,7 @@
 # Accepted proof plan
 
 The owner accepted the statement skeleton in PR #2 on 2026-10-11.
-The counting/witness and grammar/tree semantics milestones are proved; Parikh's theorem remains in progress. Read the complete reference, including appendices, alongside the
+The counting/witness, grammar/tree semantics, and one-hole plugging milestones are proved; Parikh's theorem remains in progress. Read the complete reference, including appendices, alongside the
 statements; source labels below refer to `reference/parikh_theorem.tex`.
 
 ## Reading order and module purposes
@@ -10,7 +10,7 @@ statements; source labels below refer to `reference/parikh_theorem.tex`.
    interface, and equal-image regular realization.
 2. `Parikh/Counting.lean`: concrete indexed witness denotation and the bridges to
    Mathlib's `IsLinearSet` and `IsSemilinearSet`.
-3. `Parikh/GrammarTrees.lean`, then `Decomposition.lean`: ordered production trees,
+3. `Parikh/GrammarTrees.lean`, `TreePlugging.lean`, then `Decomposition.lean`: ordered production trees,
    explicit holes, Mathlib derivation semantics, occurrence replacement, and the
    bounded cut measured by production count.
 4. `Parikh/Activation.lean`: syntax-independent support transitions, first
@@ -45,7 +45,7 @@ flowchart TD
 ```
 
 These are intended dependencies for the remaining proof. The four counting/witness
-contracts and grammar/tree equivalence now have complete proofs; the other 23 theorem bodies remain `sorry`. No forward proof depends on the converse,
+contracts, grammar/tree equivalence, and one-hole plugging now have complete proofs; the other 22 theorem bodies remain `sorry`. No forward proof depends on the converse,
 trace theory, a grammar normal form, or Presburger elimination. The finite-witness
 bridge to Mathlib is separate from the derivation-tree proof.
 
@@ -63,7 +63,7 @@ and algorithm values are pending.
 | `prop:tree-word`, `app:derivations` | `derives_iff_tree` | Every grammar, root and word; no finite `g.NT` hypothesis | Partial-tree expansion and existing rewrite context lemmas; proved |
 | `eq:word-context` | reused `ContextFreeRule.Rewrites.append_left`, `append_right` and grammar derivation adapters | Prefix/suffix closure | Reuse Mathlib one-step and multistep prefix/suffix closure directly; no parallel adapter needed |
 | `def:cycle`, `eq:cycle-root` | `OneHole`, `Cycle` | Exactly one matching hole, positive production count | Root-in-support consequence deferred; definitions concrete |
-| `lem:plug`, `eq:plug-wt`, `eq:plug-size`, `eq:plug-supp` | `plugging` | Valid one-hole context and matching complete tree | Induction on hole path; pending |
+| `lem:plug`, `eq:plug-wt`, `eq:plug-size`, `eq:plug-supp` | `plugging` | Valid one-hole context and matching complete tree | Structural induction with hole-count accounting; proved |
 | `def:insertion`, `lem:enabled` | `Inserts`, `insertion_enabled` | Position selects an internal matching subtree | Plugging and occurrence existence; pending |
 | `lem:insertion-laws`, `eq:insert-wt`, `eq:insert-size`, `eq:insert-supp` | `insertion_accounting` | Complete insertion and exact root/weight/size/support equalities | Plugging twice; pending |
 | `cor:sequence` | `InsertionSequence`; future accounting helper | Finite ordered sequence | Insertion accounting; helper deliberately deferred |
@@ -113,6 +113,11 @@ all denotations are sets, with no uniqueness assumptions. Positions select
 occurrences, and equal context weights never identify distinct context syntax.
 The first occurrence of every selected context is included in the component's
 base. Both inclusions of each equality remain explicit obligations.
+
+`TreePlugging.lean` provides four supporting theorems for `lem:plug`: matching-hole
+validity/root preservation, production-count accounting, terminal-count accounting,
+and exact support membership. These are proved for arbitrary hole counts and
+specialized to the accepted one-hole statement in `Decomposition.lean`.
 
 ## After review
 

@@ -1,4 +1,5 @@
 import Parikh.GrammarTrees
+import Parikh.TreePlugging
 
 /-! A compact family of internal surgery/decomposition contracts.
 Context identity, positions, roots and support survive until activation.
@@ -33,7 +34,19 @@ theorem plugging [DecidableEq T] (g : ContextFreeGrammar T) (E t : ParseTree T g
       (E.plug t).weight = E.weight + t.weight ∧
       (E.plug t).productionSize = E.productionSize + t.productionSize ∧
       (E.plug t).support = E.support ∪ t.support := by
-  sorry
+  obtain ⟨hvalid, hholes⟩ := hE
+  have hsemantics := hvalid.plug_complete ht (by
+    intro B hB
+    have hBA : B = A := by simpa only [hholes, List.mem_singleton] using hB
+    simpa only [hBA] using hroot)
+  refine ⟨hsemantics.1, hsemantics.2, ?_, ?_, ?_⟩
+  · funext a
+    simpa only [ParseTree.weight, counts, Pi.add_apply, hholes,
+      List.length_singleton, Nat.one_mul] using E.count_yield_plug t a
+  · simpa only [hholes, List.length_singleton, Nat.one_mul]
+      using E.productionSize_plug t
+  · ext B
+    simp [E.mem_support_plug t B, hholes]
 
 /-- Support means an internal occurrence, including an empty-production node (`lem:enabled`). -/
 theorem insertion_enabled (g : ContextFreeGrammar T) (t C : ParseTree T g.NT)

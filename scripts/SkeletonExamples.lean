@@ -87,4 +87,87 @@ example : ∃ t : ParseTree Bool Unit,
     by simp [branchingGrammar], ContextFreeRule.Rewrites.input_output⟩).trans
       (first.single.trans last.single)
 
+/-! One-hole plugging: silent productions still add production nodes, and a
+nested hole can have a different label from the outer context's root. -/
+
+example : Complete unitGrammar
+    ((ParseTree.node unitProduction [.hole 1]).plug (.node eraseProduction [])) ∧
+    ((ParseTree.node unitProduction [.hole 1]).plug (.node eraseProduction [])).root =
+      .nonterminal 0 ∧
+    ((ParseTree.node unitProduction [.hole 1]).plug (.node eraseProduction [])).weight = 0 ∧
+    ((ParseTree.node unitProduction [.hole 1]).plug (.node eraseProduction [])).productionSize = 2 := by
+  have hE : OneHole unitGrammar (.node unitProduction [.hole 1]) 1 := by
+    refine ⟨Valid.node (g := unitGrammar) _ _ (by simp [unitGrammar]) ?_ ?_, ?_⟩
+    · intro c hc
+      have h : c = .hole 1 := by simpa only [List.mem_singleton] using hc
+      subst c
+      exact Valid.hole (g := unitGrammar) (1 : ℕ)
+    · simp [ParseTree.root, unitProduction]
+    · simp [ParseTree.holes]
+  have ht : Complete unitGrammar (.node eraseProduction []) := by
+    refine ⟨Valid.node (g := unitGrammar) _ _ (by simp [unitGrammar]) (by simp) ?_, ?_⟩
+    · simp [eraseProduction]
+    · simp [ParseTree.holes]
+  have h := plugging unitGrammar _ _ 1 hE ht rfl
+  refine ⟨h.1, h.2.1, ?_, ?_⟩
+  · rw [h.2.2.1]
+    funext a
+    exact Fin.elim0 a
+  · rw [h.2.2.2.1]
+    simp [ParseTree.productionSize]
+
+def outerPlugRule : ContextFreeRule Bool ℕ :=
+  ⟨0, [.terminal false, .nonterminal 2, .terminal true]⟩
+def middlePlugRule : ContextFreeRule Bool ℕ := ⟨2, [.nonterminal 1]⟩
+def wordPlugRule : ContextFreeRule Bool ℕ := ⟨1, [.terminal true]⟩
+abbrev plugGrammar : ContextFreeGrammar Bool :=
+  ⟨ℕ, 0, {outerPlugRule, middlePlugRule, wordPlugRule}⟩
+def nestedContext : ParseTree Bool ℕ :=
+  .node outerPlugRule [.terminal false, .node middlePlugRule [.hole 1], .terminal true]
+def insertedWordTree : ParseTree Bool ℕ := .node wordPlugRule [.terminal true]
+
+example : Complete plugGrammar (nestedContext.plug insertedWordTree) ∧
+    (nestedContext.plug insertedWordTree).root = .nonterminal 0 ∧
+    (nestedContext.plug insertedWordTree).yield = [false, true, true] ∧
+    (nestedContext.plug insertedWordTree).weight true = 2 ∧
+    (nestedContext.plug insertedWordTree).productionSize = 3 ∧
+    (nestedContext.plug insertedWordTree).support = {0, 1, 2} := by
+  have hm : Valid plugGrammar (.node middlePlugRule [.hole 1]) := by
+    refine Valid.node (g := plugGrammar) _ _ (by simp [plugGrammar]) ?_ ?_
+    · intro c hc
+      have h : c = .hole 1 := by simpa only [List.mem_singleton] using hc
+      subst c
+      exact Valid.hole (g := plugGrammar) (1 : ℕ)
+    · simp [ParseTree.root, middlePlugRule]
+  have hE : OneHole plugGrammar nestedContext 1 := by
+    refine ⟨Valid.node (g := plugGrammar) _ _ (by simp [plugGrammar]) ?_ ?_, ?_⟩
+    · intro c hc
+      simp only [List.mem_cons, List.not_mem_nil, or_false] at hc
+      rcases hc with rfl | rfl | rfl
+      · exact .terminal false
+      · exact hm
+      · exact .terminal true
+    · simp [ParseTree.root, outerPlugRule, middlePlugRule]
+    · simp [nestedContext, ParseTree.holes]
+  have ht : Complete plugGrammar insertedWordTree := by
+    refine ⟨Valid.node (g := plugGrammar) _ _ (by simp [plugGrammar]) ?_ ?_, ?_⟩
+    · intro c hc
+      have h : c = .terminal true := by simpa only [List.mem_singleton] using hc
+      subst c
+      exact .terminal true
+    · simp [ParseTree.root, wordPlugRule]
+    · simp [insertedWordTree, ParseTree.holes]
+  have h := plugging plugGrammar nestedContext insertedWordTree 1 hE ht rfl
+  refine ⟨h.1, h.2.1, ?_, ?_, ?_, ?_⟩
+  · simp [nestedContext, insertedWordTree, ParseTree.plug, ParseTree.yield]
+  · rw [h.2.2.1]
+    simp [nestedContext, insertedWordTree, ParseTree.weight, counts, ParseTree.yield]
+  · rw [h.2.2.2.1]
+    simp [nestedContext, insertedWordTree, ParseTree.productionSize]
+  · rw [h.2.2.2.2]
+    ext A
+    simp [nestedContext, insertedWordTree, ParseTree.support, ParseTree.productionLabels,
+      outerPlugRule, middlePlugRule, wordPlugRule]
+    tauto
+
 end SkeletonExamples

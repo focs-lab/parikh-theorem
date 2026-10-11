@@ -11,7 +11,8 @@ insertion [PR #6](https://github.com/focs-lab/parikh-theorem/pull/6),
 and abstract activation [PR #7](https://github.com/focs-lab/parikh-theorem/pull/7)
 have merged, with CI passing.
 
-Current milestone: insertion-sequence accounting and tree realization of activation, branch
+Current milestone: [PR #8](https://github.com/focs-lab/parikh-theorem/pull/8),
+insertion-sequence accounting and tree realization of activation, branch
 [`codex/activation-tree-realization`](https://github.com/focs-lab/parikh-theorem/tree/codex/activation-tree-realization),
 based on merged `main` (`c2aa4e7a5673704b9d59543a9110dfae9b1c11ed`).
 There are **18 direct `sorry` obligations**, zero project axioms, and 18 declarations

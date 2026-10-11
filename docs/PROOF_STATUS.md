@@ -6,7 +6,8 @@ baseline is the reviewed head `6bff9679d7ea03e5401815b80c5a3dc1300f9d36`, which
 includes the requested `ParseTree` rename. The baseline pointer is now recorded
 in `contracts/baseline.json`; no existing contract fingerprints were changed.
 
-Current milestone: branch `codex/counting-witness-proofs`, based on merged `main`.
+Current milestone: [PR #3](https://github.com/focs-lab/parikh-theorem/pull/3),
+branch `codex/counting-witness-proofs`, based on merged `main`.
 There are **24 direct `sorry` obligations**, zero project axioms, and 24 declarations
 transitively dependent on `sorryAx`. Parikh's theorem is not yet proved.
 

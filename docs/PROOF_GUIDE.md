@@ -277,3 +277,28 @@ and holes for unused declared symbols. Duplicate productions may repeat trees;
 the contract concerns membership, so it does not require a unique listing.
 Filtering these trees into bases and contexts, assembling the witness with the
 activation test, and proving its quantitative bounds remain compiler work.
+
+## 12. Bounding how many trees and terminals occur
+
+The families are finite, and their sizes now have proved numerical bounds.
+Let $n$ be the number of active nonterminals, $d$ the number of terminals, $p$
+the number of productions and $b$ the largest production arity, with a minimum
+of one. A full branching tree through depth $n+1$ has
+$M = \sum_{i=0}^{n+1} b^i$ positions. Each base or bounded cycle has at most
+$M$ terminal leaves, and there are at most $K = (1+d+n+p)^M$ of either kind.
+
+[BoundedFamilySupport.lean](../Parikh/BoundedFamilySupport.lean) proves the count
+by covering each height layer with terminal leaves, active holes and production
+nodes. A production of arity $m$ has at most $A^m$ ordered child tuples when
+the previous family has size $A$. Ignoring root compatibility enlarges this
+cover, which is enough for an upper bound. Finite union bounds and the geometric
+sum recurrence give $K$ at depth $n+1$. Filtering the cover yields the exact
+base and cycle families.
+
+The terminal bound follows separately: each node has at most $b$ children,
+whose terminal yields satisfy the preceding height budget. Summing their
+lengths gives the next budget. Summing a tree's terminal counts equals its
+yield length, so the same bound applies to weight norm. The accepted
+`bounded_family_bounds` theorem in [Construction.lean](../Parikh/Construction.lean)
+now proves these claims. Witness assembly, its component/period budgets, and
+the final numerical bit budget are the remaining steps.

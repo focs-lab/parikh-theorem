@@ -12,7 +12,8 @@ grammar/tree semantics, insertion and activation, bounded-family finiteness,
 exact decomposition, and the exact component union. Converse and equal-image
 regular realization and regular-language specialization are also proved. Executable
 activation testing and bounded-tree enumeration are implemented with exact
-correctness. Compilation and quantitative bounds remain in progress.
+correctness. Quantitative bounded-family and leaf-weight bounds are proved.
+Compilation and witness size/bit bounds remain in progress.
 Read the complete reference, including appendices, alongside the
 statements; source labels below refer to `reference/parikh_theorem.tex`.
 
@@ -44,6 +45,8 @@ statements; source labels below refer to `reference/parikh_theorem.tex`.
    four size bounds plus the numerical bit budget.
    `BoundedEnumeration.lean` implements the enumeration interface with an exact
    membership proof, using Mathlib's ordered list Cartesian products.
+   `BoundedFamilySupport.lean` proves cardinality and yield-length budgets,
+   reusing the existing generated tree equations.
 7. `PROOF_STATUS.md` and `CONTRACT_CHECKS.md`: what is incomplete and how review
    freezes the accepted contracts.
 
@@ -94,7 +97,8 @@ bridge to Mathlib is separate from the derivation-tree proof.
 Names below are in namespace `Parikh`. “Pending” means a tracked theorem hole.
 Concrete definitions and interfaces are implemented. Activation testing and
 bounded-tree enumeration have executable values with complete correctness proofs;
-compiler construction and the three bounds proofs remain pending.
+`bounded_family_bounds` is proved; compiler construction and the two witness
+size/bit bounds proofs remain pending.
 
 | Source labels | Lean declaration(s) | Hypotheses / meaning | Intended prerequisites; status |
 | --- | --- | --- | --- |
@@ -127,7 +131,7 @@ compiler construction and the three bounds proofs remain pending.
 | regular specialization of `thm:parikh-statement` | `regular_image` | Any Mathlib DFA-regular language | Exact DFA-to-Mathlib-grammar bridge and shared forward theorem; proved |
 | `lem:activation-test` | `ActivationTest`, `activationTest`, `activationRounds_correct`, `Activatable.erase_iff_of_enabled`, `Activatable.batch_iff_of_enabled` | Finite input supports and operations with decidable equality; ambient types may be infinite | Executable enabled-batch search, support monotonicity, exact removal equivalence and strict remaining-cardinality decrease; implemented and proved |
 | `sec:effective` | `EncodedGrammar.decode`, `BoundedEnumeration`, `boundedEnumeration`, `Compiler` | Numeric finite syntax; no classical-choice compiler value | Enumeration and activation implemented with proofs; exact tree formula proved; compiler value pending |
-| `eq:bound-defs`, `lem:count-trees` | `GrammarSize`, `grammarSize`, `bounded_family_bounds` | `n` is active cardinality, `b ≥ 1`, `M = ∑ᵢ₌₀ⁿ⁺¹ bⁱ`, `K = (1+d+n+p)^M` | Injection into bounded position records; pending |
+| `eq:bound-defs`, `lem:count-trees` | `GrammarSize`, `grammarSize`, `bounded_family_bounds` | `n` is active cardinality, `b ≥ 1`, `M = ∑ᵢ₌₀ⁿ⁺¹ bⁱ`, `K = (1+d+n+p)^M` | Finite child-function spaces, union/cardinality bounds and yield-length induction; proved |
 | `thm:size-bound` | `WithinBounds`, `bounded_witness`, `Compiler.bounded` | At most `K2^K` components, `K` periods, norms `M` / `(K+1)M` | Bounded syntax and exact construction; pending |
 | `eq:bit-bound` | `coordinateBits`, `vectorBits`, `entryBits`, `witness_bit_bound` | Fixed widths using Mathlib `Nat.clog`; excludes list-length metadata | Four size bounds and nonnegative coordinates; pending |
 | `app:presburger` | consequence of `Witness.denotation`; formula adapter deferred | Explicit existential coefficients | Downstream arithmetic consequence, not a proof prerequisite |
@@ -310,7 +314,17 @@ both soundness and completeness using child-height bounds and ordered root
 matching. Duplicate input productions may repeat trees, as the list-membership
 interface permits; the future compiler must account for duplicates in its
 cardinality bounds. The runtime is explicit `Nat.rec` with no classical selection.
-Quantitative family bounds and full witness compilation remain separate work.
+Quantitative family bounds are now proved; full witness compilation remains.
+
+`BoundedFamilySupport.lean` counts a finite cover of active open trees. Child
+function spaces provide ordered tuples at each production's arity; finite union
+bounds and `P_(H+1) = 1 + b*P_H` give cardinality at most `q^P_H`. Discarding
+root compatibility enlarges the cover, so every valid bounded base/cycle is
+included. Filtering recovers exact families. A parallel height induction bounds
+terminal-yield length, and Mathlib's occurrence sum identifies it with weight
+norm. `bounded_family_bounds` specializes these results at height `n+1`, with
+no finite ambient-nonterminal hypothesis. Existing tree equations supply the
+height and yield formulas; every accepted declaration remains in its module.
 
 ## After review
 

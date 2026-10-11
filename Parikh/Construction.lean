@@ -1,5 +1,6 @@
 import Parikh.Activation
 import Mathlib.Data.Nat.Log
+import Parikh.BoundedFamilySupport
 
 /-!
 # What an effective construction must provide
@@ -59,6 +60,17 @@ def GrammarSize.vectorBits (s : GrammarSize) : ℕ :=
 def entryBits {T : Type*} [Fintype T] (s : GrammarSize) (W : Witness T) : ℕ :=
   (W.map fun c => (c.periods.length + 1) * Fintype.card T * s.coordinateBits).sum
 
+/-- Summing the terminal counts gives the length of a tree's terminal yield. -/
+theorem ParseTree.norm_weight_eq_length {T N : Type*} [Fintype T] [DecidableEq T]
+    (t : ParseTree T N) : norm t.weight = t.yield.length := by
+  classical
+  change (∑ a, t.yield.count a) = t.yield.length
+  rw [← List.sum_toFinset_count_eq_length t.yield]
+  symm
+  apply Finset.sum_subset (Finset.subset_univ _)
+  intro a _ ha
+  exact List.count_eq_zero.mpr (fun h => ha (List.mem_toFinset.mpr h))
+
 /-- Bounded families and leaf norms have the paper's coarse syntax bounds (`lem:count-trees`). -/
 theorem bounded_family_bounds {T : Type*} [Fintype T] [DecidableEq T]
     (g : ContextFreeGrammar T) :
@@ -67,7 +79,45 @@ theorem bounded_family_bounds {T : Type*} [Fintype T] [DecidableEq T]
     (∃ cycles : Finset (ParseTree T g.NT),
       (∀ C, C ∈ cycles ↔ IsBoundedCycle g C) ∧ cycles.card ≤ (grammarSize g).trees) ∧
     (∀ t, IsBase g t ∨ IsBoundedCycle g t → norm t.weight ≤ (grammarSize g).positions) := by
-  sorry
+  classical
+  let s := grammarSize g
+  have hb : ∀ r ∈ g.rules, r.output.length ≤ s.branching := by
+    intro r hr
+    exact (Finset.le_sup (f := fun r => r.output.length) hr).trans (Nat.le_max_right _ _)
+  have hbounded : ∀ t, IsBase g t ∨ IsBoundedCycle g t →
+      ActiveOpen g t ∧ t.height ≤ s.nonterminals + 1 := by
+    intro t ht
+    rcases ht with hbase | hcycle
+    · refine ⟨⟨hbase.1.1, ?_⟩, ?_⟩
+      · simp [hbase.1.2]
+      · exact (simple_height g t hbase.1 hbase.2.2).trans (Nat.le_succ _)
+    · obtain ⟨⟨A, hcycle⟩, hh⟩ := hcycle
+      refine ⟨⟨hcycle.1.1, ?_⟩, hh⟩
+      intro B hB
+      have hBA : B = A := by simpa only [hcycle.1.2, List.mem_singleton] using hB
+      subst B
+      exact hcycle.1.1.support_active hcycle.root_mem_support
+  let family := treeFamily g (s.nonterminals + 1)
+  have hmem : ∀ t, IsBase g t ∨ IsBoundedCycle g t → t ∈ family := by
+    intro t ht
+    obtain ⟨ho, hh⟩ := hbounded t ht
+    exact mem_treeFamily g _ t ho hh
+  have hcard : family.card ≤ s.trees := by
+    exact card_treeFamily_le g s.branching s.records (by rfl) hb _
+  refine ⟨⟨family.filter (IsBase g), ?_, ?_⟩,
+    ⟨family.filter (IsBoundedCycle g), ?_, ?_⟩, ?_⟩
+  · intro B
+    exact ⟨fun h => (Finset.mem_filter.mp h).2,
+      fun h => Finset.mem_filter.mpr ⟨hmem B (Or.inl h), h⟩⟩
+  · exact (Finset.card_filter_le _ _).trans hcard
+  · intro C
+    exact ⟨fun h => (Finset.mem_filter.mp h).2,
+      fun h => Finset.mem_filter.mpr ⟨hmem C (Or.inr h), h⟩⟩
+  · exact (Finset.card_filter_le _ _).trans hcard
+  · intro t ht
+    obtain ⟨ho, hh⟩ := hbounded t ht
+    rw [ParseTree.norm_weight_eq_length]
+    exact yield_length_le_heightPositions g s.branching hb _ t ho.1 hh
 
 /-- The guaranteed exact witness also satisfies all four bounds (`thm:size-bound`). -/
 theorem bounded_witness {T : Type*} [Fintype T] [DecidableEq T] (g : ContextFreeGrammar T) :

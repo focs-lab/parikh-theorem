@@ -1048,4 +1048,24 @@ example : (boundedEnumeration.enumerate encodedEpsilonGrammar 0).length = 1 ∧
 #eval (boundedEnumeration.enumerate encodedEpsilonGrammar 1).map
   (fun t => (t.height, t.holes.length))
 
+/-! Quantitative bounds retain infinite ambient nonterminals and zero terminal
+weights. Only the two active labels of `unitGrammar` enter the bound. -/
+example : (grammarSize unitGrammar).positions = 4 ∧
+    (grammarSize unitGrammar).trees = 625 := by
+  classical
+  simp [grammarSize, activeNonterminals, unitGrammar, unitProduction, eraseProduction,
+    GrammarSize.positions, GrammarSize.trees, GrammarSize.records]
+
+-- The certified families are exact, even with an empty alphabet and empty RHS.
+example : ∃ bases cycles : Finset (ParseTree (Fin 0) ℕ),
+    (∀ B, B ∈ bases ↔ IsBase unitGrammar B) ∧
+    (∀ C, C ∈ cycles ↔ IsBoundedCycle unitGrammar C) ∧
+    bases.card ≤ 625 ∧ cycles.card ≤ 625 := by
+  obtain ⟨⟨bases, hb, hbc⟩, ⟨cycles, hc, hcc⟩, _⟩ := bounded_family_bounds unitGrammar
+  have hK : (grammarSize unitGrammar).trees = 625 := by
+    classical
+    simp [grammarSize, activeNonterminals, unitGrammar, unitProduction, eraseProduction,
+      GrammarSize.positions, GrammarSize.trees, GrammarSize.records]
+  exact ⟨bases, cycles, hb, hc, by simpa [hK] using hbc, by simpa [hK] using hcc⟩
+
 end SkeletonExamples

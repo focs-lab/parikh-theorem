@@ -7,9 +7,9 @@ rename. Its pointer and all previous contract fingerprints remain unchanged.
 All proof increments through [PR #12](https://github.com/focs-lab/parikh-theorem/pull/12)
 have merged, with CI passing.
 
-Current milestone: exact tree decomposition, branch `codex/decomposition`, based
-on merged `main` (`a69e23943c3226ba1a178cdb0c201466f669b4be`). Publication and
-CI evidence will be recorded in the PR.
+Current milestone: [PR #13](https://github.com/focs-lab/parikh-theorem/pull/13),
+exact tree decomposition, branch `codex/decomposition`, based on merged
+`main` (`a69e23943c3226ba1a178cdb0c201466f669b4be`). CI evidence is recorded in the PR.
 There are **12 direct `sorry` obligations**, zero project axioms, and 12 declarations
 transitively dependent on `sorryAx`, down from 13. Parikh's theorem is not yet proved.
 

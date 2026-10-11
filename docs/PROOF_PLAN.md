@@ -2,7 +2,8 @@
 
 The owner accepted the statement skeleton in PR #2 on 2026-10-11.
 The counting/witness, grammar/tree semantics, plugging/insertion, abstract activation laws,
-and activation's tree realization are proved; Parikh's theorem remains in progress.
+activation's tree realization, and the exact linear-component equality are proved;
+Parikh's theorem remains in progress.
 Read the complete reference, including appendices, alongside the
 statements; source labels below refer to `reference/parikh_theorem.tex`.
 
@@ -17,7 +18,7 @@ statements; source labels below refer to `reference/parikh_theorem.tex`.
    bounded cut measured by production count.
 4. `Parikh/InsertionSequences.lean` and `Activation.lean`: sequence accounting,
    syntax-independent support transitions, first occurrences, positive
-   multiplicities, their tree realization, and the pending exact component formula.
+   multiplicities, their tree realization, and the proved exact component formula.
 5. `Parikh/RegularRealization.lean`: representative words and explicit finite
    regular expressions; the DFA-regularity obligation applies to these expressions.
 6. `Parikh/Construction.lean`: finite encoded input, algorithm interfaces, and all
@@ -50,8 +51,8 @@ flowchart TD
 
 These are intended dependencies for the remaining proof. The four counting/witness
 contracts, grammar/tree equivalence, plugging/insertion, the two abstract activation laws,
-and sequence/tree realization now have complete proofs. The remaining 18 theorem bodies
-are still `sorry`; this milestone adds previously deferred bridge lemmas. No forward proof depends on the converse,
+sequence/tree realization, and `one_linear` now have complete proofs. The remaining 17 theorem bodies
+are still `sorry`. No forward proof depends on the converse,
 trace theory, a grammar normal form, or Presburger elimination. The finite-witness
 bridge to Mathlib is separate from the derivation-tree proof.
 
@@ -81,7 +82,7 @@ and algorithm values are pending.
 | `lem:activation-realize`, `eq:activated-wt`, `eq:activated-supp` | `activationOrder_iff_insertionSequence`, `ContextsActivatable.realize` | Matching cycle list; introduce each selected context once, with exact accounting and all selected contexts enabled afterwards | Insertion enabledness and sequence accounting; proved |
 | `lem:first-occurrence` | `first_occurrences` | Any enabled list of operations | Filter later repeats whose added support is already present; proved |
 | `lem:multiplicities` | `positive_multiplicities` | Required label belongs to added support; multiplicities positive on selected set | Initial activation pass, then finite replicas with exact counts; proved |
-| `prop:one-linear`, `eq:one-linear`, `eq:component-base`, `eq:component` | `contextComponent`, `one_linear` | Complete base and activatable set | First occurrences, multiplicities, tree lifting; pending |
+| `prop:one-linear`, `eq:one-linear`, `eq:component-base`, `eq:component` | `contextComponent`, `contextComponent.mem_denotation_iff`, `one_linear` | Complete base and activatable set; every selected context contributes once before arbitrary extra copies | List-count finite sums, Mathlib additive closure, multiplicities, tree lifting; proved |
 | `thm:main`, `eq:main` | `treeRepresentation`, `treeRepresentation_eq`, `grammar_witness` | Finite terminal alphabet; arbitrary Mathlib nonterminal type | Exact decomposition, activation, semantics bridge; pending |
 | `thm:parikh-statement` | `grammar_image`, `contextFree_image`, `regular_realization` | Mathlib grammar/language interfaces | Main equality and witness bridge; regular realization also uses converse; pending |
 | `sec:example`, `eq:example-target` | `scripts/SkeletonExamples.lean` | The required order is C then E; E alone is disabled | Small support checks pass; full example grammar is deferred |
@@ -143,8 +144,15 @@ accounting, including completeness/root preservation and exact production count.
 The two tree-realization adapters in `Activation.lean` relate enabled cycle lists
 to insertion sequences in both directions, then specialize to a finite activatable
 set. `List.sum_toFinset` changes the distinct list sum to the source's finite-set
-sum. All selected cycles remain enabled afterwards. The `one_linear` equality
-remains pending; these are its previously deferred tree prerequisites.
+sum. All selected cycles remain enabled afterwards.
+
+`one_linear` proves both inclusions of the exact weight equality. Its coefficient
+adapter reindexes the period list by context identities through Mathlib's existing
+additive-closure characterization. `Finset.sum_list_map_count` changes sequence
+weights to context multiplicities. Each selected context occurs at least once,
+so subtracting one gives a natural coefficient; conversely, positive
+multiplicities and the tree-realization adapter build a sequence using each
+context its coefficient plus one times. Equal and zero context weights remain supported.
 
 ## After review
 

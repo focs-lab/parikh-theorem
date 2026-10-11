@@ -72,6 +72,20 @@ and `insertion_accounting` contracts. The only new import is the project's
 `InsertionSequences` module; there is no additional Mathlib dependency or
 finite-nonterminal assumption.
 
+The exact `one_linear` equality reuses `Finset.sum_list_map_count` rather than
+introducing a new multiset statistic. `List.count_pos_iff` supplies positivity
+for every selected context; `add_nsmul` and `Finset.sum_add_distrib` separate the
+first copy from additional copies. The only new project adapter,
+`contextComponent.mem_denotation_iff`, relates the frozen indexed-list denotation
+to coefficients indexed by context syntax. It uses the existing
+`Component.denotation_eq_vadd_closure`,
+`AddSubmonoid.mem_closure_range_iff_of_fintype`, `Set.mem_vadd_set`, and
+`Finset.sum_coe_sort`. This finite reindexing supports distinct contexts with
+equal weights without identifying their required roots or supports. The tree
+construction reuses `positive_multiplicities`,
+`activationOrder_iff_insertionSequence`, and `InsertionSequence.accounting`.
+There is no new import, dependency, instance, or definition.
+
 No trace-membership dependency, replacement semilinearity predicate, or generic
 automata-equivalence development is introduced. Re-audit Mathlib before adding
 helpers in each accepted proof milestone; these identified gaps are not permission

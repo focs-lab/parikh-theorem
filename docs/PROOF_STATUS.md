@@ -1,4 +1,4 @@
-# Proof status: activation orders realized by tree insertion sequences
+# Proof status: exact linear component for one activated context set
 
 The owner accepted the reviewed skeleton in [PR #2](https://github.com/focs-lab/parikh-theorem/pull/2)
 on 2026-10-11. The immutable baseline remains the reviewed head
@@ -8,56 +8,53 @@ The counting/witness [PR #3](https://github.com/focs-lab/parikh-theorem/pull/3),
 grammar/tree semantics [PR #4](https://github.com/focs-lab/parikh-theorem/pull/4),
 one-hole plugging [PR #5](https://github.com/focs-lab/parikh-theorem/pull/5),
 insertion [PR #6](https://github.com/focs-lab/parikh-theorem/pull/6),
-and abstract activation [PR #7](https://github.com/focs-lab/parikh-theorem/pull/7)
+abstract activation [PR #7](https://github.com/focs-lab/parikh-theorem/pull/7),
+and tree realization [PR #8](https://github.com/focs-lab/parikh-theorem/pull/8)
 have merged, with CI passing.
 
-Current milestone: [PR #8](https://github.com/focs-lab/parikh-theorem/pull/8),
-insertion-sequence accounting and tree realization of activation, branch
-[`codex/activation-tree-realization`](https://github.com/focs-lab/parikh-theorem/tree/codex/activation-tree-realization),
-based on merged `main` (`c2aa4e7a5673704b9d59543a9110dfae9b1c11ed`).
-There are **18 direct `sorry` obligations**, zero project axioms, and 18 declarations
-transitively dependent on `sorryAx`. Parikh's theorem is not yet proved.
+Current milestone: the exact `one_linear` component equality, branch
+[`codex/one-linear`](https://github.com/focs-lab/parikh-theorem/tree/codex/one-linear),
+based on merged `main` (`ae109deebb2602a1511faf6e777afbf51b116108`).
+There are **17 direct `sorry` obligations**, zero project axioms, and 17 declarations
+transitively dependent on `sorryAx`, down from 18. Parikh's theorem is not yet proved.
 
 ## Completed in this milestone
 
-All names have namespace `Parikh`. Source: `eq:cycle-root`, `cor:sequence`,
-`lem:activation-realize`, `eq:activated-wt`, and `eq:activated-supp`.
+All names have namespace `Parikh`. Source: `prop:one-linear`, `eq:one-linear`,
+`eq:component-base`, and `eq:component`.
 
 | Declaration | Proof / role |
 | --- | --- |
-| `Cycle.root_mem_support` | A nontrivial cycle's root is a production-node label in its support, rather than a hole label. |
-| `InsertionSequence.accounting` | A sequence from a complete base preserves completeness/root and exactly adds the listed weights/production counts and unions their supports. |
-| `activationOrder_iff_insertionSequence` | A list of matching cycles is enabled exactly when it can be realized by a tree insertion sequence from the complete base. Repeats are allowed. |
-| `ContextsActivatable.realize` | Each member of an activatable finite set is inserted once, with exact finite-set weight/support accounting, and remains enabled afterwards. |
+| `one_linear` | The weights of insertion sequences using exactly the selected context set equal its linear component, with every selected context contributing once to the base. |
+| `contextComponent.mem_denotation_iff` | A thin Mathlib adapter expressing the indexed-list denotation with independent natural coefficients for context identities. |
 
-These four theorems discharge source lemmas deliberately deferred from the
-skeleton. They are proved immediately, with no new holes. The 18 named skeleton
-obligations and their allowlists are unchanged. `one_linear` remains the next
-major equality to prove.
+The existing `one_linear` statement is unchanged; its direct and transitive
+unresolved status is removed from the named allowlists. The new adapter is proved
+immediately and introduces no hole. Both declarations have no `sorryAx` or
+project-axiom dependencies. Their audits report only standard Lean foundations:
+`propext`, `Classical.choice`, and `Quot.sound`.
 
-Cycle-root support and sequence accounting live in `InsertionSequences.lean`;
-the two realization adapters live in `Activation.lean`. All 457 earlier contract
-entries are preserved exactly. Four proved declarations and six Lean-generated
-proof/simplification helpers extend the manifest to 467 entries. No existing
-declaration is removed, moved, or changed. Definition meanings, instances, and
-Lean/Mathlib pins are unchanged; the only new import is the support module.
+All 467 earlier contract entries are preserved exactly. One new proved adapter
+and six Lean-generated equation/proof/simplification helpers extend the manifest
+to 474 entries. The generated `contextComponent.eq_1` records the existing
+concrete definition's equation. No existing declaration is deleted or moved.
+All earlier signatures, definition meanings, instances, imports, and Lean/Mathlib
+pins are unchanged.
 
-Sequence accounting is induction using the existing insertion identities. The
-list/order correspondence uses enabledness for the next step and support
-accounting for the remaining order. Its reverse direction extracts those same
-facts from the sequence constructor. It retains cycle syntax and order, including
-repeated cycles, and needs no finite nonterminal type or public equality instance.
+For the forward inclusion, sequence accounting and
+`Finset.sum_list_map_count` express the final weight using each context's count.
+Every selected context occurs, so its count minus one is a natural coefficient;
+the first copies supply the component base. For the reverse inclusion, add one
+to each chosen coefficient, use `positive_multiplicities` to produce an enabled
+order with those counts, and realize that order as an insertion sequence.
 
-The finite-set realization uses the witness already supplied by
-`ContextsActivatable`. `List.sum_toFinset` changes the distinct list sum to the
-finite-set sum. Cycle-root membership and final support accounting make every
-selected cycle enabled again. The empty set, a terminal-rooted complete base,
-empty productions, and zero-weight cycles are supported. This is a semantic
-existence proof; it does not provide an executable compiler implementation.
-
-All four new theorems have no `sorryAx` or project-axiom dependencies. Their
-axiom audits report only standard Lean foundations: `propext`, `Classical.choice`,
-and `Quot.sound`. All previously published hypotheses and statements are preserved.
+The coefficient adapter uses `Component.denotation_eq_vadd_closure`,
+`AddSubmonoid.mem_closure_range_iff_of_fintype`, and `Finset.sum_coe_sort` to
+reindex finite sums. Context syntax still determines membership, roots, and
+support. Equal weights, zero weights, repeated contexts, empty context sets,
+terminal-rooted bases, and infinite ambient nonterminal types are supported.
+No new equality instance or finite-nonterminal hypothesis is public. These are
+semantic proofs; executable compiler values remain separate work.
 
 ## Previously completed
 
@@ -66,6 +63,7 @@ and `Quot.sound`. All previously published hypotheses and statements are preserv
 - [PR #5](https://github.com/focs-lab/parikh-theorem/pull/5): `plugging` and four supporting validity/root, size, count, and support lemmas (`lem:plug`).
 - [PR #6](https://github.com/focs-lab/parikh-theorem/pull/6): `insertion_enabled`, `insertion_accounting`, and three supporting occurrence/context lemmas (`lem:enabled`, `lem:insertion-laws`).
 - [PR #7](https://github.com/focs-lab/parikh-theorem/pull/7): `first_occurrences`, `positive_multiplicities`, and three abstract support/list lemmas (`lem:first-occurrence`, `lem:multiplicities`).
+- [PR #8](https://github.com/focs-lab/parikh-theorem/pull/8): `Cycle.root_mem_support`, `InsertionSequence.accounting`, `activationOrder_iff_insertionSequence`, and `ContextsActivatable.realize` (`eq:cycle-root`, `cor:sequence`, `lem:activation-realize`, `eq:activated-wt`, `eq:activated-supp`).
 
 Their statements and proofs are unchanged here. The grammar/tree bridge supports
 arbitrary derivation order and nonterminal types. Witness existence and tree
@@ -80,7 +78,6 @@ allowlists in `contracts/obligations.json` are authoritative for CI.
 | --- | --- |
 | GrammarTrees | `complete_support_active`, `bounded_open_finite` |
 | Decomposition | `simple_height`, `bounded_cut`, `decomposition` |
-| Activation | `one_linear` |
 | RegularRealization | `representative_counts`, `witnessExpression_correct`, `converse`, `regular_image` |
 | Construction | `bounded_family_bounds`, `bounded_witness`, `witness_bit_bound` |
 | Statements | `treeRepresentation_eq`, `grammar_image`, `grammar_witness`, `contextFree_image`, `regular_realization` |
@@ -91,14 +88,15 @@ correctness fields are requirements, not assumed theorems.
 
 ## Validation
 
-- `lake build Parikh.InsertionSequences`, `lake build Parikh.Activation`, and full `lake build` pass, with only expected theorem-hole warnings in remaining obligations.
-- `lake env lean scripts/SkeletonExamples.lean` passes. New examples realize a cycle that introduces the second cycle's required label, reject the reverse order, repeat a zero-weight cycle with exact production count, and verify that each selected cycle is enabled afterwards. Both cycles have the same zero weight but different roots; the nonterminal type is infinite (`ℕ`). An empty context set preserves a terminal-rooted base and its nonzero weight.
-- `python3 scripts/check-contracts.py` checks 467 declarations against the accepted skeleton and merged `main`. All 457 earlier signatures and definition fingerprints are preserved. The checker and baseline pointer are unchanged.
-- `#print axioms` for all four new theorems reports only standard foundations; none depends on unresolved obligations.
+- `lake build Parikh.Activation` and full `lake build` pass, with only expected theorem-hole warnings in the 17 remaining obligations.
+- `lake env lean scripts/SkeletonExamples.lean` passes. Two distinct contexts with different roots but equal nonzero weights require at least two terminal contributions; every count at least two is realized, and smaller counts are rejected. The nonterminal type is infinite (`ℕ`). A zero-weight context gives exactly the zero vector, and an empty context set gives exactly a terminal-rooted base's nonzero weight.
+- `python3 scripts/check-contracts.py` checks 474 declarations against the accepted skeleton and merged `main`. All 467 earlier signatures and definition fingerprints are preserved. The checker and baseline pointer are unchanged.
+- `#print axioms` for `one_linear` and its new adapter reports only standard foundations; neither depends on unresolved obligations.
 - `git diff --check` passes.
-- `python3 scripts/check-contracts.py --final` correctly rejects the 18 outstanding holes. This milestone does not complete Parikh's theorem.
+- `python3 scripts/check-contracts.py --final` correctly rejects the 17 outstanding holes. This milestone does not complete Parikh's theorem.
 - Cloud Lean 4.34.1 / Lake 5.0.0, pinned Mathlib access, and GitHub authentication/push access were verified. CI results are reported in the PR separately from local validation.
 
-Next eligible milestone: the exact `one_linear` component equality
-(`prop:one-linear`), using the proved counting, activation, and tree-realization
-lemmas. Keep that increment in a new PR with the accepted statements unchanged.
+Next eligible milestone: active-support and simple-tree height bounds
+(`complete_support_active`, `simple_height`), preparing the bounded-family,
+bounded-cut, and decomposition proofs. Keep each increment in a new PR with
+the accepted statements unchanged.

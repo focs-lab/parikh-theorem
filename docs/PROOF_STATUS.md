@@ -66,3 +66,20 @@ continue, record the accepted skeleton SHA and begin with the counting/witness
 bridges, as one coherent proof milestone in a new PR. Audit both local holes and
 transitive assumptions before marking any declaration complete. Every increment
 is published separately; no self-merge or license/release decision is included.
+
+## Owner-requested skeleton review amendment
+
+The owner requested renaming `RawTree` to `ParseTree` during skeleton review.
+The type, its namespace, all Lean uses, examples, and proof-plan references were
+renamed consistently. This is a naming change only: holes remain permitted,
+and `Valid` / `Complete` continue to impose grammar validity and completeness.
+The still-unaccepted proposal snapshot is regenerated explicitly for this
+authorized rename, including generated declaration names and affected type/body
+hashes. The accepted baseline remains unset; no proof obligations are discharged
+by this amendment.
+
+Amendment validation: `lake build`, `lake env lean scripts/SkeletonExamples.lean`,
+`python3 scripts/check-contracts.py`, and `git diff --check` pass. The audit still
+reports 334 declarations, 28 direct holes, zero project axioms, and 28 declarations
+with unresolved dependencies. All Lean edits were checked to be identifier
+substitution plus the clarifying parse-tree docstring.

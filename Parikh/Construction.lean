@@ -49,9 +49,9 @@ def entryBits {T : Type*} [Fintype T] (s : GrammarSize) (W : Witness T) : ℕ :=
 /-- Bounded families and leaf norms have the paper's coarse syntax bounds (`lem:count-trees`). -/
 theorem bounded_family_bounds {T : Type*} [Fintype T] [DecidableEq T]
     (g : ContextFreeGrammar T) :
-    (∃ bases : Finset (RawTree T g.NT),
+    (∃ bases : Finset (ParseTree T g.NT),
       (∀ B, B ∈ bases ↔ IsBase g B) ∧ bases.card ≤ (grammarSize g).trees) ∧
-    (∃ cycles : Finset (RawTree T g.NT),
+    (∃ cycles : Finset (ParseTree T g.NT),
       (∀ C, C ∈ cycles ↔ IsBoundedCycle g C) ∧ cycles.card ≤ (grammarSize g).trees) ∧
     (∀ t, IsBase g t ∨ IsBoundedCycle g t → norm t.weight ≤ (grammarSize g).positions) := by
   sorry
@@ -89,7 +89,7 @@ The future implementation must enumerate syntax, not use classical choice.
 -/
 structure BoundedEnumeration where
   enumerate : (g : EncodedGrammar) → ℕ →
-    List (RawTree (Fin g.terminalCount) (Fin (g.extraNonterminalCount + 1)))
+    List (ParseTree (Fin g.terminalCount) (Fin (g.extraNonterminalCount + 1)))
   correct : ∀ g H t, t ∈ enumerate g H ↔ Valid g.decode t ∧ t.height ≤ H
 
 /-- Algorithm output contract: exact image, explicit finite data, and the four bounds.

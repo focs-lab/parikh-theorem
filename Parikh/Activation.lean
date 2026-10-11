@@ -44,18 +44,18 @@ structure ActivationTest (N C : Type*) [DecidableEq N] [DecidableEq C] where
 
 /-- Concrete context subsets do not need a `DecidableEq g.NT` public hypothesis. -/
 def ContextsActivatable {T : Type*} (g : ContextFreeGrammar T)
-    (B : RawTree T g.NT) (D : Finset (RawTree T g.NT)) : Prop :=
-  ∃ order : List (RawTree T g.NT), order.Nodup ∧
+    (B : ParseTree T g.NT) (D : Finset (ParseTree T g.NT)) : Prop :=
+  ∃ order : List (ParseTree T g.NT), order.Nodup ∧
     (∀ C, C ∈ order ↔ C ∈ D) ∧
-    ∃ roots : RawTree T g.NT → g.NT,
+    ∃ roots : ParseTree T g.NT → g.NT,
       (∀ C ∈ D, Cycle g C (roots C)) ∧
-      ActivationOrder roots RawTree.support B.support order
+      ActivationOrder roots ParseTree.support B.support order
 
 /-- Every selected context is paid once in the base (`eq:component-base`). -/
 noncomputable def contextComponent {T : Type*} [DecidableEq T]
-    (B : RawTree T N) (D : Finset (RawTree T N)) : Component T := by
+    (B : ParseTree T N) (D : Finset (ParseTree T N)) : Component T := by
   classical
-  exact ⟨B.weight + ∑ C ∈ D, C.weight, D.toList.map RawTree.weight⟩
+  exact ⟨B.weight + ∑ C ∈ D, C.weight, D.toList.map ParseTree.weight⟩
 
 /-- The explicit finite-union formula, retaining context identities (`eq:main`). -/
 def treeRepresentation {T : Type*} [DecidableEq T] (g : ContextFreeGrammar T) :
@@ -65,7 +65,7 @@ def treeRepresentation {T : Type*} [DecidableEq T] (g : ContextFreeGrammar T) :
 
 /-- One activatable subset gives exactly one linear component (`prop:one-linear`). -/
 theorem one_linear {T : Type*} [DecidableEq T] (g : ContextFreeGrammar T)
-    (B : RawTree T g.NT) (D : Finset (RawTree T g.NT))
+    (B : ParseTree T g.NT) (D : Finset (ParseTree T g.NT))
     (hB : Complete g B) (hD : ContextsActivatable g B D) :
     {v | ∃ t Cs, InsertionSequence g B Cs t ∧
       (∀ C, C ∈ Cs ↔ C ∈ D) ∧ t.weight = v} =

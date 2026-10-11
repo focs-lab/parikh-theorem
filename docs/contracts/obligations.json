@@ -62,15 +62,15 @@
   ],
   "compiler_generated_partial": [
     "Parikh.ActivationOrder._unsafe_rec",
-    "Parikh.RawTree.frontier._unsafe_rec",
-    "Parikh.RawTree.height._unsafe_rec",
-    "Parikh.RawTree.holes._unsafe_rec",
-    "Parikh.RawTree.labelPaths._unsafe_rec",
-    "Parikh.RawTree.plug._unsafe_rec",
-    "Parikh.RawTree.productionLabels._unsafe_rec",
-    "Parikh.RawTree.productionSize._unsafe_rec",
-    "Parikh.RawTree.replaceAt._unsafe_rec",
-    "Parikh.RawTree.subtree._unsafe_rec",
-    "Parikh.RawTree.yield._unsafe_rec"
+    "Parikh.ParseTree.frontier._unsafe_rec",
+    "Parikh.ParseTree.height._unsafe_rec",
+    "Parikh.ParseTree.holes._unsafe_rec",
+    "Parikh.ParseTree.labelPaths._unsafe_rec",
+    "Parikh.ParseTree.plug._unsafe_rec",
+    "Parikh.ParseTree.productionLabels._unsafe_rec",
+    "Parikh.ParseTree.productionSize._unsafe_rec",
+    "Parikh.ParseTree.replaceAt._unsafe_rec",
+    "Parikh.ParseTree.subtree._unsafe_rec",
+    "Parikh.ParseTree.yield._unsafe_rec"
   ]
 }

@@ -17,15 +17,15 @@ example : ¬ ActivationOrder required added {0} [true] := by
   simp [ActivationOrder, required]
 
 def emptyProduction : ContextFreeRule (Fin 0) Unit := ⟨(), []⟩
-def emptyTree : RawTree (Fin 0) Unit := .node emptyProduction []
+def emptyTree : ParseTree (Fin 0) Unit := .node emptyProduction []
 
 example : emptyTree.productionSize = 1 ∧ emptyTree.height = 1 ∧
     emptyTree.holes = [] ∧ emptyTree.yield = [] := by
-  simp [emptyTree, RawTree.productionSize, RawTree.height, RawTree.holes, RawTree.yield]
+  simp [emptyTree, ParseTree.productionSize, ParseTree.height, ParseTree.holes, ParseTree.yield]
 
-example : (RawTree.hole () : RawTree (Fin 0) Unit).support = ∅ := by
+example : (ParseTree.hole () : ParseTree (Fin 0) Unit).support = ∅ := by
   ext A
-  simp [RawTree.support, RawTree.productionLabels]
+  simp [ParseTree.support, ParseTree.productionLabels]
 
 example : Witness.denotation ([] : Witness (Fin 0)) = ∅ := by
   ext v

@@ -1,10 +1,11 @@
 # Accepted proof plan
 
 The owner accepted the statement skeleton in PR #2 on 2026-10-11.
-The counting/witness, grammar/tree semantics, plugging/insertion, abstract activation laws,
-activation's tree realization, the exact linear-component equality, active support,
-and simple-tree height bounds are proved;
-Parikh's theorem remains in progress.
+The forward Parikh theorem and exact finite witness existence are proved for
+Mathlib grammars and context-free languages. The derivation-tree proof includes
+grammar/tree semantics, insertion and activation, bounded-family finiteness,
+exact decomposition, and the exact component union. Converse/regular realization,
+executable construction, and quantitative bounds remain in progress.
 Read the complete reference, including appendices, alongside the
 statements; source labels below refer to `reference/parikh_theorem.tex`.
 
@@ -20,6 +21,8 @@ statements; source labels below refer to `reference/parikh_theorem.tex`.
 4. `Parikh/InsertionSequences.lean` and `Activation.lean`: sequence accounting,
    syntax-independent support transitions, first occurrences, positive
    multiplicities, their tree realization, and the proved exact component formula.
+   `FiniteRepresentation.lean` specializes bounded-tree finiteness to the base and
+   cycle families and proves semilinearity of their activatable-component union.
 5. `Parikh/RegularRealization.lean`: representative words and explicit finite
    regular expressions; the DFA-regularity obligation applies to these expressions.
 6. `Parikh/Construction.lean`: finite encoded input, algorithm interfaces, and all
@@ -57,7 +60,8 @@ These are intended dependencies for the remaining proof. The four counting/witne
 contracts, grammar/tree equivalence, plugging/insertion, the two abstract activation laws,
 sequence/tree realization, `one_linear`, active support, and simple-tree height
 now have complete proofs, as do `bounded_open_finite`, `bounded_cut`, `decomposition`,
-and `treeRepresentation_eq`. The remaining 11 theorem bodies
+and `treeRepresentation_eq`. `grammar_image`, `grammar_witness`, and
+`contextFree_image` now complete the forward theorem. The remaining 8 theorem bodies
 are still `sorry`. No forward proof depends on the converse,
 trace theory, a grammar normal form, or Presburger elimination. The finite-witness
 bridge to Mathlib is separate from the derivation-tree proof.
@@ -81,7 +85,7 @@ and algorithm values are pending.
 | `lem:insertion-laws`, `eq:insert-wt`, `eq:insert-size`, `eq:insert-supp` | `insertion_accounting` | Complete insertion and exact root/weight/size/support equalities | Outer one-hole context and plugging twice; proved |
 | `cor:sequence` | `InsertionSequence.accounting` | Finite ordered sequence from a complete tree; exact root/weight/size/support and completeness | Induction using insertion accounting; proved |
 | `lem:simple-height`, `def:families`, `def:statistics` | `ParseTree.Simple`, `ParseTree.labelPath_subset_support`, `ParseTree.exists_labelPath_height`, `simple_height`, `IsBase`, `IsBoundedCycle` | Active nonterminals replace an unnecessarily finite ambient type; repeated siblings are allowed | Longest label path, path-label distinctness, active support, and Mathlib finite-set cardinality; height bound proved, family predicates concrete |
-| `lem:finite`, `def:statistics` | `activeNonterminals`, `Valid.support_active`, `complete_support_active`, `bounded_open_finite`, `BoundedEnumeration` | Finite terminals; holes restricted to active symbols for the general grammar | Active-support containment and bounded-family finiteness proved; executable enumerator pending |
+| `lem:finite`, `def:statistics` | `activeNonterminals`, `Valid.support_active`, `complete_support_active`, `bounded_open_finite`, `bases_finite`, `bounded_cycles_finite`, `BoundedEnumeration` | Finite terminals; holes restricted to active symbols for the general grammar | Active-support containment and bounded-family finiteness proved; executable enumerator pending |
 | `lem:cut` | `bounded_cut`, `Complete.exists_minimal_nonsimple_subtree`, `ParseTree.exists_root_mem_child_support`, `ParseTree.height_le_height_plug`, `ParseTree.productionSize_subtree_bound`, `ParseTree.subtree_replacement` | Non-simple complete tree; strict decrease in production count | Descent to simple children, repeated root, bounded context, indexed reversible surgery; proved |
 | `thm:decomposition`, `eq:decomposition`, `cor:finite-generation` | `decomposition`, `InsertionSequence.append` | Exact tree reconstruction for every complete tree/root | Mathlib natural strong induction using bounded cut, followed by sequence concatenation; proved |
 | `def:activation`, `eq:activation` | `ActivationOrder`, `Activatable`, `ContextsActivatable` | Operations retain their identities and require previously present labels | Concrete definitions; arbitrary support sets in the abstract interface |
@@ -90,8 +94,9 @@ and algorithm values are pending.
 | `lem:multiplicities` | `positive_multiplicities` | Required label belongs to added support; multiplicities positive on selected set | Initial activation pass, then finite replicas with exact counts; proved |
 | `prop:one-linear`, `eq:one-linear`, `eq:component-base`, `eq:component` | `contextComponent`, `contextComponent.mem_denotation_iff`, `one_linear` | Complete base and activatable set; every selected context contributes once before arbitrary extra copies | List-count finite sums, Mathlib additive closure, multiplicities, tree lifting; proved |
 | `thm:main`, `eq:main` | `treeRepresentation`, `treeRepresentation_eq`, `InsertionSequence.contextsActivatable` | Exact image equality; finite terminal alphabet and arbitrary Mathlib nonterminal type | Decomposition, first-occurrence activation, `one_linear`, semantics bridge; equality proved |
-| `thm:main` | `grammar_witness` | Exact finite semilinear witness | Main equality, bounded-family finiteness, and counting/witness bridges; pending |
-| `thm:parikh-statement` | `grammar_image`, `contextFree_image`, `regular_realization` | Mathlib grammar/language interfaces | Main equality and witness bridge; regular realization also uses converse; pending |
+| `thm:main` | `treeRepresentation_isSemilinearSet`, `grammar_witness` | Semilinear tree union and exact finite witness | Finite base/cycle families, Mathlib powerset and finite semilinear unions, main equality, and witness bridge; proved |
+| `thm:parikh-statement` | `grammar_image`, `contextFree_image` | Mathlib grammar/language interfaces; arbitrary ambient nonterminals | Main equality, finite semilinear union, and Mathlib's context-free witness; proved |
+| `thm:parikh-statement` | `regular_realization` | DFA-regular language with the same Parikh image | Forward semilinearity and converse; pending |
 | `sec:example`, `eq:example-target` | `scripts/SkeletonExamples.lean` | The required order is C then E; E alone is disabled | Small support checks pass; full example grammar is deferred |
 | `eq:representative` | `AlphabetOrder`, `representative`, `representative_counts` | Explicit exhaustive, repetition-free alphabet list | List counting; pending law, concrete construction |
 | `lem:linear-regular`, `thm:converse`, `eq:regular-construction` | `componentExpression`, `witnessExpression`, `witnessExpression_correct`, `converse` | Finite alphabet; exact image and Mathlib DFA regularity | Word-count laws; existing NFA/DFA conversion where useful; pending |
@@ -209,8 +214,19 @@ whose yield belongs to the grammar language by `derives_iff_tree` and Mathlib's
 `mem_language_iff`. Conversely, a generated word gives a complete tree,
 `decomposition` gives its bounded context list, the activation adapter certifies
 that list's distinct set, and `one_linear` places its exact weight in the
-corresponding component. Semilinearity and finite witness construction remain
-the next milestone; the equality proof does not enumerate bounded families.
+corresponding component. The equality proof does not enumerate bounded families.
+
+`FiniteRepresentation.lean` specializes `bounded_open_finite` to simple bases
+using `simple_height`. A bounded cycle's unique hole is active because its
+matching root occurs in production support, so the same bounded-open family
+also gives `bounded_cycles_finite`. Convert these finite sets to finsets and
+take the cycles' powerset, filtered by `ContextsActivatable` for each base.
+This gives exactly `treeRepresentation`, preserving actual context identities.
+Mathlib's `IsSemilinearSet.biUnion_finset` and the proved component bridge make
+this union semilinear. The exact equality yields `grammar_image`;
+`exists_witness` yields `grammar_witness`; unpacking Mathlib's context-free
+grammar witness yields `contextFree_image`. No finite-nonterminal hypothesis,
+quantitative-bound obligation, or executable-enumeration claim is introduced.
 
 ## After review
 

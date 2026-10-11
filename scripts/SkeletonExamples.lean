@@ -782,4 +782,30 @@ example : treeRepresentation unitGrammar = {0} := by
     · funext a
       exact Fin.elim0 a
 
+/-! Forward Parikh and exact witnesses: distinguish an unproductive grammar
+from a grammar deriving the empty word over an empty alphabet. -/
+
+example : IsSemilinearSet (image noProductionsGrammar.language) ∧
+    ∃ W : Witness Bool, W.denotation = ∅ := by
+  refine ⟨contextFree_image noProductionsGrammar.language ⟨noProductionsGrammar, rfl⟩, ?_⟩
+  obtain ⟨W, hW⟩ := grammar_witness noProductionsGrammar
+  refine ⟨W, ?_⟩
+  have hl := ContextFreeGrammar.language_eq_zero_of_forall_input_ne_initial
+    (g := noProductionsGrammar) (by simp [noProductionsGrammar])
+  simpa [image, hl, Language.zero_def] using hW
+
+example : ∃ W : Witness (Fin 0), W.denotation = image unitGrammar.language ∧
+    0 ∈ W.denotation := by
+  obtain ⟨W, hW⟩ := grammar_witness unitGrammar
+  refine ⟨W, hW, ?_⟩
+  rw [hW]
+  refine ⟨[], ?_, ?_⟩
+  · apply (unitGrammar.mem_language_iff []).mpr
+    exact (ContextFreeGrammar.Produces.single (g := unitGrammar) ⟨unitProduction,
+      by simp [unitGrammar], ContextFreeRule.Rewrites.input_output⟩).trans
+      (ContextFreeGrammar.Produces.single (g := unitGrammar) ⟨eraseProduction,
+        by simp [unitGrammar], ContextFreeRule.Rewrites.input_output⟩)
+  · funext a
+    exact Fin.elim0 a
+
 end SkeletonExamples

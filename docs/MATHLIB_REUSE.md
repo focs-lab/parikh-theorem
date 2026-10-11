@@ -150,6 +150,21 @@ no public finite or decidable-equality assumption on nonterminals and makes
 no claim to implement an activation algorithm. No new imports, definitions,
 instances, statistics, or dependency pins are needed.
 
+Forward semilinearity specializes the already proved `bounded_open_finite` to
+simple bases using `simple_height` and to bounded cycles using
+`Cycle.root_mem_support` and `Valid.support_active`. These two tree-specific
+finiteness adapters use `Set.Finite.subset`, with no parallel finiteness theory.
+`Set.Finite.toFinset`, `Set.Finite.mem_toFinset`, `Finset.powerset`,
+`Finset.mem_powerset`, and `Finset.filter` describe the exact finite family of
+activatable components. Mathlib's `IsSemilinearSet.biUnion_finset` and the proved
+`component_isLinearSet` bridge supply semilinearity. The public proofs then reuse
+`treeRepresentation_eq`, `exists_witness`, and Mathlib's `Language.IsContextFree`
+definition. All Mathlib facts are already available through the pinned imports;
+the sole new import is the project's `FiniteRepresentation` module. No new
+data definitions, instances, cache targets, dependency pins, or nonterminal
+assumptions are needed. Classical finite-set selection and filtering establish
+semantic existence, with executable construction still a separate obligation.
+
 No trace-membership dependency, replacement semilinearity predicate, or generic
 automata-equivalence development is introduced. Re-audit Mathlib before adding
 helpers in each accepted proof milestone; these identified gaps are not permission

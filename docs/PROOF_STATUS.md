@@ -1,75 +1,75 @@
-# Proof status: regular-language specialization
+# Proof status: executable activation testing
 
 The owner accepted the reviewed skeleton in [PR #2](https://github.com/focs-lab/parikh-theorem/pull/2)
 on 2026-10-11. The immutable baseline remains the reviewed head
 `6bff9679d7ea03e5401815b80c5a3dc1300f9d36`, including the requested `ParseTree`
 rename. Its pointer and all previous contract fingerprints remain unchanged.
-All proof increments through [PR #17](https://github.com/focs-lab/parikh-theorem/pull/17)
-have merged, with CI passing. The independent README guide in
-[PR #18](https://github.com/focs-lab/parikh-theorem/pull/18) has also merged.
+All proof increments through [PR #20](https://github.com/focs-lab/parikh-theorem/pull/20)
+have merged, with CI passing. The independent documentation increments
+[PR #18](https://github.com/focs-lab/parikh-theorem/pull/18) and
+[PR #19](https://github.com/focs-lab/parikh-theorem/pull/19), plus the math-rendering
+fix [PR #21](https://github.com/focs-lab/parikh-theorem/pull/21), have also merged.
 
-Current milestone: [PR #20](https://github.com/focs-lab/parikh-theorem/pull/20),
-regular-language specialization (`regular_image`),
-branch `codex/regular-language-image`, based on merged `main`
-(`08d1dfbb1177505ae936a722da8580ea900e5b66`).
-CI evidence is recorded in the PR.
+Current milestone: executable activation testing (`lem:activation-test`),
+branch `codex/executable-activation-test`, based on merged `main`
+(`73ff517a0cd9cabc38932497b798ef0d337eeeb4`).
+The PR and CI evidence will be linked after publication.
 There are **3 direct `sorry` obligations**, zero project axioms, and 3 declarations
-transitively dependent on `sorryAx`, down from 4. All accepted qualitative Parikh
-results are now proved: forward semilinearity, exact finite witness existence,
-converse, equal-image regular realization, and regular-language specialization.
-Executable construction and quantitative bounds remain.
+transitively dependent on `sorryAx`, unchanged in this milestone. All accepted
+qualitative Parikh results are proved. This increment implements the first
+algorithm interface with a complete correctness proof; bounded enumeration,
+exact compilation, and quantitative bounds remain.
 
 ## Completed in this milestone
 
-The accepted public contract `regular_image` is proved: every Mathlib DFA-regular
-language over a finite terminal alphabet has a semilinear Parikh image
-(`thm:parikh-statement`). Its signature and all referenced meanings are unchanged.
-It is removed from both unresolved allowlists.
+`activationTest N C` is a computable value of the accepted `ActivationTest N C`
+interface. Its `run` field returns a Boolean, and its checked `correct` field
+proves that it returns `true` exactly when `Activatable` holds. It needs only
+decidable equality on labels and operations; neither ambient type must be finite.
+The required labels, added finite supports, initial support and selected operation
+set are the inputs. Operation identities remain distinct even when their supports
+or eventual weights coincide.
 
-The new `DFAGrammar.lean` module is a thin adapter between existing Mathlib types:
+The new `ActivationAlgorithm.lean` module contains six support/implementation
+declarations, all complete:
 
 | Declaration (namespace `Parikh`) | Role |
 | --- | --- |
-| `dfaGrammar` | A finite DFA becomes a Mathlib right-linear grammar: a transition emits its letter and next state; an accepting state may erase itself. |
-| `dfaGrammar_derives_iff` | From every state, deriving a terminal word is equivalent to DFA acceptance started at that state. |
-| `dfaGrammar_language` | The grammar language equals the DFA language exactly, preserving word order, epsilon, rejection and empty alphabets. |
+| `ActivationOrder.mono` | Enlarging available support preserves an enabled order. |
+| `Activatable.erase_iff_of_enabled` | Any enabled selected operation can go first; updating support and removing it preserves activation exactly. |
+| `Activatable.batch_iff_of_enabled` | An entire subset enabled at the start can be processed together, accumulating its supports by finite union. |
+| `activationRounds` | Executable search with a structural natural-number round budget; reject if remaining operations have no enabled member. |
+| `activationRounds_correct` | If the budget is at least the selected set's cardinality, the Boolean result is equivalent to the accepted activation predicate. |
+| `activationTest` | Supplies that cardinality as the budget and packages the algorithm with its exact correctness proof. |
 
-For derivation soundness, each reachable sentential form is either a terminal
-prefix followed by its reached DFA state, or a completed accepted terminal word.
-There is exactly one possible nonterminal position; terminal-only forms cannot
-rewrite. Induction over Mathlib's relation closure preserves this invariant.
-For completeness, induction over the input word applies its transition rules
-and finishes with an accepting-state erasure. No grammar/tree semantics, DFA
-semantics, determinization, regex equivalence or general automata theory is
-reimplemented. The pinned Mathlib sources have no DFA-to-context-free-grammar
-adapter, as recorded in `MATHLIB_REUSE.md`.
+Each round filters the remaining set for enabled operations, adds their supports
+using Mathlib's `Finset.biUnion`, and subtracts those operations. An empty remaining
+set succeeds, including with zero budget. A nonempty enabled batch strictly
+decreases the remaining cardinality, so the initial cardinality supplies enough
+rounds. A stalled nonempty set cannot have an activation order: the first operation
+of such an order would be enabled. The single-operation equivalence is proved
+using support monotonicity and the existing `filter_of_covered`; finite-set
+induction gives the batch equivalence. No operation must add its own required label.
 
-The new shared `GrammarImage.lean` module proves `treeRepresentation_correct`,
-combining the already checked exact tree union proof with its semilinearity.
-The existing `treeRepresentation_eq` and `grammar_image` remain in
-`Statements.lean` with their exact signatures; their proofs project the shared
-result. This permits `regular_image` to reuse the forward proof without creating
-an import cycle. The general grammar theorem still allows arbitrary ambient
-nonterminal types. Only the adapter has finite DFA states.
+Processing a whole enabled batch avoids choosing an ordering of a `Finset`.
+Mathlib's `Finset.toList` is noncomputable, so the runtime does not use it or a
+classical selection function. Structural recursion is explicit; no partial or
+unsafe helper is added. The proof allowlists, checker, immutable baseline,
+existing definitions and instances, all prior declarations, Lean/Mathlib pins,
+and cache selections are unchanged. Only the interface's explanatory comment
+is updated in `Activation.lean`; its signature and meaning stay fixed.
 
-Six previously generated simplification declarations belonging to
-`periodExpressions_image` are now retained explicitly with their exact old
-names, kernel types and universe parameters, reconstructed from the same Mathlib
-proofs using kernel-checked theorem declarations. The same proof uses these equalities
-instead of depending on which imported module first preprocesses a Mathlib
-lemma. This preserves every frozen helper; no theorem is deleted or moved.
+The contract manifest preserves all 572 earlier entries and appends 15 entries:
+the six named declarations above and nine Lean-generated proof/equation helpers,
+for 587 declarations in total.
+The completed declarations depend only on standard Lean foundations:
+`propext`, `Classical.choice`, and `Quot.sound`. Some proof fields and Mathlib
+finite-set proof infrastructure use these foundations; the algorithm's finite-set
+operations and supplied equality decisions compile and evaluate normally.
+No completed declaration depends on `sorryAx` or a project axiom.
 
-All **563 prior contract entries** are preserved exactly. Four new support
-declarations and five generated declarations extend the manifest to **572 entries**.
-The completed public/support proofs, including the refactored forward proofs
-and retained simplifier equalities, use only standard Lean foundations:
-`propext`, `Classical.choice`, and `Quot.sound`. None depends on `sorryAx` or a
-project axiom. The checker, immutable baseline, instances, existing definition
-meanings, Lean/Mathlib pins and cache selection are unchanged.
-
-The DFA-to-grammar adapter uses classical finite filtering. It supplies semantic
-correctness for this specialization and is not an executable compiler. Algorithm
-implementations and their correctness proofs remain separate work.
+This is an actual activation algorithm, independent of grammar syntax. It does
+not yet enumerate bounded trees or compile a grammar to a semilinear witness.
 
 ## Previously completed
 
@@ -95,11 +95,12 @@ implementations and their correctness proofs remain separate work.
 
 - [PR #17](https://github.com/focs-lab/parikh-theorem/pull/17): `witnessExpression_correct`, `converse`, and `regular_realization`, with finite continuation-language automata and specialized word-prefix adapters (`lem:linear-regular`, `thm:converse`, `thm:parikh-statement`).
 
-All prior statements and meanings are unchanged. Only the forward equality and
-semilinearity proof bodies are factored here, and the six generated simplifier
-equalities are retained explicitly. The grammar/tree bridge supports
-arbitrary derivation order and nonterminal types. Witness existence and tree
-semantics are semantic proofs, not executable compiler implementations.
+- [PR #20](https://github.com/focs-lab/parikh-theorem/pull/20): `regular_image`, exact DFA-to-Mathlib-grammar language equality, and shared forward-image support, completing every accepted qualitative Parikh theorem (`thm:parikh-statement`).
+
+All prior statements, definition meanings and proof bodies are unchanged here.
+The grammar/tree bridge supports arbitrary derivation order and nonterminal types.
+Witness and automaton existence are classical proofs; the activation implementation
+in this increment is a separate executable value.
 
 ## Remaining named theorem obligations
 
@@ -110,24 +111,26 @@ allowlists in `docs/contracts/obligations.json` are authoritative for CI.
 | --- | --- |
 | Construction | `bounded_family_bounds`, `bounded_witness`, `witness_bit_bound` |
 
-`ActivationTest`, `BoundedEnumeration`, and `Compiler` remain concrete structures
-specifying future finite algorithms, with no implementing values yet. Their
-correctness fields are requirements, not assumed theorems. The exact finite
+`ActivationTest` now has the executable `activationTest` implementation and a
+proved correctness field. `BoundedEnumeration` and `Compiler` still have no
+implementing values; their correctness fields remain requirements, not assumed
+theorems. The exact finite
 grammar witness and regular-language realization are classical existence proofs.
 The small remaining theorem-hole count does not account for those unimplemented
 algorithm values.
 
 ## Validation
 
-- Affected modules and full `lake build` pass (1321 jobs), with only the 3 expected theorem-hole warnings in `Construction.lean`.
-- `lake env lean scripts/SkeletonExamples.lean` passes. A concrete three-state DFA accepts epsilon and repeated `false true` blocks while rejecting an equal-count permutation; its grammar accepts precisely these words. A noninitial state can derive its accepted continuation. Empty-alphabet accepting and rejecting DFAs retain their epsilon distinction and both have semilinear images. All earlier examples still pass.
-- `python3 scripts/check-contracts.py` checks 572 declarations, preserving all 563 earlier contracts. The checker and baseline pointer are unchanged.
-- `#print axioms` for the completed adapter, shared support, regular specialization, retained simplifier equalities and existing forward/converse declarations reports only standard foundations, with no unresolved dependencies.
+- Affected modules and full `lake build` pass (1322 jobs), with only the 3 expected theorem-hole warnings in `Construction.lean`.
+- `lake env lean scripts/SkeletonExamples.lean` passes. New kernel-checked computations cover C enabling E, a blocked singleton, empty work/support, a mutually blocked cycle with and without an initial label, a non-self-adding four-operation chain using the full round budget, and batches with empty or overlapping supports. Positive and negative examples also apply the implementation's correctness field. Compiled `#eval` returns `[true, false, true]`; all earlier semantic examples still pass.
+- `python3 scripts/check-contracts.py` audits 587 declarations and preserves all 572 prior contracts; the append-only manifest extension records the six new named declarations and nine generated proof/equation helpers. Direct holes, transitive holes and project axioms remain 3 / 3 / 0.
+- `#print axioms` for all six completed declarations reports only standard foundations, with no unresolved dependencies.
 - `git diff --check` passes.
-- `python3 scripts/check-contracts.py --final` correctly rejects the 3 outstanding holes. Full project completion still requires executable algorithms with checked correctness and quantitative bounds.
-- Cloud Lean 4.34.1 / Lake 5.0.0, pinned dependency access, selected cache, and GitHub authentication/read/push access were verified. CI results are reported in the PR separately from local validation.
+- Final-mode contract checking continues to reject the 3 outstanding bounds holes. Whole-project completion also requires bounded enumeration and exact compilation with correctness proofs.
+- Cloud Lean 4.34.1 / Lake 5.0.0, pinned dependency/cache access and GitHub read/write authentication were verified. CI evidence is reported separately in the PR.
 
-Next eligible work: implement the finite `ActivationTest` algorithm and prove
-its `correct` contract. Then implement bounded syntax enumeration, assemble the
-exact compiler with correctness proofs, and prove the quantitative bounds.
+Next eligible work: implement `BoundedEnumeration.enumerate` for finite encoded
+grammars and prove its exact membership contract: every valid tree up to the
+height bound is enumerated, and every enumerated tree is valid and within that
+bound. Then assemble exact compilation and prove the quantitative size/bit bounds.
 Keep accepted contracts unchanged and publish each coherent increment as a new PR.

@@ -191,7 +191,7 @@ theorem activationOrder_iff_insertionSequence {T : Type*} {g : ContextFreeGramma
         rw [← hsupport]
         exact (ih next hstep.2.1 htail).mpr ⟨t, hrest⟩
 
-/-- A decidable finite-search implementation is a future value of this interface.
+/-- Exact finite-search interface, implemented by `activationTest` in `ActivationAlgorithm`.
 `lem:activation-test`: no choice of an enabled operation can cause a false rejection.
 -/
 structure ActivationTest (N C : Type*) [DecidableEq N] [DecidableEq C] where

@@ -222,6 +222,20 @@ cycle. Six old generated simplifier equalities are retained explicitly because
 additional imports change automatic auxiliary-lemma naming. The existing cache
 already includes ContextFreeGrammar and DFA; no cache or pin changes are needed.
 
+The executable-activation milestone searches pinned finite-set and computability
+sources for enabled-operation/activation search and least-fixed-point algorithms.
+Mathlib's order-theoretic fixed-point framework does not provide this finite
+operation predicate or the required executable decision interface. The runtime
+reuses `Finset.filter`, `biUnion`, union, difference, cardinality and decidable
+equality; `Finset.toList` is explicitly noncomputable and is not used to select
+runtime operations. Existing `ActivationOrder.filter_of_covered` supplies the
+single-operation removal argument; the new monotonicity and batch lemmas only
+adapt this project's frozen activation predicate. `Finset.induction_on`,
+`mem_erase`, `mem_filter`, `mem_sdiff`, `biUnion_insert`, `coe_union` and
+`card_sdiff_of_subset` provide the set and progress proofs. The implementation
+uses ordinary structural natural-number recursion with no new data representation,
+partial helper, tactic, Mathlib import or cache target. All existing pins remain.
+
 No trace-membership dependency, replacement semilinearity predicate, or generic
 automata-equivalence development is introduced. Re-audit Mathlib before adding
 helpers in each accepted proof milestone; these identified gaps are not permission

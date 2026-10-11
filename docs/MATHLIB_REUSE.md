@@ -165,6 +165,25 @@ data definitions, instances, cache targets, dependency pins, or nonterminal
 assumptions are needed. Classical finite-set selection and filtering establish
 semantic existence, with executable construction still a separate obligation.
 
+The expression-image milestone reuses `List.count_flatten`,
+`List.count_replicate`, `List.sum_map_eq_nsmul_single`, and
+`List.count_eq_one_of_mem` for representative words. `Set.image2_singleton`
+proves literal-word matching. `Language.mem_mul` and `append_mem_mul` bridge
+concatenation to the existing `counts_append` law; `Set.image_union` handles
+finite witness union. `Language.mem_kstar`, `join_mem_kstar`,
+`List.eq_replicate_of_mem`, and `AddSubmonoid.mem_closure_singleton` prove the
+exact image of a starred word. `Set.range_list_get`,
+`AddSubmonoid.closure_union`, and `AddSubmonoid.mem_sup` prove the period product.
+`Component.denotation_eq_vadd_closure` recovers the accepted independent indexed
+coefficients, including zeros and duplicates. These are thin adapters between
+the frozen counting definitions and Mathlib language/closure operations; no
+parallel semantics or algebra is introduced. All facts are available through
+the existing pinned imports, so no dependency or cache change is needed.
+The pinned `RegularExpressions.lean` explicitly lacks regex-to-DFA equivalence,
+and `DFA.lean` provides no regular concatenation/star closure. This increment
+proves the exact-image half independently; DFA regularity of the constructed
+word-block expressions remains tracked in `witnessExpression_correct`.
+
 No trace-membership dependency, replacement semilinearity predicate, or generic
 automata-equivalence development is introduced. Re-audit Mathlib before adding
 helpers in each accepted proof milestone; these identified gaps are not permission

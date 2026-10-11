@@ -24,7 +24,8 @@ statements; source labels below refer to `reference/parikh_theorem.tex`.
    `FiniteRepresentation.lean` specializes bounded-tree finiteness to the base and
    cycle families and proves semilinearity of their activatable-component union.
 5. `Parikh/RegularRealization.lean`: representative words and explicit finite
-   regular expressions; the DFA-regularity obligation applies to these expressions.
+   regular expressions; representative counting and exact expression images are proved.
+   The DFA-regularity obligation applies to these expressions.
 6. `Parikh/Construction.lean`: finite encoded input, algorithm interfaces, and all
    four size bounds plus the numerical bit budget.
 7. `PROOF_STATUS.md` and `CONTRACT_CHECKS.md`: what is incomplete and how acceptance
@@ -61,7 +62,9 @@ contracts, grammar/tree equivalence, plugging/insertion, the two abstract activa
 sequence/tree realization, `one_linear`, active support, and simple-tree height
 now have complete proofs, as do `bounded_open_finite`, `bounded_cut`, `decomposition`,
 and `treeRepresentation_eq`. `grammar_image`, `grammar_witness`, and
-`contextFree_image` now complete the forward theorem. The remaining 8 theorem bodies
+`contextFree_image` now complete the forward theorem. Representative counting
+and both inclusions of the expression-image construction are also proved.
+The remaining 7 theorem bodies
 are still `sorry`. No forward proof depends on the converse,
 trace theory, a grammar normal form, or Presburger elimination. The finite-witness
 bridge to Mathlib is separate from the derivation-tree proof.
@@ -98,8 +101,8 @@ and algorithm values are pending.
 | `thm:parikh-statement` | `grammar_image`, `contextFree_image` | Mathlib grammar/language interfaces; arbitrary ambient nonterminals | Main equality, finite semilinear union, and Mathlib's context-free witness; proved |
 | `thm:parikh-statement` | `regular_realization` | DFA-regular language with the same Parikh image | Forward semilinearity and converse; pending |
 | `sec:example`, `eq:example-target` | `scripts/SkeletonExamples.lean` | The required order is C then E; E alone is disabled | Small support checks pass; full example grammar is deferred |
-| `eq:representative` | `AlphabetOrder`, `representative`, `representative_counts` | Explicit exhaustive, repetition-free alphabet list | List counting; pending law, concrete construction |
-| `lem:linear-regular`, `thm:converse`, `eq:regular-construction` | `componentExpression`, `witnessExpression`, `witnessExpression_correct`, `converse` | Finite alphabet; exact image and Mathlib DFA regularity | Word-count laws; existing NFA/DFA conversion where useful; pending |
+| `eq:representative` | `AlphabetOrder`, `representative`, `representative_counts` | Explicit exhaustive, repetition-free alphabet list | Mathlib list counting and the alphabet occurrence law; proved |
+| `lem:linear-regular`, `thm:converse`, `eq:regular-construction` | `componentExpression`, `witnessExpression`, `componentExpression_image`, `witnessExpression_image`, `witnessExpression_correct`, `converse` | Finite alphabet; exact image and Mathlib DFA regularity | Representative counts and additive closure prove exact images; DFA clause and converse pending, reusing existing NFA/DFA conversion where useful |
 | regular specialization of `thm:parikh-statement` | `regular_image` | Any Mathlib DFA-regular language | Future thin DFA-to-CFG adapter, or direct finite-path specialization; pending |
 | `lem:activation-test` | `ActivationTest` | Finite operation data with decidable equality | Finite enabled-operation search; algorithm value pending |
 | `sec:effective` | `EncodedGrammar.decode`, `BoundedEnumeration`, `Compiler` | Numeric finite syntax; no classical-choice compiler value | Enumeration, activation test, exact tree formula; implementation pending |
@@ -227,6 +230,16 @@ this union semilinear. The exact equality yields `grammar_image`;
 `exists_witness` yields `grammar_witness`; unpacking Mathlib's context-free
 grammar witness yields `contextFree_image`. No finite-nonterminal hypothesis,
 quantitative-bound obligation, or executable-enumeration claim is introduced.
+
+`RegularRealization.lean` proves representative counts and exact expression images.
+Literal words accept singletons; concatenation adds images; a starred word has
+exactly the natural multiples of its count vector. Inducting over periods uses
+Mathlib additive closure of a union and membership in the supremum of two additive
+submonoids. The already proved indexed-denotation bridge gives the exact component
+image, and Mathlib's image-of-union law gives the witness image. Empty alphabets,
+empty witnesses, absent periods, zero periods, and duplicate periods are supported.
+The frozen combined correctness theorem uses this proved image half and retains
+its outstanding DFA clause. No full regex-to-DFA equivalence is required.
 
 ## After review
 

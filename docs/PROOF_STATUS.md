@@ -8,7 +8,7 @@ The counting/witness [PR #3](https://github.com/focs-lab/parikh-theorem/pull/3)
 and grammar/tree semantics [PR #4](https://github.com/focs-lab/parikh-theorem/pull/4)
 have merged, with CI passing.
 
-Current milestone: one-hole plugging, branch
+Current milestone: [one-hole plugging PR #5](https://github.com/focs-lab/parikh-theorem/pull/5), branch
 [`codex/one-hole-plugging`](https://github.com/focs-lab/parikh-theorem/tree/codex/one-hole-plugging),
 based on merged `main` (`61ea99e6bfd4d1a8e4298cf1b63786f653fb2f43`).
 There are **22 direct `sorry` obligations**, zero project axioms, and 22 declarations

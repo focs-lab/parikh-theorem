@@ -56,7 +56,7 @@ flowchart TD
 These are intended dependencies for the remaining proof. The four counting/witness
 contracts, grammar/tree equivalence, plugging/insertion, the two abstract activation laws,
 sequence/tree realization, `one_linear`, active support, and simple-tree height
-now have complete proofs, as does `bounded_open_finite`. The remaining 14 theorem bodies
+now have complete proofs, as do `bounded_open_finite` and `bounded_cut`. The remaining 13 theorem bodies
 are still `sorry`. No forward proof depends on the converse,
 trace theory, a grammar normal form, or Presburger elimination. The finite-witness
 bridge to Mathlib is separate from the derivation-tree proof.
@@ -81,7 +81,7 @@ and algorithm values are pending.
 | `cor:sequence` | `InsertionSequence.accounting` | Finite ordered sequence from a complete tree; exact root/weight/size/support and completeness | Induction using insertion accounting; proved |
 | `lem:simple-height`, `def:families`, `def:statistics` | `ParseTree.Simple`, `ParseTree.labelPath_subset_support`, `ParseTree.exists_labelPath_height`, `simple_height`, `IsBase`, `IsBoundedCycle` | Active nonterminals replace an unnecessarily finite ambient type; repeated siblings are allowed | Longest label path, path-label distinctness, active support, and Mathlib finite-set cardinality; height bound proved, family predicates concrete |
 | `lem:finite`, `def:statistics` | `activeNonterminals`, `Valid.support_active`, `complete_support_active`, `bounded_open_finite`, `BoundedEnumeration` | Finite terminals; holes restricted to active symbols for the general grammar | Active-support containment and bounded-family finiteness proved; executable enumerator pending |
-| `lem:cut` | `bounded_cut` | Non-simple complete tree; strict decrease in production count | Minimal non-simple subtree, simple side branches, surgery; pending |
+| `lem:cut` | `bounded_cut`, `Complete.exists_minimal_nonsimple_subtree`, `ParseTree.exists_root_mem_child_support`, `ParseTree.height_le_height_plug`, `ParseTree.productionSize_subtree_bound`, `ParseTree.subtree_replacement` | Non-simple complete tree; strict decrease in production count | Descent to simple children, repeated root, bounded context, indexed reversible surgery; proved |
 | `thm:decomposition`, `eq:decomposition`, `cor:finite-generation` | `decomposition` | Exact tree reconstruction for every complete tree/root | Strong induction using bounded cut; pending |
 | `def:activation`, `eq:activation` | `ActivationOrder`, `Activatable`, `ContextsActivatable` | Operations retain their identities and require previously present labels | Concrete definitions; arbitrary support sets in the abstract interface |
 | `lem:activation-realize`, `eq:activated-wt`, `eq:activated-supp` | `activationOrder_iff_insertionSequence`, `ContextsActivatable.realize` | Matching cycle list; introduce each selected context once, with exact accounting and all selected contexts enabled afterwards | Insertion enabledness and sequence accounting; proved |
@@ -176,6 +176,16 @@ and inherited active holes; a child's height is bounded by the list maximum.
 Finite images and unions cover the node cases. The proof establishes semantic
 finiteness without changing syntax or imposing a finite ambient nonterminal type.
 Executable enumeration remains a separate implementation obligation.
+
+`BoundedCutSupport.lean` supplies five structural adapters for `bounded_cut`.
+Descent through non-simple children finds an occurrence whose children are simple;
+its repeated path label must include the root. The existing support/subtree bridge
+locates a proper descendant with that root, and the existing one-hole-context
+construction cuts it out. Simple child heights and monotonicity of height under
+plugging bound the context. Proper-subtree production counts and exact plugging
+accounting prove strict decrease. Reversible indexed replacement preserves the
+selected position and reconstructs the whole tree by reinsertion, including all
+side branches and their order. No definition or frozen statement is changed.
 
 ## After review
 

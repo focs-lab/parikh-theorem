@@ -659,4 +659,60 @@ example : {t : ParseTree Bool ℕ | Valid noProductionsGrammar t ∧ t.height �
   rintro t ⟨A, rfl⟩
   exact ⟨Valid.hole (g := noProductionsGrammar) A, by simp [ParseTree.height]⟩
 
+/-! Bounded cut: both side branches exceed the simple-tree bound, while the
+removed context is bounded. All terminal counts are zero, so size—not yield—decreases. -/
+
+def tallSilentChild : ParseTree Bool ℕ :=
+  .node loopRule [.node loopRule [.node loopRule [emptyChild]]]
+
+def tallSiblingTree : ParseTree Bool ℕ := .node forkRule [tallSilentChild, tallSilentChild]
+
+example : (activeNonterminals insertionGrammar).card + 1 < tallSiblingTree.height ∧
+    ∃ smaller C, Complete insertionGrammar smaller ∧
+      smaller.root = tallSiblingTree.root ∧ IsBoundedCycle insertionGrammar C ∧
+      Inserts insertionGrammar smaller C tallSiblingTree ∧
+      smaller.productionSize < tallSiblingTree.productionSize ∧
+      smaller.weight = 0 ∧ C.weight = 0 := by
+  classical
+  have he : Complete insertionGrammar emptyChild := by
+    refine ⟨Valid.node (g := insertionGrammar) _ [] (by simp [insertionGrammar])
+      (by simp) (by simp [emptyRule]), ?_⟩
+    simp [emptyChild, ParseTree.holes]
+  have wrap (c : ParseTree Bool insertionGrammar.NT) (hc : Complete insertionGrammar c)
+      (hroot : c.root = .nonterminal 1) :
+      Complete insertionGrammar (.node loopRule [c]) := by
+    refine ⟨Valid.node (g := insertionGrammar) _ [c] (by simp [insertionGrammar]) ?_ ?_, ?_⟩
+    · intro d hd
+      have heq : d = c := by simpa using hd
+      exact heq.symm ▸ hc.1
+    · simp [loopRule, hroot]
+    · simp [ParseTree.holes, hc.2]
+  have hchild : Complete insertionGrammar tallSilentChild :=
+    wrap _ (wrap _ (wrap _ he rfl) rfl) rfl
+  have ht : Complete insertionGrammar tallSiblingTree := by
+    refine ⟨Valid.node (g := insertionGrammar) _ _ (by simp [insertionGrammar]) ?_ ?_, ?_⟩
+    · intro d hd
+      have heq : d = tallSilentChild := by simpa using hd
+      exact heq.symm ▸ hchild.1
+    · simp [ParseTree.root, tallSilentChild, forkRule, loopRule]
+    · simp [tallSiblingTree, ParseTree.holes, hchild.2]
+  have hs : ¬ tallSiblingTree.Simple := by
+    simp [tallSiblingTree, tallSilentChild, emptyChild, ParseTree.Simple,
+      ParseTree.labelPaths, forkRule, loopRule, emptyRule]
+  obtain ⟨smaller, C, hsmaller, hroot, hbounded, hinsert, hsize⟩ :=
+    bounded_cut insertionGrammar tallSiblingTree ht hs
+  have haccount := insertion_accounting _ _ _ _ hinsert
+  have hz : tallSiblingTree.weight = 0 := by
+    ext a
+    simp [tallSiblingTree, tallSilentChild, emptyChild, ParseTree.weight, counts, ParseTree.yield]
+  refine ⟨?_, smaller, C, hsmaller, hroot, hbounded, hinsert, hsize, ?_, ?_⟩
+  · simp [activeNonterminals, insertionGrammar, forkRule, loopRule, emptyRule,
+      tallSiblingTree, tallSilentChild, emptyChild, ParseTree.height]
+  all_goals
+    ext a
+    have hzero : smaller.weight a + C.weight a = 0 :=
+      (congrFun haccount.2.1 a).symm.trans (congrFun hz a)
+    change _ = (0 : ℕ)
+    omega
+
 end SkeletonExamples

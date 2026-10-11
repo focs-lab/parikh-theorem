@@ -115,6 +115,19 @@ height helpers. The sole new Mathlib import is `Data.Set.Finite.List`, included
 in the documented and CI cache selections; the dependency pins stay unchanged.
 No executable enumerator is claimed by this semantic finiteness proof.
 
+The bounded-cut adapters reuse core `List.foldl_rel` and `List.foldl_map` for
+height monotonicity, `List.nodup_cons` for the repeated root, and Mathlib's
+`List.single_le_sum` for strict production-size decrease along a proper subtree.
+Core `List.getElem?_set_self`, `List.set_set`, `List.set_getElem_self`, and
+`Option.bind_eq_some_iff` prove reversible replacement at the original position.
+The height bound reuses `simple_height`, `List.max_le_iff`, and
+`List.foldl_max_eq_max`. Existing `Complete.mem_support_iff_subtree`,
+`Complete.subtree_context`, `Valid.plug_complete`, and `productionSize_plug`
+supply the semantic and accounting bridges. Mathlib has no equivalent adapters
+for this project's ordered production-tree syntax. Five immediately proved
+structural lemmas suffice; no new syntax, statistic, instance, Mathlib import,
+finite-nonterminal hypothesis, or dependency revision is introduced.
+
 No trace-membership dependency, replacement semilinearity predicate, or generic
 automata-equivalence development is introduced. Re-audit Mathlib before adding
 helpers in each accepted proof milestone; these identified gaps are not permission

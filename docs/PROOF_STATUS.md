@@ -1,54 +1,58 @@
-# Proof status: exact tree decomposition
+# Proof status: exact tree-representation equality
 
 The owner accepted the reviewed skeleton in [PR #2](https://github.com/focs-lab/parikh-theorem/pull/2)
 on 2026-10-11. The immutable baseline remains the reviewed head
 `6bff9679d7ea03e5401815b80c5a3dc1300f9d36`, including the requested `ParseTree`
 rename. Its pointer and all previous contract fingerprints remain unchanged.
-All proof increments through [PR #12](https://github.com/focs-lab/parikh-theorem/pull/12)
+All proof increments through [PR #13](https://github.com/focs-lab/parikh-theorem/pull/13)
 have merged, with CI passing.
 
-Current milestone: [PR #13](https://github.com/focs-lab/parikh-theorem/pull/13),
-exact tree decomposition, branch `codex/decomposition`, based on merged
-`main` (`a69e23943c3226ba1a178cdb0c201466f669b4be`). CI evidence is recorded in the PR.
-There are **12 direct `sorry` obligations**, zero project axioms, and 12 declarations
-transitively dependent on `sorryAx`, down from 13. Parikh's theorem is not yet proved.
+Current milestone: [PR #14](https://github.com/focs-lab/parikh-theorem/pull/14),
+exact tree-representation equality, branch `codex/tree-representation-equality`,
+based on merged `main` (`cdf98728a37fac9910a8fd9f3babe22e3df8e74c`).
+CI evidence is recorded in the PR.
+There are **11 direct `sorry` obligations**, zero project axioms, and 11 declarations
+transitively dependent on `sorryAx`, down from 12. The forward semilinearity and
+finite-witness contracts remain unproved.
 
 ## Completed in this milestone
 
-`Parikh.decomposition` (`thm:decomposition`, `eq:decomposition`) now reconstructs
-every complete tree exactly from a simple complete base with the same root and
-a finite ordered list of bounded cycle contexts. Its existing statement is
-unchanged and removed from both unresolved allowlists. There is no restriction
-to the grammar's start symbol, finite terminals, or finite ambient nonterminals.
+`Parikh.treeRepresentation_eq` (`thm:main`, `eq:main`) now identifies the exact
+union of activatable tree/context components with the Mathlib grammar's Parikh
+image. Both inclusions are proved. Its existing statement is unchanged and
+removed from both unresolved allowlists. No finite or decidable-equality
+hypothesis is added for the grammar's ambient nonterminal type.
 
-The proof uses Mathlib's `Nat.strong_induction_on`, quantified over all complete
-trees of the given production count. A simple tree is its own base with no
-contexts. Otherwise the already proved `bounded_cut` gives a smaller complete
-tree with the same root and a bounded context whose reinsertion recovers the
-original tree. Apply the induction hypothesis to the smaller tree, append that
-final context, and retain boundedness for every entry by list membership.
-Strict decrease is in production-node count, so silent unit cycles and empty
-productions remain supported.
+For a represented vector, `one_linear` realizes it with an insertion sequence
+from the selected simple complete start tree. Sequence accounting preserves
+completeness and the start root. `derives_iff_tree` and Mathlib's
+`ContextFreeGrammar.mem_language_iff` place the resulting yield in the grammar
+language, with exactly the represented counts.
 
-The one new adapter, `Parikh.InsertionSequence.append`, concatenates existing
-insertion sequences while preserving their context order. It is proved directly
-by induction on the existing constructors; no new tree or reconstruction
-relation is introduced. The decomposition keeps actual context syntax and
-occurrence-based insertion witnesses, rather than just terminal-count equality.
+Conversely, a generated word gives a complete start tree by the same semantics
+bridge. `decomposition` supplies a simple base and a bounded-context sequence.
+The new `InsertionSequence.contextsActivatable` adapter certifies that the set
+of distinct contexts in this sequence is activatable. It extracts matching
+cycles from the insertion steps, selects their roots locally by classical
+choice, reuses `activationOrder_iff_insertionSequence`, and applies
+`first_occurrences`. `List.mem_toFinset` retains precisely the contexts used,
+including distinct contexts with equal or zero weights. `one_linear` then places
+the original tree's exact weight in the corresponding component.
 
 Both audited declarations depend only on standard Lean foundations:
 `propext`, `Classical.choice`, and `Quot.sound`. Neither depends on `sorryAx`
 or a project axiom. All existing definitions, instances, syntax, statistics,
 and previously completed proofs are retained.
 
-All **520 prior contract entries** are preserved exactly. The single proved
-sequence adapter extends the manifest to **521 entries**. No previous declaration
+All **521 prior contract entries** are preserved exactly. The single proved
+activation adapter extends the manifest to **522 entries**. No previous declaration
 is deleted or moved. The checker, immutable baseline, existing signatures and
 definition meanings, instances, and Lean/Mathlib pins are unchanged. No additional
 Mathlib import or cache dependency is required.
 
-This is a semantic existence proof. Executable decomposition, enumeration, and
-compiler implementations remain separate work.
+This proves exact equality. Semilinearity and finite witness construction still
+require the bounded-family finiteness argument. Classical existence proofs do
+not provide executable enumeration, activation testing, or compilation.
 
 ## Previously completed
 
@@ -64,6 +68,8 @@ compiler implementations remain separate work.
 
 - [PR #12](https://github.com/focs-lab/parikh-theorem/pull/12): `bounded_cut` and five structural adapters for minimal non-simple subtrees, height, production count, and reversible indexed replacement (`lem:cut`).
 
+- [PR #13](https://github.com/focs-lab/parikh-theorem/pull/13): `decomposition` and `InsertionSequence.append`, by strong induction on production count and exact bounded-context reinsertion (`thm:decomposition`, `eq:decomposition`).
+
 Their statements and proofs are unchanged here. The grammar/tree bridge supports
 arbitrary derivation order and nonterminal types. Witness existence and tree
 semantics are semantic proofs, not executable compiler implementations.
@@ -77,7 +83,7 @@ allowlists in `contracts/obligations.json` are authoritative for CI.
 | --- | --- |
 | RegularRealization | `representative_counts`, `witnessExpression_correct`, `converse`, `regular_image` |
 | Construction | `bounded_family_bounds`, `bounded_witness`, `witness_bit_bound` |
-| Statements | `treeRepresentation_eq`, `grammar_image`, `grammar_witness`, `contextFree_image`, `regular_realization` |
+| Statements | `grammar_image`, `grammar_witness`, `contextFree_image`, `regular_realization` |
 
 `ActivationTest`, `BoundedEnumeration`, and `Compiler` remain concrete structures
 specifying future finite algorithms, with no implementing values yet. Their
@@ -85,15 +91,15 @@ correctness fields are requirements, not assumed theorems.
 
 ## Validation
 
-- Affected modules and full `lake build` pass, with only expected theorem-hole warnings in the 12 remaining obligations.
-- `lake env lean scripts/SkeletonExamples.lean` passes. The new decomposition example has infinite ambient nonterminals and a non-start-rooted silent unit chain. It obtains a simple zero-weight base, a nonempty bounded-context list, exact ordered reconstruction, and the production-count identity. Existing empty-alphabet, empty-production, positional-sibling, activation, finiteness, and bounded-cut checks still pass.
-- `python3 scripts/check-contracts.py` checks 521 declarations against the accepted skeleton and merged `main`, preserving all 520 earlier contracts. The checker and baseline pointer are unchanged.
-- `#print axioms` for `decomposition` and `InsertionSequence.append` reports only standard foundations, with no unresolved dependencies.
+- Affected modules and full `lake build` pass, with only expected theorem-hole warnings in the 11 remaining obligations.
+- `lake env lean scripts/SkeletonExamples.lean` passes. New equality examples distinguish a grammar with no productions (empty representation) from an empty-alphabet grammar deriving the empty word (exactly the zero vector), both over infinite ambient nonterminals. Existing zero-weight cycles, equal-weight distinct contexts, positional insertion, activation order, finiteness, and decomposition examples still pass.
+- `python3 scripts/check-contracts.py` checks 522 declarations against the accepted skeleton and merged `main`, preserving all 521 earlier contracts. The checker and baseline pointer are unchanged.
+- `#print axioms` for `treeRepresentation_eq` and `InsertionSequence.contextsActivatable` reports only standard foundations, with no unresolved dependencies.
 - `git diff --check` passes.
-- `python3 scripts/check-contracts.py --final` correctly rejects the 12 outstanding holes. This milestone does not complete Parikh's theorem.
-- Cloud Lean 4.34.1 / Lake 5.0.0 and GitHub authentication/read/push access were verified. The existing pinned dependencies and selected Mathlib cache were reused. CI results are reported in the PR separately from local validation.
+- `python3 scripts/check-contracts.py --final` correctly rejects the 11 outstanding holes. This milestone does not complete Parikh's theorem.
+- Cloud Lean 4.34.1 / Lake 5.0.0, the pinned dependencies and selected Mathlib cache, and GitHub read/push access were verified. CI results are reported in the PR separately from local validation.
 
-Next eligible milestone: `treeRepresentation_eq` (`thm:main`), combining exact
-decomposition, activation, `one_linear`, and the grammar/tree semantics bridge.
-Then prove the forward semilinearity and exact-witness contracts using bounded
-family finiteness. Keep each increment in a new PR with accepted contracts unchanged.
+Next eligible milestone: `grammar_image`, `grammar_witness`, and
+`contextFree_image`, deriving the forward semilinearity and exact finite witness
+from `treeRepresentation_eq`, bounded-family finiteness, and the proved
+counting/witness bridges. Keep accepted contracts unchanged and publish a new PR.

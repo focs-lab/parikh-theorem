@@ -2214,6 +2214,18 @@
       "unsafe": false,
       "value": null
     },
+    "Parikh.InsertionSequence.contextsActivatable": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "e25ba41dbdbd8cc229a4e85dfaff009e3994c22ca3abfd9f8fec017519d2744a",
+      "unsafe": false,
+      "value": null
+    },
     "Parikh.InsertionSequence.nil": {
       "instance": false,
       "kind": "constructor",

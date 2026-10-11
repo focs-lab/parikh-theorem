@@ -56,8 +56,8 @@ flowchart TD
 These are intended dependencies for the remaining proof. The four counting/witness
 contracts, grammar/tree equivalence, plugging/insertion, the two abstract activation laws,
 sequence/tree realization, `one_linear`, active support, and simple-tree height
-now have complete proofs, as do `bounded_open_finite`, `bounded_cut`, and `decomposition`.
-The remaining 12 theorem bodies
+now have complete proofs, as do `bounded_open_finite`, `bounded_cut`, `decomposition`,
+and `treeRepresentation_eq`. The remaining 11 theorem bodies
 are still `sorry`. No forward proof depends on the converse,
 trace theory, a grammar normal form, or Presburger elimination. The finite-witness
 bridge to Mathlib is separate from the derivation-tree proof.
@@ -89,7 +89,8 @@ and algorithm values are pending.
 | `lem:first-occurrence` | `first_occurrences` | Any enabled list of operations | Filter later repeats whose added support is already present; proved |
 | `lem:multiplicities` | `positive_multiplicities` | Required label belongs to added support; multiplicities positive on selected set | Initial activation pass, then finite replicas with exact counts; proved |
 | `prop:one-linear`, `eq:one-linear`, `eq:component-base`, `eq:component` | `contextComponent`, `contextComponent.mem_denotation_iff`, `one_linear` | Complete base and activatable set; every selected context contributes once before arbitrary extra copies | List-count finite sums, Mathlib additive closure, multiplicities, tree lifting; proved |
-| `thm:main`, `eq:main` | `treeRepresentation`, `treeRepresentation_eq`, `grammar_witness` | Finite terminal alphabet; arbitrary Mathlib nonterminal type | Exact decomposition, activation, semantics bridge; pending |
+| `thm:main`, `eq:main` | `treeRepresentation`, `treeRepresentation_eq`, `InsertionSequence.contextsActivatable` | Exact image equality; finite terminal alphabet and arbitrary Mathlib nonterminal type | Decomposition, first-occurrence activation, `one_linear`, semantics bridge; equality proved |
+| `thm:main` | `grammar_witness` | Exact finite semilinear witness | Main equality, bounded-family finiteness, and counting/witness bridges; pending |
 | `thm:parikh-statement` | `grammar_image`, `contextFree_image`, `regular_realization` | Mathlib grammar/language interfaces | Main equality and witness bridge; regular realization also uses converse; pending |
 | `sec:example`, `eq:example-target` | `scripts/SkeletonExamples.lean` | The required order is C then E; E alone is disabled | Small support checks pass; full example grammar is deferred |
 | `eq:representative` | `AlphabetOrder`, `representative`, `representative_counts` | Explicit exhaustive, repetition-free alphabet list | List counting; pending law, concrete construction |
@@ -198,6 +199,18 @@ context. The new sequence adapter is a direct induction on the existing relation
 without changing its constructors or introducing another reconstruction relation.
 No finite alphabet or nonterminal assumption is needed. The proof is semantic
 existence; executable decomposition remains separate work.
+
+`InsertionSequence.contextsActivatable` extracts matching roots from actual
+insertion steps, recovers the enabled list using the existing activation/tree
+equivalence, and applies `first_occurrences` to its distinct context set.
+`treeRepresentation_eq` then proves both inclusions. A represented vector is
+realized by `one_linear`; sequence accounting retains a complete start tree,
+whose yield belongs to the grammar language by `derives_iff_tree` and Mathlib's
+`mem_language_iff`. Conversely, a generated word gives a complete tree,
+`decomposition` gives its bounded context list, the activation adapter certifies
+that list's distinct set, and `one_linear` places its exact weight in the
+corresponding component. Semilinearity and finite witness construction remain
+the next milestone; the equality proof does not enumerate bounded families.
 
 ## After review
 

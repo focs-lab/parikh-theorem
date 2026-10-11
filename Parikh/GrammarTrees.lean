@@ -117,10 +117,44 @@ noncomputable def activeNonterminals (g : ContextFreeGrammar T) : Finset g.NT :=
 def ActiveOpen (g : ContextFreeGrammar T) (t : ParseTree T g.NT) : Prop :=
   Valid g t ∧ ∀ A ∈ t.holes, A ∈ activeNonterminals g
 
+/-- Production-node labels are active even in a valid open tree (`def:statistics`).
+Holes contribute no label to support. -/
+theorem Valid.support_active {g : ContextFreeGrammar T} {t : ParseTree T g.NT}
+    (ht : Valid g t) : t.support ⊆ (activeNonterminals g : Set g.NT) := by
+  classical
+  induction ht with
+  | terminal a =>
+    intro A hA
+    change A ∈ (ParseTree.terminal a : ParseTree T g.NT).productionLabels at hA
+    delta ParseTree.productionLabels at hA
+    rw [WellFounded.fix_eq] at hA
+    exact False.elim (List.not_mem_nil hA)
+  | hole A =>
+    intro B hB
+    change B ∈ (ParseTree.hole A : ParseTree T g.NT).productionLabels at hB
+    delta ParseTree.productionLabels at hB
+    rw [WellFounded.fix_eq] at hB
+    exact False.elim (List.not_mem_nil hB)
+  | node r children hr hc roots ih =>
+    intro A hA
+    change A ∈ (ParseTree.node r children).productionLabels at hA
+    delta ParseTree.productionLabels at hA
+    rw [WellFounded.fix_eq] at hA
+    rcases List.mem_cons.mp hA with rfl | hA
+    · unfold activeNonterminals
+      apply Finset.mem_union_right
+      apply Finset.mem_biUnion.mpr
+      exact ⟨r, hr, Finset.mem_union_left _ (Finset.mem_singleton_self _)⟩
+    · obtain ⟨labels, hlabels, hA⟩ := List.mem_flatten.mp hA
+      obtain ⟨c, hc, rfl⟩ := List.mem_map.mp hlabels
+      change ∀ c ∈ children, ∀ A, A ∈ c.productionLabels → A ∈ activeNonterminals g at ih
+      delta ParseTree.productionLabels at ih
+      exact ih c.val c.property A hA
+
 /-- Every production node in a complete tree belongs to the finite active alphabet. -/
 theorem complete_support_active (g : ContextFreeGrammar T) (t : ParseTree T g.NT)
     (ht : Complete g t) : t.support ⊆ (activeNonterminals g : Set g.NT) := by
-  sorry
+  exact ht.1.support_active
 
 /-- Finite terminals and finite productions suffice; no `Fintype g.NT` (`lem:finite`). -/
 theorem bounded_open_finite [Finite T] (g : ContextFreeGrammar T) (H : ℕ) :

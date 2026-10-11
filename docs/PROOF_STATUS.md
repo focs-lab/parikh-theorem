@@ -1,4 +1,4 @@
-# Proof status: exact linear component for one activated context set
+# Proof status: active support and simple-tree height bounds
 
 The owner accepted the reviewed skeleton in [PR #2](https://github.com/focs-lab/parikh-theorem/pull/2)
 on 2026-10-11. The immutable baseline remains the reviewed head
@@ -9,53 +9,63 @@ grammar/tree semantics [PR #4](https://github.com/focs-lab/parikh-theorem/pull/4
 one-hole plugging [PR #5](https://github.com/focs-lab/parikh-theorem/pull/5),
 insertion [PR #6](https://github.com/focs-lab/parikh-theorem/pull/6),
 abstract activation [PR #7](https://github.com/focs-lab/parikh-theorem/pull/7),
-and tree realization [PR #8](https://github.com/focs-lab/parikh-theorem/pull/8)
+tree realization [PR #8](https://github.com/focs-lab/parikh-theorem/pull/8),
+and exact linear component [PR #9](https://github.com/focs-lab/parikh-theorem/pull/9)
 have merged, with CI passing.
 
-Current milestone: [PR #9](https://github.com/focs-lab/parikh-theorem/pull/9),
-the exact `one_linear` component equality, branch
-[`codex/one-linear`](https://github.com/focs-lab/parikh-theorem/tree/codex/one-linear),
-based on merged `main` (`ae109deebb2602a1511faf6e777afbf51b116108`).
-There are **17 direct `sorry` obligations**, zero project axioms, and 17 declarations
-transitively dependent on `sorryAx`, down from 18. Parikh's theorem is not yet proved.
+Current milestone: [PR #10](https://github.com/focs-lab/parikh-theorem/pull/10),
+active support and the simple-tree height bound, branch
+[`codex/active-support-height`](https://github.com/focs-lab/parikh-theorem/tree/codex/active-support-height),
+based on merged `main` (`37dfb799e8ef23ba6e0782bab77fcf0af4946f19`).
+There are **15 direct `sorry` obligations**, zero project axioms, and 15 declarations
+transitively dependent on `sorryAx`, down from 17. Parikh's theorem is not yet proved.
 
 ## Completed in this milestone
 
-All names have namespace `Parikh`. Source: `prop:one-linear`, `eq:one-linear`,
-`eq:component-base`, and `eq:component`.
+All names have namespace `Parikh`. Source: `def:statistics`, `lem:simple-height`,
+and the active-alphabet prerequisite for `lem:finite`.
 
 | Declaration | Proof / role |
 | --- | --- |
-| `one_linear` | The weights of insertion sequences using exactly the selected context set equal its linear component, with every selected context contributing once to the base. |
-| `contextComponent.mem_denotation_iff` | A thin Mathlib adapter expressing the indexed-list denotation with independent natural coefficients for context identities. |
+| `complete_support_active` | Every production-node label of a complete tree lies in the grammar's finite active alphabet. |
+| `simple_height` | A simple complete tree's production height is at most the active nonterminal cardinality, with no finite ambient nonterminal hypothesis. |
+| `Valid.support_active` | Stronger support containment for any valid open tree; holes contribute no production label. |
+| `ParseTree.labelPath_subset_support` | Every label on any production-label path belongs to the tree's support. |
+| `ParseTree.exists_labelPath_height` | A longest production-label path has length equal to production height, including terminal/hole and empty-production cases. |
 
-The existing `one_linear` statement is unchanged; its direct and transitive
-unresolved status is removed from the named allowlists. The new adapter is proved
-immediately and introduces no hole. Both declarations have no `sorryAx` or
-project-axiom dependencies. Their audits report only standard Lean foundations:
-`propext`, `Classical.choice`, and `Quot.sound`.
+Both existing theorem statements are unchanged and removed from the direct and
+transitive unresolved allowlists. Three supporting lemmas are proved immediately
+and introduce no holes. All five audited declarations depend only on standard
+Lean foundations: `propext`, `Classical.choice`, and `Quot.sound`. None depends
+on `sorryAx` or a project axiom.
 
-All 467 earlier contract entries are preserved exactly. One new proved adapter
-and six Lean-generated equation/proof/simplification helpers extend the manifest
-to 474 entries. The generated `contextComponent.eq_1` records the existing
-concrete definition's equation. No existing declaration is deleted or moved.
-All earlier signatures, definition meanings, instances, imports, and Lean/Mathlib
-pins are unchanged.
+All 474 earlier contract entries are preserved exactly, including generated
+helpers. Three proved adapters and 20 Lean-generated equation, matching,
+proof, and simplification declarations extend the manifest to 497 entries.
+No existing declaration is deleted or moved. All earlier signatures,
+definition meanings, instances, and Lean/Mathlib pins are unchanged.
+The only new import is the project's structural path module, `ParseTreePaths`.
 
-For the forward inclusion, sequence accounting and
-`Finset.sum_list_map_count` express the final weight using each context's count.
-Every selected context occurs, so its count minus one is a natural coefficient;
-the first copies supply the component base. For the reverse inclusion, add one
-to each chosen coefficient, use `positive_multiplicities` to produce an enabled
-order with those counts, and realize that order as an insertion sequence.
+Support containment is induction on validity: each production is a member of the
+grammar's finite rule set, so its input label is active; child supports satisfy
+the same property. The proof unfolds the existing well-founded label recursion
+explicitly so previously published generated simplification helpers remain
+stable. The complete-tree contract is a direct specialization.
 
-The coefficient adapter uses `Component.denotation_eq_vadd_closure`,
-`AddSubmonoid.mem_closure_range_iff_of_fintype`, and `Finset.sum_coe_sort` to
-reindex finite sums. Context syntax still determines membership, roots, and
-support. Equal weights, zero weights, repeated contexts, empty context sets,
-terminal-rooted bases, and infinite ambient nonterminal types are supported.
-No new equality instance or finite-nonterminal hypothesis is public. These are
-semantic proofs; executable compiler values remain separate work.
+The path proofs are structural adapters for the existing syntax. Mathlib/core
+list maxima select a tallest child, with a separate singleton path for an empty
+production. Simplicity makes the chosen path duplicate-free. Its length equals
+its finite-set cardinality, and support containment makes that finite set a
+subset of the active alphabet. Mathlib's cardinality monotonicity finishes the
+height bound. Neither new paths nor new statistics are defined.
+
+Height counts production nodes, not yield length. Terminal-only trees have
+height zero; empty productions have height one. Repeated labels on separate
+branches remain permitted. Arbitrary valid holes outside the active alphabet
+still have empty support; this does not establish `ActiveOpen`, so its hole
+restriction remains essential for the next finite-family obligation.
+These are semantic proofs; enumeration and executable compiler values remain
+separate work.
 
 ## Previously completed
 
@@ -65,6 +75,7 @@ semantic proofs; executable compiler values remain separate work.
 - [PR #6](https://github.com/focs-lab/parikh-theorem/pull/6): `insertion_enabled`, `insertion_accounting`, and three supporting occurrence/context lemmas (`lem:enabled`, `lem:insertion-laws`).
 - [PR #7](https://github.com/focs-lab/parikh-theorem/pull/7): `first_occurrences`, `positive_multiplicities`, and three abstract support/list lemmas (`lem:first-occurrence`, `lem:multiplicities`).
 - [PR #8](https://github.com/focs-lab/parikh-theorem/pull/8): `Cycle.root_mem_support`, `InsertionSequence.accounting`, `activationOrder_iff_insertionSequence`, and `ContextsActivatable.realize` (`eq:cycle-root`, `cor:sequence`, `lem:activation-realize`, `eq:activated-wt`, `eq:activated-supp`).
+- [PR #9](https://github.com/focs-lab/parikh-theorem/pull/9): `one_linear`, with `contextComponent.mem_denotation_iff` (`prop:one-linear`, `eq:one-linear`, `eq:component`).
 
 Their statements and proofs are unchanged here. The grammar/tree bridge supports
 arbitrary derivation order and nonterminal types. Witness existence and tree
@@ -77,8 +88,8 @@ allowlists in `contracts/obligations.json` are authoritative for CI.
 
 | Module | Outstanding declarations |
 | --- | --- |
-| GrammarTrees | `complete_support_active`, `bounded_open_finite` |
-| Decomposition | `simple_height`, `bounded_cut`, `decomposition` |
+| GrammarTrees | `bounded_open_finite` |
+| Decomposition | `bounded_cut`, `decomposition` |
 | RegularRealization | `representative_counts`, `witnessExpression_correct`, `converse`, `regular_image` |
 | Construction | `bounded_family_bounds`, `bounded_witness`, `witness_bit_bound` |
 | Statements | `treeRepresentation_eq`, `grammar_image`, `grammar_witness`, `contextFree_image`, `regular_realization` |
@@ -89,15 +100,15 @@ correctness fields are requirements, not assumed theorems.
 
 ## Validation
 
-- `lake build Parikh.Activation` and full `lake build` pass, with only expected theorem-hole warnings in the 17 remaining obligations.
-- `lake env lean scripts/SkeletonExamples.lean` passes. Two distinct contexts with different roots but equal nonzero weights require at least two terminal contributions; every count at least two is realized, and smaller counts are rejected. The nonterminal type is infinite (`ℕ`). A zero-weight context gives exactly the zero vector, and an empty context set gives exactly a terminal-rooted base's nonzero weight.
-- `python3 scripts/check-contracts.py` checks 474 declarations against the accepted skeleton and merged `main`. All 467 earlier signatures and definition fingerprints are preserved. The checker and baseline pointer are unchanged.
-- `#print axioms` for `one_linear` and its new adapter reports only standard foundations; neither depends on unresolved obligations.
+- Affected modules and full `lake build` pass, with only expected theorem-hole warnings in the 15 remaining obligations.
+- `lake env lean scripts/SkeletonExamples.lean` passes. A unit/empty-production chain over infinite nonterminals (`ℕ`) and an empty terminal alphabet reaches the active-cardinality bound. Repeated siblings are simple despite duplicate total production labels; repeating a label along one branch violates simplicity and can exceed the bound. A terminal-only tree is complete and simple even in a grammar without productions. An inactive hole is valid and has active support, but fails `ActiveOpen`.
+- `python3 scripts/check-contracts.py` checks 497 declarations against the accepted skeleton and merged `main`. All 474 earlier signatures and definition fingerprints are preserved. The checker and baseline pointer are unchanged.
+- `#print axioms` for both completed targets and all three supporting lemmas reports only standard foundations; none depends on unresolved obligations.
 - `git diff --check` passes.
-- `python3 scripts/check-contracts.py --final` correctly rejects the 17 outstanding holes. This milestone does not complete Parikh's theorem.
+- `python3 scripts/check-contracts.py --final` correctly rejects the 15 outstanding holes. This milestone does not complete Parikh's theorem.
 - Cloud Lean 4.34.1 / Lake 5.0.0, pinned Mathlib access, and GitHub authentication/push access were verified. CI results are reported in the PR separately from local validation.
 
-Next eligible milestone: active-support and simple-tree height bounds
-(`complete_support_active`, `simple_height`), preparing the bounded-family,
-bounded-cut, and decomposition proofs. Keep each increment in a new PR with
-the accepted statements unchanged.
+Next eligible milestone: `bounded_open_finite` (`lem:finite`), using finite
+productions, their fixed child arities, finite terminals, and the existing
+active-hole restriction. Then prove bounded cut and decomposition. Keep each
+increment in a new PR with accepted statements unchanged.

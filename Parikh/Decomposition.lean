@@ -1,4 +1,5 @@
 import Parikh.GrammarTrees
+import Parikh.ParseTreePaths
 import Parikh.TreePlugging
 import Parikh.TreeReplacement
 
@@ -97,7 +98,14 @@ theorem insertion_accounting [DecidableEq T] (g : ContextFreeGrammar T)
 theorem simple_height (g : ContextFreeGrammar T) (t : ParseTree T g.NT)
     (ht : Complete g t) (hs : t.Simple) :
     t.height ≤ (activeNonterminals g).card := by
-  sorry
+  classical
+  obtain ⟨path, hp, hlen⟩ := t.exists_labelPath_height
+  have hsubset : path.toFinset ⊆ activeNonterminals g := by
+    intro A hA
+    exact complete_support_active g t ht
+      (t.labelPath_subset_support path hp A (List.mem_toFinset.mp hA))
+  rw [← hlen, ← List.toFinset_card_of_nodup (hs path hp)]
+  exact Finset.card_le_card hsubset
 
 /-- A minimal non-simple subtree yields a bounded removable context (`lem:cut`). -/
 theorem bounded_cut (g : ContextFreeGrammar T) (t : ParseTree T g.NT)

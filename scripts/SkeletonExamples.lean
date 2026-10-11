@@ -547,4 +547,77 @@ example : {v | ∃ t Cs, InsertionSequence activationGrammar (.terminal true) Cs
   ext v
   simp [contextComponent.mem_denotation_iff, ParseTree.weight, ParseTree.yield]
 
+/-! Active support and simple-tree height: production nodes, rather than yield
+length or the total number of label occurrences, determine the bound. -/
+
+def unitChain : ParseTree (Fin 0) ℕ :=
+  .node unitProduction [.node eraseProduction []]
+
+-- Infinite nonterminals and an empty terminal alphabet: the height bound is tight.
+example : Complete unitGrammar unitChain ∧ unitChain.Simple ∧ unitChain.yield = [] ∧
+    unitChain.height = (activeNonterminals unitGrammar).card ∧ unitChain.height = 2 := by
+  classical
+  have he : Valid unitGrammar (.node eraseProduction []) :=
+    Valid.node (g := unitGrammar) _ [] (by simp [unitGrammar])
+      (by simp) (by simp [eraseProduction])
+  have ht : Complete unitGrammar unitChain := by
+    refine ⟨Valid.node (g := unitGrammar) _ _ (by simp [unitGrammar]) ?_ ?_, ?_⟩
+    · intro c hc
+      have heq : c = .node eraseProduction [] := by simpa using hc
+      exact heq.symm ▸ he
+    · simp [ParseTree.root, unitProduction, eraseProduction]
+    · simp [unitChain, ParseTree.holes]
+  have hs : unitChain.Simple := by
+    simp [unitChain, ParseTree.Simple, ParseTree.labelPaths, unitProduction, eraseProduction]
+  have hh := simple_height unitGrammar unitChain ht hs
+  have hn : (activeNonterminals unitGrammar).card = 2 := by
+    simp [activeNonterminals, unitGrammar, unitProduction, eraseProduction]
+  have hlower : 2 ≤ unitChain.height := by simp [unitChain, ParseTree.height]
+  refine ⟨ht, hs, by simp [unitChain, ParseTree.yield], ?_, ?_⟩ <;> omega
+
+-- Repeated siblings are simple, although their total label list has a duplicate.
+example : repeatedTree.Simple ∧ ¬ repeatedTree.productionLabels.Nodup ∧
+    repeatedTree.height ≤ (activeNonterminals insertionGrammar).card ∧
+    repeatedTree.productionSize > repeatedTree.height ∧
+    repeatedTree.support ⊆ (activeNonterminals insertionGrammar : Set ℕ) := by
+  have hs : repeatedTree.Simple := by
+    simp [repeatedTree, emptyChild, ParseTree.Simple, ParseTree.labelPaths, forkRule, emptyRule]
+  refine ⟨hs, ?_, simple_height insertionGrammar repeatedTree insertion_data.1 hs, ?_,
+    complete_support_active insertionGrammar repeatedTree insertion_data.1⟩
+  · simp [repeatedTree, emptyChild, ParseTree.productionLabels, forkRule, emptyRule]
+  · simp [repeatedTree, emptyChild, ParseTree.productionSize, ParseTree.height]
+
+-- Repeating the label along a branch violates simplicity, even at zero weight.
+example : ¬ wrappedTree.Simple ∧
+    (activeNonterminals insertionGrammar).card < wrappedTree.height := by
+  classical
+  constructor
+  · simp [wrappedTree, silentCycle, emptyChild, ParseTree.plug, ParseTree.Simple,
+      ParseTree.labelPaths, forkRule, loopRule, emptyRule]
+  · simp [activeNonterminals, insertionGrammar, wrappedTree, silentCycle, emptyChild,
+      ParseTree.plug, ParseTree.height, forkRule, loopRule, emptyRule]
+
+abbrev noProductionsGrammar : ContextFreeGrammar Bool := ⟨ℕ, 37, ∅⟩
+
+-- A terminal-only tree remains complete and simple even without productions.
+example : Complete noProductionsGrammar (.terminal true) ∧
+    (.terminal true : ParseTree Bool ℕ).Simple ∧
+    (.terminal true : ParseTree Bool ℕ).height ≤
+      (activeNonterminals noProductionsGrammar).card := by
+  have ht : Complete noProductionsGrammar (.terminal true) :=
+    ⟨.terminal true, by simp [ParseTree.holes]⟩
+  have hs : (.terminal true : ParseTree Bool ℕ).Simple := by
+    simp [ParseTree.Simple, ParseTree.labelPaths]
+  exact ⟨ht, hs, simple_height noProductionsGrammar _ ht hs⟩
+
+-- A valid hole outside the active alphabet has empty support, but is not ActiveOpen.
+example : Valid noProductionsGrammar (.hole 99) ∧
+    (.hole 99 : ParseTree Bool ℕ).support ⊆
+      (activeNonterminals noProductionsGrammar : Set ℕ) ∧
+    ¬ ActiveOpen noProductionsGrammar (.hole 99) := by
+  have hv : Valid noProductionsGrammar (.hole 99) :=
+    Valid.hole (g := noProductionsGrammar) (99 : ℕ)
+  refine ⟨hv, hv.support_active, ?_⟩
+  simp [ActiveOpen, ParseTree.holes, activeNonterminals, noProductionsGrammar]
+
 end SkeletonExamples

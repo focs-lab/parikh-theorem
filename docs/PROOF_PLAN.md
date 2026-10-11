@@ -2,7 +2,8 @@
 
 The owner accepted the statement skeleton in PR #2 on 2026-10-11.
 The counting/witness, grammar/tree semantics, plugging/insertion, abstract activation laws,
-activation's tree realization, and the exact linear-component equality are proved;
+activation's tree realization, the exact linear-component equality, active support,
+and simple-tree height bounds are proved;
 Parikh's theorem remains in progress.
 Read the complete reference, including appendices, alongside the
 statements; source labels below refer to `reference/parikh_theorem.tex`.
@@ -13,7 +14,7 @@ statements; source labels below refer to `reference/parikh_theorem.tex`.
    interface, and equal-image regular realization.
 2. `Parikh/Counting.lean`: concrete indexed witness denotation and the bridges to
    Mathlib's `IsLinearSet` and `IsSemilinearSet`.
-3. `Parikh/GrammarTrees.lean`, `TreePlugging.lean`, `TreeReplacement.lean`, then `Decomposition.lean`: ordered production trees,
+3. `Parikh/GrammarTrees.lean`, `ParseTreePaths.lean`, `TreePlugging.lean`, `TreeReplacement.lean`, then `Decomposition.lean`: ordered production trees,
    explicit holes, Mathlib derivation semantics, occurrence replacement, and the
    bounded cut measured by production count.
 4. `Parikh/InsertionSequences.lean` and `Activation.lean`: sequence accounting,
@@ -32,9 +33,12 @@ statements; source labels below refer to `reference/parikh_theorem.tex`.
 flowchart TD
   Counting[Counting and witness bridges] --> Main[Exact union and forward theorem]
   Trees[Concrete syntax and grammar semantics] --> Surgery[Plugging and insertion]
-  Trees --> Bounded[Active alphabet and bounded families]
+  Trees --> Height[Active support and simple-tree height]
+  Trees --> Bounded[Finite bounded families]
+  Height --> Bounded
   Surgery --> Cut[Minimal subtree cut and decomposition]
-  Bounded --> Cut
+  Height --> Cut
+  Bounded --> Main
   Surgery --> Realize[Activation orders realized by tree sequences]
   Activation[Abstract activation and multiplicities] --> Realize
   Realize --> Linear[One linear component]
@@ -51,7 +55,8 @@ flowchart TD
 
 These are intended dependencies for the remaining proof. The four counting/witness
 contracts, grammar/tree equivalence, plugging/insertion, the two abstract activation laws,
-sequence/tree realization, and `one_linear` now have complete proofs. The remaining 17 theorem bodies
+sequence/tree realization, `one_linear`, active support, and simple-tree height
+now have complete proofs. The remaining 15 theorem bodies
 are still `sorry`. No forward proof depends on the converse,
 trace theory, a grammar normal form, or Presburger elimination. The finite-witness
 bridge to Mathlib is separate from the derivation-tree proof.
@@ -74,8 +79,8 @@ and algorithm values are pending.
 | `def:insertion`, `lem:enabled` | `Inserts`, `insertion_enabled` | Position selects an internal matching subtree | Plugging and occurrence existence; proved |
 | `lem:insertion-laws`, `eq:insert-wt`, `eq:insert-size`, `eq:insert-supp` | `insertion_accounting` | Complete insertion and exact root/weight/size/support equalities | Outer one-hole context and plugging twice; proved |
 | `cor:sequence` | `InsertionSequence.accounting` | Finite ordered sequence from a complete tree; exact root/weight/size/support and completeness | Induction using insertion accounting; proved |
-| `lem:simple-height`, `def:families` | `ParseTree.Simple`, `simple_height`, `IsBase`, `IsBoundedCycle` | Active nonterminals replace an unnecessarily finite ambient type | Path-label distinctness and active support; pending |
-| `lem:finite` | `activeNonterminals`, `complete_support_active`, `bounded_open_finite`, `BoundedEnumeration` | Finite terminals; holes restricted to active symbols for the general grammar | Finite productions and bounded child arities; pending proof and enumerator |
+| `lem:simple-height`, `def:families`, `def:statistics` | `ParseTree.Simple`, `ParseTree.labelPath_subset_support`, `ParseTree.exists_labelPath_height`, `simple_height`, `IsBase`, `IsBoundedCycle` | Active nonterminals replace an unnecessarily finite ambient type; repeated siblings are allowed | Longest label path, path-label distinctness, active support, and Mathlib finite-set cardinality; height bound proved, family predicates concrete |
+| `lem:finite`, `def:statistics` | `activeNonterminals`, `Valid.support_active`, `complete_support_active`, `bounded_open_finite`, `BoundedEnumeration` | Finite terminals; holes restricted to active symbols for the general grammar | Active-support containment proved; bounded-family finiteness and enumerator pending |
 | `lem:cut` | `bounded_cut` | Non-simple complete tree; strict decrease in production count | Minimal non-simple subtree, simple side branches, surgery; pending |
 | `thm:decomposition`, `eq:decomposition`, `cor:finite-generation` | `decomposition` | Exact tree reconstruction for every complete tree/root | Strong induction using bounded cut; pending |
 | `def:activation`, `eq:activation` | `ActivationOrder`, `Activatable`, `ContextsActivatable` | Operations retain their identities and require previously present labels | Concrete definitions; arbitrary support sets in the abstract interface |
@@ -153,6 +158,15 @@ weights to context multiplicities. Each selected context occurs at least once,
 so subtracting one gives a natural coefficient; conversely, positive
 multiplicities and the tree-realization adapter build a sequence using each
 context its coefficient plus one times. Equal and zero context weights remain supported.
+
+`Valid.support_active` uses production membership to place every production-node
+label in the finite active alphabet, including in open trees. The accepted
+`complete_support_active` follows by specialization. `ParseTreePaths.lean`
+connects production-label paths to support and realizes production height with
+a longest path. `simple_height` applies simplicity to that path, identifies its
+length with its finite-set cardinality, and bounds it by the active cardinality.
+The proof counts production nodes; holes and terminals contribute no labels,
+empty productions still contribute one, and repeated siblings remain allowed.
 
 ## After review
 

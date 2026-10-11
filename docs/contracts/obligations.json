@@ -4,7 +4,6 @@
     "Parikh.bounded_family_bounds",
     "Parikh.bounded_open_finite",
     "Parikh.bounded_witness",
-    "Parikh.complete_support_active",
     "Parikh.contextFree_image",
     "Parikh.converse",
     "Parikh.decomposition",
@@ -13,7 +12,6 @@
     "Parikh.regular_image",
     "Parikh.regular_realization",
     "Parikh.representative_counts",
-    "Parikh.simple_height",
     "Parikh.treeRepresentation_eq",
     "Parikh.witnessExpression_correct",
     "Parikh.witness_bit_bound"
@@ -24,7 +22,6 @@
     "Parikh.bounded_family_bounds",
     "Parikh.bounded_open_finite",
     "Parikh.bounded_witness",
-    "Parikh.complete_support_active",
     "Parikh.contextFree_image",
     "Parikh.converse",
     "Parikh.decomposition",
@@ -33,7 +30,6 @@
     "Parikh.regular_image",
     "Parikh.regular_realization",
     "Parikh.representative_counts",
-    "Parikh.simple_height",
     "Parikh.treeRepresentation_eq",
     "Parikh.witnessExpression_correct",
     "Parikh.witness_bit_bound"

@@ -11,7 +11,9 @@ fix in PR #21 have also merged.
 Current milestone: quantitative bounded-family and leaf-weight bounds
 (`lem:count-trees`), branch `codex/bounded-family-bounds`, based on merged `main`
 (`d6472d423d4248db5bb294ab2f626fc90788e686`).
-Publication pending.
+Published as [PR #24](https://github.com/focs-lab/parikh-theorem/pull/24);
+the PR's [checks](https://github.com/focs-lab/parikh-theorem/pull/24/checks)
+record CI evidence for the submitted head.
 There are **2 direct `sorry` obligations**, zero project axioms, and 2 declarations
 transitively dependent on `sorryAx`. This milestone removes `bounded_family_bounds`
 from both unresolved lists. All accepted qualitative Parikh results are proved;

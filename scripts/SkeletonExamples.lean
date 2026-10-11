@@ -808,4 +808,48 @@ example : ∃ W : Witness (Fin 0), W.denotation = image unitGrammar.language ∧
   · funext a
     exact Fin.elim0 a
 
+/-! Expression images: empty unions differ from epsilon over an empty alphabet;
+zero and repeated periods retain their semantics. Counts do not fix letter order. -/
+
+def boolAlphabet : AlphabetOrder Bool :=
+  ⟨[false, true], by decide, by intro a; cases a <;> simp⟩
+
+def emptyAlphabet : AlphabetOrder (Fin 0) :=
+  ⟨[], by simp, fun a => Fin.elim0 a⟩
+
+example : image (witnessExpression boolAlphabet []).matches' = ∅ := by
+  rw [witnessExpression_image]
+  ext v
+  simp [Witness.denotation]
+
+example : image (witnessExpression emptyAlphabet
+    [⟨0, [0, 0]⟩]).matches' = {0} := by
+  rw [witnessExpression_image]
+  ext v
+  have hv : v = 0 := by funext a; exact Fin.elim0 a
+  subst v
+  simp [Witness.denotation, Component.denotation]
+
+-- No periods gives the singleton base word, rather than an empty language.
+example : (componentExpression boolAlphabet ⟨fun _ => 1, []⟩).matches' =
+    {[false, true]} := by
+  change (wordExpression (representative boolAlphabet (fun _ => 1))).matches' * 1 = _
+  rw [mul_one, wordExpression_matches]
+  rfl
+
+def pairedComponent : Component Bool := ⟨0, [0, fun _ => 1, fun _ => 1]⟩
+
+-- Both nonzero indexed periods contribute; the zero period can be repeated
+-- arbitrarily. The image includes these counts but the language orders blocks.
+example : counts [true, true, false, false] ∈
+    image (witnessExpression boolAlphabet [pairedComponent]).matches' ∧
+    [true, true, false, false] ∉
+      (witnessExpression boolAlphabet [pairedComponent]).matches' := by
+  constructor
+  · rw [witnessExpression_image]
+    refine ⟨pairedComponent, by simp, fun i => if i.val = 0 then 37 else 1, ?_⟩
+    funext a
+    cases a <;> decide
+  · decide
+
 end SkeletonExamples

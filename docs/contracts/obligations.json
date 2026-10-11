@@ -5,7 +5,6 @@
     "Parikh.converse",
     "Parikh.regular_image",
     "Parikh.regular_realization",
-    "Parikh.representative_counts",
     "Parikh.witnessExpression_correct",
     "Parikh.witness_bit_bound"
   ],
@@ -16,7 +15,6 @@
     "Parikh.converse",
     "Parikh.regular_image",
     "Parikh.regular_realization",
-    "Parikh.representative_counts",
     "Parikh.witnessExpression_correct",
     "Parikh.witness_bit_bound"
   ],

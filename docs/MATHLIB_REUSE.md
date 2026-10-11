@@ -7,7 +7,7 @@ The audit searched the actual sources before choosing the interfaces.
 | Existing source | Reuse and remaining gap |
 | --- | --- |
 | `Computability/Language.lean` | Reuse `Language`, `Symbol`, and language algebra. No parallel language datatype. |
-| `Computability/ContextFreeGrammar.lean` | Reuse `ContextFreeRule`, `ContextFreeGrammar`, `Produces`, `Derives`, `language`, `Language.IsContextFree`. Rewriting context lemmas already exist. No ordered derivation-tree syntax or complete-tree equivalence was found. |
+| `Computability/ContextFreeGrammar.lean` | Reuse `ContextFreeRule`, `ContextFreeGrammar`, `Produces`, `Derives`, `language`, `Language.IsContextFree`. Rewriting context lemmas already exist. No ordered derivation-tree syntax or complete-tree equivalence was found. The existing tree syntax is now connected by proved frontier expansion and complete-tree equivalence. Reuse `Derives.append_left/right`, `Rewrites.input_output` and `nonterminal_input_mem`; the new `rewrites_append_cases` locates a rewrite in either concatenated part, a missing converse to the context lemmas. |
 | `ModelTheory/Arithmetic/Presburger/Semilinear/Defs.lean` | Reuse `IsLinearSet`, `IsSemilinearSet`, finitely generated additive closure, and finite-union lemmas. New witness records only supply explicit indexed bases/periods; their denotation-to-Mathlib bridges are now proved. |
 | `Algebra/Group/Submonoid/Finsupp.lean` | Reuse `AddSubmonoid.mem_closure_range_iff_of_fintype` to identify indexed natural sums with additive closure. `Set.finite_range`, finite-set enumeration, and Mathlib finite unions finish both witness directions. |
 | `Data/List/Count.lean` and finite-sum infrastructure | Reuse `List.count`, lists, `Fin`, `Finset`, natural scalar multiplication and sums. No custom vector arithmetic. |
@@ -15,6 +15,13 @@ The audit searched the actual sources before choosing the interfaces.
 | `Computability/DFA.lean`, `NFA.lean`, `EpsilonNFA.lean` | Reuse `Language.IsRegular`, `NFA.toDFA_correct` and `εNFA.toNFA_correct` where applicable. A specialized finite automaton for the witness expressions can avoid reproving determinization. The converse does not require a grammar. |
 | `Data/Nat/Log.lean` | Reuse `Nat.clog` for the document's fixed-width bit bound. |
 | `Data/Tree/Basic.lean`, `Data/W/*` | Existing binary trees/W-types do not directly provide ordered variable-arity production nodes, nonterminal holes, local RHS-root matching or grammar semantics. A small raw syntax with a separate validity predicate keeps these meanings explicit. |
+
+The tree-semantics milestone also reuses core `List.filterMap_flatten`,
+`List.map_congr_left`, `List.flatMap_singleton'`, and `Relation.ReflTransGen`
+induction. Frontier projections are thin tree-specific adapters. Forest induction
+stays inside the two validity proofs, with no new forest datatype or rewriting
+relation. No finite-nonterminal assumption, grammar normalization, leftmost
+restriction, or dependency upgrade is needed.
 
 No trace-membership dependency, replacement semilinearity predicate, or generic
 automata-equivalence development is introduced. Re-audit Mathlib before adding

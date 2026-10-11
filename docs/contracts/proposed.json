@@ -2222,6 +2222,45 @@
       "unsafe": false,
       "value": "691e35260f86eafc91292204b158a96c11b9a2be65944f908d8c88a7f0521560"
     },
+    "Parikh.ParseTree.frontier.eq_1": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "eb44cc91baa8e9456347952886e8643890dceb1f7d8037b569ce9304d965fcc0",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.ParseTree.frontier.eq_2": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "06dd1534476527ffab7af57ff558b8e81b927c372dad149ca90f3c8194259dc5",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.ParseTree.frontier.eq_3": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "4fd8bd6de1894fda70596d14cd9d64453320adc1ae504c28f0ca8b133d170c7e",
+      "unsafe": false,
+      "value": null
+    },
     "Parikh.ParseTree.frontier.eq_def": {
       "instance": false,
       "kind": "theorem",
@@ -2232,6 +2271,59 @@
       "partial": false,
       "reducibility": "opaque",
       "type": "a7010f37a9664edb4f7dcfaa09ee97e8e32e53ec77b9877976cb9f559f597341",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.ParseTree.frontier_holes": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "7343d4011e286de1d13b1dc5f625cd7fd4d06ea650a13123e25479aadc7a8314",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.ParseTree.frontier_holes.match_1": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [
+        "u_1",
+        "u_2",
+        "u_3"
+      ],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "dd1304a84746e20e2dbb248c489826ea8805d0af8999b466c4b17a586e22d330",
+      "unsafe": false,
+      "value": "784a4700c5e9c5389b7870498b519209dbcb21b244949a28d32bf0e988835bae"
+    },
+    "Parikh.ParseTree.frontier_of_holes_eq_nil": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "4c54219265aba3311620241c9be21e3b139a84503e19106f187de9a081fa6eb0",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.ParseTree.frontier_yield": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "cb24ed4dbb0dc472bfedbd6ff83404cd8f6c046a18c4a6015d7fc7f85fb703bf",
       "unsafe": false,
       "value": null
     },
@@ -2431,6 +2523,45 @@
       "type": "6c5076c0d14489e421c1a64a570327b87efdb0e1d403e98ea6a2b8b940122439",
       "unsafe": false,
       "value": "097daf1b3834e1275b286eafb15bf1addf57d4325cdbfda0ef6f77317c926625"
+    },
+    "Parikh.ParseTree.holes.eq_1": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "4366e0ac90319ae00c61caee29ce96c694d032b9f7c44c3b7b31cb6e1a2637a7",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.ParseTree.holes.eq_2": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "71510e01dadc23301c0e5bf6dafc21caf883420d6162ada73166727479338db0",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.ParseTree.holes.eq_3": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "0701382106f12c91418d136a1651d1a49f2a4c6fada38114c18d0c7e1a30c63c",
+      "unsafe": false,
+      "value": null
     },
     "Parikh.ParseTree.holes.eq_def": {
       "instance": false,
@@ -2974,6 +3105,45 @@
       "unsafe": false,
       "value": "c5ffda36a353543e30d0462d75a332b32f6a1c0b2097e3cedc7aa80ecd6551e4"
     },
+    "Parikh.ParseTree.root.eq_1": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "30515073393a4d0592e46d10aa77e90cab25ce645f9889f1673f9cc218b5c7f3",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.ParseTree.root.eq_2": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "e2757f5432beee3acdef6070a0b7986ebff63defdacb8624976f3afcd39a763b",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.ParseTree.root.eq_3": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "408e9c87c7dd18626d5a6b9aef8fcd01abba92cd71e10654dd5a40592d632ea5",
+      "unsafe": false,
+      "value": null
+    },
     "Parikh.ParseTree.root.match_1": {
       "instance": false,
       "kind": "definition",
@@ -3226,6 +3396,45 @@
       "unsafe": false,
       "value": "1af448bde8b8b2d18a3d6893e7859b4c31203007a1b78889a476d1e7b0c7a840"
     },
+    "Parikh.ParseTree.yield.eq_1": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "7197a8c0c58678c346939c0bbc279a41fa501dd6172f1fbd8c12c5485b1aa0bc",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.ParseTree.yield.eq_2": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "586aa78b291a21b0716bca945ed36539f964dc9a321ba904c214257f6df8a4e9",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.ParseTree.yield.eq_3": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "49b59c846b0543f60f1178edb5756794f6a2bd31d5adfba8ffca4a615d7e8ab7",
+      "unsafe": false,
+      "value": null
+    },
     "Parikh.ParseTree.yield.eq_def": {
       "instance": false,
       "kind": "theorem",
@@ -3344,6 +3553,55 @@
       "partial": false,
       "reducibility": "abbrev",
       "type": "2f5a7f4e696e2558e54e807bc5e509f21d183bc258a813832c42d1f1c19f821a",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.Valid.derives_frontier": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "0ad8d1214e5e9643263f2ec54b57ec76b08a6070a5f96bd7a028b550e1c04a52",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.Valid.frontier_step": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "a9441db73534365777f751dfb75d138d3390109fdc3d7c94c0efdb014d935f71",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.Valid.frontier_step._simp_1_4": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "f1197cbc62adbf978015bb0fb43984afddc325f6347e7af1b891465bad429dbb",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.Valid.frontier_step._simp_1_9": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "cf87dac1506d6846166e2a6c9067dd57487ede091462dfbf744f746c8351fca6",
       "unsafe": false,
       "value": null
     },
@@ -3661,6 +3919,18 @@
       "unsafe": false,
       "value": null
     },
+    "Parikh.derives_tree_frontier": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "66fd3e1b7b8b0614ef5915a6cd7df3e125fdf0440de4140f5168fc6fbbca7b06",
+      "unsafe": false,
+      "value": null
+    },
     "Parikh.entryBits": {
       "instance": false,
       "kind": "definition",
@@ -3936,6 +4206,19 @@
       "unsafe": false,
       "value": null
     },
+    "Parikh.rewrites_append_cases": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "023040324eb8295bb1002c903b3502cd86436560810c339971964c46b3ed4629",
+      "unsafe": false,
+      "value": null
+    },
     "Parikh.simple_height": {
       "instance": false,
       "kind": "theorem",
@@ -4073,6 +4356,48 @@
       "type": "147eb64cce0ba81f58b4a9c80318f6574d62f8e6e08f188c965a21c0ff44b804",
       "unsafe": false,
       "value": null
+    },
+    "_private.Parikh.GrammarTrees.0.Parikh.ParseTree.frontier_holes.match_1.eq_1": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2",
+        "u_3"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "bc53c63f6a022db9adc0beef842fcac8dc58f64ed926c07add523dca5aa86e8e",
+      "unsafe": false,
+      "value": null
+    },
+    "_private.Parikh.GrammarTrees.0.Parikh.ParseTree.frontier_holes.match_1.eq_2": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2",
+        "u_3"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "12b0bf77a719914cd6b3bdba085a97ed421910f4557d525596c3c83e8b1143e8",
+      "unsafe": false,
+      "value": null
+    },
+    "_private.Parikh.GrammarTrees.0.Parikh.ParseTree.frontier_holes.match_1.splitter": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [
+        "u_1",
+        "u_2",
+        "u_3"
+      ],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "dd1304a84746e20e2dbb248c489826ea8805d0af8999b466c4b17a586e22d330",
+      "unsafe": false,
+      "value": "9750d94286a43f464a4dd79ca31997ea95dadf7d71b41f9afba8f39da5d40cb2"
     },
     "_private.Parikh.GrammarTrees.0.Parikh.ParseTree.plug.match_1._arg_pusher": {
       "instance": false,
@@ -4217,6 +4542,45 @@
       "type": "110c3022242dbe92295bdff936bdc5da08f852d8f5afd2a1a5c22d6d7782fac3",
       "unsafe": false,
       "value": "6f9c85a3b80bfd722324cfec0a4e2d3aa3ce22a5ddba6f19de9a9a8720798641"
+    },
+    "_private.Parikh.GrammarTrees.0.Parikh.activeNonterminals.match_1.eq_1": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "32c7b5b21abe9717d7b509ee7f075fbb8c19e497e10ee80149d36f2cdb54d98c",
+      "unsafe": false,
+      "value": null
+    },
+    "_private.Parikh.GrammarTrees.0.Parikh.activeNonterminals.match_1.eq_2": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "ae46e895908c8c8937ec2658686507dbf3ddfc59d36af5912ff3ff5a851fedb9",
+      "unsafe": false,
+      "value": null
+    },
+    "_private.Parikh.GrammarTrees.0.Parikh.activeNonterminals.match_1.splitter": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "896f5073b959cbfd70667482ff3b0ced2c30b1d84c95f062b13807f2f354ef99",
+      "unsafe": false,
+      "value": "879b5d7124c88886c44fd594836ea14d0e746fc57bcc096e240ab7231fedb226"
     }
   },
   "pins": {

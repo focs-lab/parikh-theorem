@@ -5,15 +5,16 @@ vectors of a context-free language form a semilinear set. The development uses
 Mathlib's languages, context-free grammars, and semilinear sets, so its results
 can be used without translating to a separate language or grammar formalism.
 
-**The forward theorem, exact finite semilinear witnesses, and converse regular
-realization are proved.** Over a finite terminal alphabet, every semilinear set
+**The forward theorem, exact finite semilinear witnesses, converse regular
+realization, and regular-language specialization are proved.** Over a finite
+terminal alphabet, every semilinear set
 is the exact Parikh image of a Mathlib DFA-regular language, and every Mathlib
 grammar has a regular language with the same image. The derivation-tree proof
 supports arbitrary ambient nonterminal types. Witness and automaton existence
 are classical proofs.
 
-Regular-language specialization, executable construction with correctness
-proofs, and quantitative bounds remain in progress. All **4 remaining theorem
+Executable construction with correctness proofs and quantitative bounds
+remain in progress. All **3 remaining theorem
 holes** are tracked in the [proof-status ledger](docs/PROOF_STATUS.md).
 A successful build may still contain these explicitly tracked `sorry`
 obligations; algorithm implementations are also still outstanding.
@@ -63,9 +64,8 @@ with the required count vectors and use $u_b(u_{p_1})^*\cdots(u_{p_k})^*$;
 then take a finite union. Together the two directions imply that every
 context-free language has the same Parikh image as some regular language.
 Both directions and the equal-image regular realization are proved in Lean.
-The separate `regular_image` theorem, which specializes semilinearity to an
-arbitrary DFA-regular language, remains an obligation in the
-[ledger](docs/PROOF_STATUS.md).
+The separate `regular_image` theorem proves semilinearity for every DFA-regular
+language, using a right-linear Mathlib grammar with exactly the DFA's word language.
 
 ### Lean interface
 
@@ -170,6 +170,8 @@ flowchart TD
   Regular --> Converse
   Forward --> EqualImage[Equal-image regular language]
   Converse --> EqualImage
+  DFAGrammar[Exact DFA to grammar bridge] --> Specialization[Regular-language specialization]
+  Forward --> Specialization
   Forward --> Effective[Executable construction and bounds: in progress]
   Activation --> Effective
 ```
@@ -188,8 +190,10 @@ flowchart TD
 | [InsertionSequences.lean](Parikh/InsertionSequences.lean) | Root, completeness, weight, size, and support accounting over insertion sequences. |
 | [Activation.lean](Parikh/Activation.lean) | Abstract activation, first occurrences, positive multiplicities, their realization by trees, and the linear-component equality. |
 | [FiniteRepresentation.lean](Parikh/FiniteRepresentation.lean) | Finiteness of bases and bounded cycles, and semilinearity of their union. |
+| [GrammarImage.lean](Parikh/GrammarImage.lean) | Shared exact tree-image equality and forward semilinearity, keeping public declarations in `Statements.lean`. |
+| [DFAGrammar.lean](Parikh/DFAGrammar.lean) | A finite DFA as a Mathlib right-linear grammar, with proved equality of their word languages. |
 | [WordBlockAutomata.lean](Parikh/WordBlockAutomata.lean) | Finite continuation-language NFAs and DFA regularity for fixed-word and starred-word prefixes, reusing Mathlib determinization. |
-| [RegularRealization.lean](Parikh/RegularRealization.lean) | Representative words, component/witness expressions, exact images, DFA regularity, and the proved converse. The `regular_image` specialization remains open. |
+| [RegularRealization.lean](Parikh/RegularRealization.lean) | Representative words, component/witness expressions, exact images, DFA regularity, the converse, and regular-language specialization. |
 | [Construction.lean](Parikh/Construction.lean) | Finite grammar encoding, enumeration/compiler specifications, and quantitative size/bit bounds. Algorithm implementations and bound proofs remain in progress. |
 
 The remaining folders support reading, building, and reviewing the proofs:

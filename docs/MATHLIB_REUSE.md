@@ -86,6 +86,23 @@ construction reuses `positive_multiplicities`,
 `activationOrder_iff_insertionSequence`, and `InsertionSequence.accounting`.
 There is no new import, dependency, instance, or definition.
 
+The active-support proof reuses `Finset.mem_union_right`,
+`Finset.mem_biUnion`, `Finset.mem_singleton_self`, `List.mem_cons`,
+`List.mem_flatten`, and `List.mem_map`. It unfolds the existing recursion with
+Lean's `WellFounded.fix_eq`; this keeps previously published generated
+simplification declarations stable. No replacement statistics or active-alphabet
+definition is introduced. `Valid.support_active` is the stronger open-tree
+adapter needed to derive the complete-tree contract.
+
+For production height, core `List.max_mem` selects a child of maximum height,
+and `List.foldl_max_eq_max` connects that maximum to the frozen height definition.
+The two tree-specific path adapters reuse `List.mem_map`, `List.mem_flatMap`,
+and `List.map_eq_nil_iff`; no generic maximum theory is reproved.
+`List.toFinset_card_of_nodup` and `Finset.card_le_card` finish the simple-tree
+height bound. These facts are available through the existing imports. The only
+new import is the project's `ParseTreePaths` module; no new Mathlib dependency,
+instance, or finite-nonterminal assumption is needed.
+
 No trace-membership dependency, replacement semilinearity predicate, or generic
 automata-equivalence development is introduced. Re-audit Mathlib before adding
 helpers in each accepted proof milestone; these identified gaps are not permission

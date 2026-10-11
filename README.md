@@ -2,7 +2,8 @@
 
 An independent, reusable Lean 4 library for Parikh's theorem.
 **The statement skeleton is accepted. The counting/witness bridges, grammar/tree equivalence,
-plugging/insertion, and abstract activation laws are proved; Parikh's theorem itself remains in progress.**
+plugging/insertion, abstract activation laws, and activation's tree realization are proved;
+Parikh's theorem itself remains in progress.**
 
 Start with the [public statements](Parikh/Statements.lean),
 [proof plan](docs/PROOF_PLAN.md), and [proof-status ledger](docs/PROOF_STATUS.md).

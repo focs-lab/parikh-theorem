@@ -1461,6 +1461,43 @@
       "unsafe": false,
       "value": "eb27294abc6de4d31b23eb5814413a8337414bfdbb6780ae7b1fe18d475ccd77"
     },
+    "Parikh.ContextsActivatable.realize": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "c9f647d9e3bcf7053923b7e707ef5a232031e623bf06f3983f251bcc7e1a8570",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.ContextsActivatable.realize._simp_1_1": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "2f2d8528014799a83a39d1a536ea0f59a0fc005b944c4776d9f8c7c5f3bc5c99",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.ContextsActivatable.realize._simp_1_2": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u",
+        "v"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "99a49dbfd543a3a53afc2cda1d0ad5c41975e81cc19e66f9a2230fc208839c16",
+      "unsafe": false,
+      "value": null
+    },
     "Parikh.Cycle": {
       "instance": false,
       "kind": "definition",
@@ -1472,6 +1509,18 @@
       "type": "f55dde8b03a7f175dc026a1305d43d621e620835ab140a613ef6355eef6e4293",
       "unsafe": false,
       "value": "fe76294afd7e3b36329c932020f39ba33b81661b48625f2c40fd5da23c1da6c4"
+    },
+    "Parikh.Cycle.root_mem_support": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "e668515ef99641f6b41c4249af880f735a6f41a97fb83d9a44e893440c4ca85c",
+      "unsafe": false,
+      "value": null
     },
     "Parikh.EncodedGrammar": {
       "instance": false,
@@ -1956,6 +2005,67 @@
       "partial": false,
       "reducibility": "opaque",
       "type": "75f4f89044cfd19ed7370a6e28ec62b568f3f3cd30070b2ae247a742bb60496a",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.InsertionSequence.accounting": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "ce1783b7fffb9d23fea321f763b1ebd9bfedd1e71a092bdaa8a0a36c82cf786c",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.InsertionSequence.accounting._proof_1_1": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "5588371c89bb4bd73b724dd89ac705fdb414e898242c41a2357445e1eea5a024",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.InsertionSequence.accounting._simp_1_2": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "7124c589a0abbfc95d15b0ca861567926953285be4bcbe77f7b7bc47567bb213",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.InsertionSequence.accounting._simp_1_3": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u",
+        "v"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "99a49dbfd543a3a53afc2cda1d0ad5c41975e81cc19e66f9a2230fc208839c16",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.InsertionSequence.accounting._simp_1_4": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "ef5554f72fdbc417b967a89ac8fee92d025473b33c1cd15fe303f15925391c91",
       "unsafe": false,
       "value": null
     },
@@ -4426,6 +4536,18 @@
       "partial": false,
       "reducibility": "opaque",
       "type": "dbbcf5a4590f6a78fab3f44225c62aa2ecbcd0a36438bf8cea628424c026be93",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.activationOrder_iff_insertionSequence": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "e5fee9bd8cb15de670f244d2794c174bb137635efd98361b3bda935ed429c3a8",
       "unsafe": false,
       "value": null
     },

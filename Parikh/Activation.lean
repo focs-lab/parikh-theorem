@@ -1,4 +1,5 @@
 import Parikh.Decomposition
+import Parikh.InsertionSequences
 
 /-! Activation is independent of grammar syntax. The added sets and required
 labels remain indexed by operations, even when their eventual weights coincide.
@@ -137,6 +138,37 @@ theorem positive_multiplicities {N C : Type*} [DecidableEq C]
     have hpositive := hm c hc
     omega
 
+/-- With matching cycles, enabled support transitions are exactly realizable
+tree insertion sequences (`lem:activation-realize`). Repeated cycles are allowed. -/
+theorem activationOrder_iff_insertionSequence {T : Type*} {g : ContextFreeGrammar T}
+    (roots : ParseTree T g.NT → g.NT) (B : ParseTree T g.NT)
+    (Cs : List (ParseTree T g.NT)) (hB : Complete g B)
+    (hCs : ∀ C ∈ Cs, Cycle g C (roots C)) :
+    ActivationOrder roots ParseTree.support B.support Cs ↔
+      ∃ t, InsertionSequence g B Cs t := by
+  classical
+  induction Cs generalizing B with
+  | nil => exact ⟨fun _ => ⟨B, .nil B⟩, fun _ => True.intro⟩
+  | cons C Cs ih =>
+    have hC := hCs C (by simp)
+    have htail : ∀ D ∈ Cs, Cycle g D (roots D) :=
+      fun D hD => hCs D (List.mem_cons_of_mem C hD)
+    constructor
+    · intro horder
+      obtain ⟨next, hstep⟩ := (insertion_enabled g B C (roots C) hB hC).mpr horder.1
+      have hsupport := (insertion_accounting g B C next hstep).2.2.2
+      have hnext : ActivationOrder roots ParseTree.support next.support Cs := by
+        simpa only [hsupport] using horder.2
+      obtain ⟨t, hseq⟩ := (ih next hstep.2.1 htail).mp hnext
+      exact ⟨t, .cons hstep hseq⟩
+    · rintro ⟨t, hseq⟩
+      cases hseq with
+      | @cons _ _ next _ _ hstep hrest =>
+        refine ⟨(insertion_enabled g B C (roots C) hB hC).mp ⟨next, hstep⟩, ?_⟩
+        have hsupport := (insertion_accounting g B C next hstep).2.2.2
+        rw [← hsupport]
+        exact (ih next hstep.2.1 htail).mpr ⟨t, hrest⟩
+
 /-- A decidable finite-search implementation is a future value of this interface.
 `lem:activation-test`: no choice of an enabled operation can cause a false rejection.
 -/
@@ -154,6 +186,38 @@ def ContextsActivatable {T : Type*} (g : ContextFreeGrammar T)
     ∃ roots : ParseTree T g.NT → g.NT,
       (∀ C ∈ D, Cycle g C (roots C)) ∧
       ActivationOrder roots ParseTree.support B.support order
+
+/-- Introduce each selected context once, with exact accounting and every
+selected context enabled afterwards (`lem:activation-realize`, `eq:activated-wt/supp`). -/
+theorem ContextsActivatable.realize {T : Type*} [DecidableEq T]
+    {g : ContextFreeGrammar T} {B : ParseTree T g.NT} {D : Finset (ParseTree T g.NT)}
+    (hD : ContextsActivatable g B D) (hB : Complete g B) :
+    ∃ order t, order.Nodup ∧ (∀ C, C ∈ order ↔ C ∈ D) ∧
+      InsertionSequence g B order t ∧ Complete g t ∧ t.root = B.root ∧
+      t.weight = B.weight + ∑ C ∈ D, C.weight ∧
+      t.support = B.support ∪ ⋃ C ∈ D, C.support ∧
+      ∀ C ∈ D, ∃ t', Inserts g t C t' := by
+  classical
+  obtain ⟨order, hnd, hmem, roots, hcycles, horder⟩ := hD
+  obtain ⟨t, hseq⟩ := (activationOrder_iff_insertionSequence roots B order hB
+    (fun C hC => hcycles C ((hmem C).mp hC))).mp horder
+  obtain ⟨ht, hroot, hweight, _, hsupport⟩ := hseq.accounting hB
+  have hset : order.toFinset = D := by
+    ext C
+    simpa only [List.mem_toFinset] using hmem C
+  have hsum : (order.map ParseTree.weight).sum = ∑ C ∈ D, C.weight := by
+    rw [← hset]
+    exact (List.sum_toFinset ParseTree.weight hnd).symm
+  have hsupportD : t.support = B.support ∪ ⋃ C ∈ D, C.support := by
+    simpa only [hmem] using hsupport
+  refine ⟨order, t, hnd, hmem, hseq, ht, hroot, ?_, hsupportD, ?_⟩
+  · simpa only [hsum] using hweight
+  · intro C hC
+    apply (insertion_enabled g t C (roots C) ht (hcycles C hC)).mpr
+    rw [hsupportD]
+    apply Or.inr
+    simp only [Set.mem_iUnion]
+    exact ⟨C, hC, (hcycles C hC).root_mem_support⟩
 
 /-- Every selected context is paid once in the base (`eq:component-base`). -/
 noncomputable def contextComponent {T : Type*} [DecidableEq T]

@@ -179,11 +179,35 @@ theorem bounded_cut (g : ContextFreeGrammar T) (t : ParseTree T g.NT)
     rw [hEplug] at hbefore
     omega
 
+/-- Concatenate insertion sequences, retaining the ordered list of contexts. -/
+theorem InsertionSequence.append {g : ContextFreeGrammar T}
+    {B middle t : ParseTree T g.NT} {Cs Ds : List (ParseTree T g.NT)}
+    (first : InsertionSequence g B Cs middle)
+    (second : InsertionSequence g middle Ds t) :
+    InsertionSequence g B (Cs ++ Ds) t := by
+  induction first with
+  | nil _ => simpa only [List.nil_append] using second
+  | cons step _ ih => exact .cons step (ih second)
+
 /-- Exact reconstruction by strong induction on production count (`thm:decomposition`). -/
 theorem decomposition (g : ContextFreeGrammar T) (t : ParseTree T g.NT)
     (ht : Complete g t) :
     ∃ B Cs, Complete g B ∧ B.root = t.root ∧ B.Simple ∧
       (∀ C ∈ Cs, IsBoundedCycle g C) ∧ InsertionSequence g B Cs t := by
-  sorry
+  classical
+  induction hn : t.productionSize using Nat.strong_induction_on generalizing t with
+  | h n ih =>
+    by_cases hs : t.Simple
+    · exact ⟨t, [], ht, rfl, hs, by simp, .nil t⟩
+    · obtain ⟨smaller, C, hsmaller, hroot, hbounded, hstep, hsize⟩ :=
+        bounded_cut g t ht hs
+      obtain ⟨B, Cs, hB, hBroot, hsimple, hCs, hseq⟩ :=
+        ih smaller.productionSize (hsize.trans_eq hn) smaller hsmaller rfl
+      refine ⟨B, Cs ++ [C], hB, hBroot.trans hroot, hsimple, ?_, ?_⟩
+      · intro D hD
+        rcases List.mem_append.mp hD with hD | hD
+        · exact hCs D hD
+        · exact (List.mem_singleton.mp hD) ▸ hbounded
+      · exact hseq.append (.cons hstep (.nil t))
 
 end Parikh

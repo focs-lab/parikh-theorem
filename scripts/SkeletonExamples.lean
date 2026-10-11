@@ -715,4 +715,42 @@ example : (activeNonterminals insertionGrammar).card + 1 < tallSiblingTree.heigh
     change _ = (0 : ℕ)
     omega
 
+/-! Exact decomposition also applies to non-start roots over infinite
+nonterminals. A silent unit chain needs contexts despite its empty yield. -/
+
+example : ∃ B Cs, Complete insertionGrammar B ∧ B.root = .nonterminal 1 ∧
+    B.Simple ∧ B.weight = 0 ∧ (∀ C ∈ Cs, IsBoundedCycle insertionGrammar C) ∧
+    Cs ≠ [] ∧ InsertionSequence insertionGrammar B Cs tallSilentChild ∧
+    tallSilentChild.productionSize = B.productionSize + (Cs.map ParseTree.productionSize).sum := by
+  have he : Complete insertionGrammar emptyChild :=
+    ⟨Valid.node (g := insertionGrammar) _ [] (by simp [insertionGrammar])
+      (by simp) (by simp [emptyRule]), by simp [emptyChild, ParseTree.holes]⟩
+  have h1 := plugging insertionGrammar silentCycle emptyChild 1 insertion_data.2.1 he rfl
+  have h2 := plugging insertionGrammar silentCycle (silentCycle.plug emptyChild) 1
+    insertion_data.2.1 h1.1 (h1.2.1.trans insertion_data.2.2.1)
+  have h3 := plugging insertionGrammar silentCycle
+    (silentCycle.plug (silentCycle.plug emptyChild)) 1 insertion_data.2.1 h2.1
+    (h2.2.1.trans insertion_data.2.2.1)
+  have ht : Complete insertionGrammar tallSilentChild := by
+    simpa [tallSilentChild, silentCycle, ParseTree.plug] using h3.1
+  have hs : ¬ tallSilentChild.Simple := by
+    simp [tallSilentChild, emptyChild, ParseTree.Simple, ParseTree.labelPaths, loopRule, emptyRule]
+  obtain ⟨B, Cs, hB, hr, hsimple, hbounded, hseq⟩ :=
+    decomposition insertionGrammar tallSilentChild ht
+  have hn : Cs ≠ [] := by
+    intro hnil
+    subst Cs
+    cases hseq
+    exact hs hsimple
+  have ha := hseq.accounting hB
+  have hz : tallSilentChild.weight = 0 := by
+    ext a
+    simp [tallSilentChild, emptyChild, ParseTree.weight, counts, ParseTree.yield]
+  refine ⟨B, Cs, hB, hr, hsimple, ?_, hbounded, hn, hseq, ha.2.2.2.1⟩
+  ext a
+  have hzero : B.weight a + (Cs.map ParseTree.weight).sum a = 0 :=
+    (congrFun ha.2.2.1 a).symm.trans (congrFun hz a)
+  change _ = (0 : ℕ)
+  omega
+
 end SkeletonExamples

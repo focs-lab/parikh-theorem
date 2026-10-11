@@ -2106,6 +2106,18 @@
       "unsafe": false,
       "value": null
     },
+    "Parikh.InsertionSequence.append": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "7854746c1e3dceb138c7b99a12c095325f645478179e6848370be53c7d4025af",
+      "unsafe": false,
+      "value": null
+    },
     "Parikh.InsertionSequence.below": {
       "instance": false,
       "kind": "inductive",

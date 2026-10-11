@@ -128,6 +128,16 @@ for this project's ordered production-tree syntax. Five immediately proved
 structural lemmas suffice; no new syntax, statistic, instance, Mathlib import,
 finite-nonterminal hypothesis, or dependency revision is introduced.
 
+Exact decomposition reuses Mathlib's `Nat.strong_induction_on`, generalizing
+over the tree rather than its root label. The already proved `bounded_cut`
+supplies strict decrease in production-node count and exact reinsertion.
+Core `List.mem_append` and `List.mem_singleton` preserve the bounded-cycle
+property when appending that final context. Mathlib's generic relation closure
+has transitivity, but does not record the context list in this project's
+`InsertionSequence` relation. One thin `InsertionSequence.append` adapter proves
+concatenation by induction on the existing constructors. No new syntax,
+induction principle, statistics, imports, instances, or dependency pins are needed.
+
 No trace-membership dependency, replacement semilinearity predicate, or generic
 automata-equivalence development is introduced. Re-audit Mathlib before adding
 helpers in each accepted proof milestone; these identified gaps are not permission

@@ -4,14 +4,15 @@ An independent, reusable Lean 4 library for Parikh's theorem.
 **The statement skeleton is accepted. The counting/witness bridges, grammar/tree equivalence,
 plugging/insertion, abstract activation laws, activation's tree realization, the exact
 linear-component equality, active-support containment, simple-tree height bound,
-bounded active-open-tree finiteness, and bounded removable-context extraction are proved;
+bounded active-open-tree finiteness, bounded removable-context extraction, and exact
+tree decomposition are proved;
 Parikh's theorem itself remains in progress.**
 
 Start with the [public statements](Parikh/Statements.lean),
 [proof plan](docs/PROOF_PLAN.md), and [proof-status ledger](docs/PROOF_STATUS.md).
 The [build instructions](docs/BUILD.md), [Mathlib reuse audit](docs/MATHLIB_REUSE.md),
 and [contract checks](docs/CONTRACT_CHECKS.md) describe the pinned environment and
-the incremental proof workflow. All 13 remaining theorem holes are explicitly tracked.
+the incremental proof workflow. All 12 remaining theorem holes are explicitly tracked.
 
 ## References and agent handoff
 

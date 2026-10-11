@@ -1,5 +1,6 @@
 import Parikh.Construction
 import Parikh.FiniteRepresentation
+import Parikh.GrammarImage
 import Parikh.RegularRealization
 
 /-!
@@ -11,8 +12,9 @@ Start with `contextFree_image` for a language known to be context-free, or
 same image, and `regular_realization` supplies a DFA-regular language with it.
 
 The proof assembles earlier modules through `treeRepresentation_eq`: the union
-of activatable tree components is exactly the grammar image. One inclusion
-reconstructs words from components; the other decomposes a derivation tree.
+of activatable tree components is exactly the grammar image. Its proof and
+semilinearity are shared in `GrammarImage.lean`, so regular-language specialization
+can reuse them without an import cycle.
 The public results do not require a finite ambient nonterminal type.
 
 Witness and automaton existence are classical. Executable construction and the
@@ -26,37 +28,14 @@ variable {T : Type*}
 /-- The exact tree/context union equals the Mathlib grammar image (`thm:main`). -/
 theorem treeRepresentation_eq [Finite T] [DecidableEq T] (g : ContextFreeGrammar T) :
     treeRepresentation g = image g.language := by
-  classical
-  ext v
-  constructor
-  · -- Realize a component vector by insertions, then read the resulting word.
-    rintro ⟨B, D, hB, _, hD, hv⟩
-    rw [← one_linear g B D hB.1 hD] at hv
-    obtain ⟨t, Cs, hseq, _, hweight⟩ := hv
-    obtain ⟨ht, hroot, _, _, _⟩ := hseq.accounting hB.1
-    refine ⟨t.yield, ?_, hweight⟩
-    exact (g.mem_language_iff t.yield).mpr
-      ((derives_iff_tree g g.initial t.yield).mpr
-        ⟨t, ht, hroot.trans hB.2.1, rfl⟩)
-  · -- Decompose a word's derivation tree and collect the contexts it uses.
-    rintro ⟨w, hw, rfl⟩
-    obtain ⟨t, ht, hroot, hyield⟩ :=
-      (derives_iff_tree g g.initial w).mp ((g.mem_language_iff w).mp hw)
-    obtain ⟨B, Cs, hB, hBroot, hsimple, hbounded, hseq⟩ := decomposition g t ht
-    have hD := hseq.contextsActivatable hB
-    refine ⟨B, Cs.toFinset, ⟨hB, hBroot.trans hroot, hsimple⟩,
-      fun C hC => hbounded C (List.mem_toFinset.mp hC), hD, ?_⟩
-    rw [← one_linear g B Cs.toFinset hB hD]
-    exact ⟨t, Cs, hseq, fun C => List.mem_toFinset.symm,
-      by simp only [ParseTree.weight, hyield]⟩
+  exact (treeRepresentation_correct g).1
 
 /-- Forward Parikh theorem for Mathlib grammars (`thm:parikh-statement`).
 No finiteness or decidable-equality assumption is imposed on `g.NT`.
 -/
 theorem grammar_image [Finite T] [DecidableEq T] (g : ContextFreeGrammar T) :
     IsSemilinearSet (image g.language) := by
-  rw [← treeRepresentation_eq g]
-  exact treeRepresentation_isSemilinearSet g
+  exact (treeRepresentation_correct g).2
 
 /-- A finite indexed witness with exact denotation, not merely containment (`thm:main`). -/
 theorem grammar_witness [Finite T] [DecidableEq T] (g : ContextFreeGrammar T) :

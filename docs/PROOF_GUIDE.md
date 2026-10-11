@@ -171,8 +171,9 @@ facts with `one_linear` to establish semilinearity.
 
 ## 7. The equality has two directions
 
-`treeRepresentation_eq` in [Statements.lean](../Parikh/Statements.lean) joins
-the argument together:
+`treeRepresentation_correct` in [GrammarImage.lean](../Parikh/GrammarImage.lean)
+joins the argument together. Its equality is exposed as `treeRepresentation_eq`
+in [Statements.lean](../Parikh/Statements.lean):
 
 - Given a vector in a component, activate its contexts, insert the requested
   extra copies, and read the resulting complete tree. Its word belongs to the
@@ -204,6 +205,21 @@ predicate and proves `converse`.
 Combining the converse with the forward theorem gives `regular_realization`:
 every grammar has a regular language with the same letter counts. The words
 need not occur in the same order in those two languages.
+
+## 9. Why regular languages also have semilinear images
+
+The converse starts from a semilinear set and produces a regular language.
+The separate theorem `regular_image` starts with any DFA-regular language and
+proves that its image is semilinear. To reuse the forward theorem, interpret
+the DFA as a right-linear grammar.
+
+Each state becomes a nonterminal. A transition $q \xrightarrow{a} q'$ becomes
+$q\to a q'$, and an accepting state has an empty production $q\to\varepsilon$.
+A partial derivation records the letters already read, followed by the current
+state. It can finish precisely when that state is accepting.
+[DFAGrammar.lean](../Parikh/DFAGrammar.lean) proves that the grammar and DFA accept
+exactly the same words. The shared forward result in `GrammarImage.lean` then
+gives semilinearity, and `RegularRealization.lean` exposes `regular_image`.
 
 The existence proofs use classical reasoning. Computing a witness from a finite
 grammar encoding, together with proved resource bounds, is a further obligation.

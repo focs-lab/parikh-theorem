@@ -1,19 +1,19 @@
 # Parikh theorem
 
 An independent, reusable Lean 4 library for Parikh's theorem.
-**The forward Parikh theorem is proved for Mathlib grammars and context-free
-languages, including existence of an exact finite semilinear witness.**
-The derivation-tree proof supports arbitrary ambient nonterminal types.
-The constructed witness expressions now have proved exact Parikh images.
-DFA regularity, converse/regular realization, executable construction with
-correctness proofs, and quantitative bounds remain in progress. Witness
-existence is a classical proof.
+**The forward Parikh theorem, exact finite semilinear witnesses, and converse
+regular realization are proved.** For finite terminal alphabets, every semilinear
+set is the exact Parikh image of a Mathlib DFA-regular language, and every Mathlib
+grammar has a regular language with the same image. The derivation-tree proof supports
+arbitrary ambient nonterminal types. Regular-language specialization, executable
+construction with correctness proofs, and quantitative bounds remain in progress.
+Witness and automaton existence are classical proofs.
 
 Start with the [public statements](Parikh/Statements.lean),
 [proof plan](docs/PROOF_PLAN.md), and [proof-status ledger](docs/PROOF_STATUS.md).
 The [build instructions](docs/BUILD.md), [Mathlib reuse audit](docs/MATHLIB_REUSE.md),
 and [contract checks](docs/CONTRACT_CHECKS.md) describe the pinned environment and
-the incremental proof workflow. All 7 remaining theorem holes are explicitly tracked.
+the incremental proof workflow. All 4 remaining theorem holes are explicitly tracked.
 
 ## References and agent handoff
 

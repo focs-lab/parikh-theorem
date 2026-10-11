@@ -852,4 +852,41 @@ example : counts [true, true, false, false] ∈
     cases a <;> decide
   · decide
 
+/-! DFA regularity preserves the actual word language, including epsilon and
+empty unions; equal Parikh counts still do not admit every letter order. -/
+
+example : (witnessExpression emptyAlphabet []).matches'.IsRegular ∧
+    (witnessExpression emptyAlphabet [⟨0, [0, 0]⟩]).matches'.IsRegular ∧
+    [] ∈ (witnessExpression emptyAlphabet [⟨0, [0, 0]⟩]).matches' ∧
+    [] ∉ (witnessExpression emptyAlphabet []).matches' := by
+  exact ⟨witnessExpression_regular _ _, witnessExpression_regular _ _,
+    by decide, by decide⟩
+
+example : ∃ σ : Type, ∃ _ : Fintype σ, ∃ M : DFA Bool σ,
+    M.accepts = (witnessExpression boolAlphabet [pairedComponent]).matches' ∧
+      [false, true, false, true] ∈ M.accepts ∧
+      [true, true, false, false] ∉ M.accepts := by
+  obtain ⟨σ, hσ, M, hM⟩ := (witnessExpression_correct boolAlphabet [pairedComponent]).2
+  refine ⟨σ, hσ, M, hM, ?_, ?_⟩
+  · rw [hM]
+    decide
+  · rw [hM]
+    decide
+
+-- Equal-image realization of an unproductive grammar is actually empty,
+-- even with infinitely many ambient nonterminals.
+example : ∃ R : Language Bool, R.IsRegular ∧ R = 0 := by
+  obtain ⟨R, hR, himage⟩ := regular_realization noProductionsGrammar
+  have hl := ContextFreeGrammar.language_eq_zero_of_forall_input_ne_initial
+    (g := noProductionsGrammar) (by simp [noProductionsGrammar])
+  refine ⟨R, hR, ?_⟩
+  ext w
+  constructor
+  · intro hw
+    have hcounts : counts w ∈ image R := ⟨w, hw, rfl⟩
+    rw [himage, hl] at hcounts
+    simp [image, Language.zero_def] at hcounts
+  · intro hw
+    exact (Language.notMem_zero _ hw).elim
+
 end SkeletonExamples

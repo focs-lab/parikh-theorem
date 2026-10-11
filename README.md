@@ -1,31 +1,222 @@
-# Parikh theorem
+# Parikh's theorem in Lean
 
-An independent, reusable Lean 4 library for Parikh's theorem.
-**The forward Parikh theorem is proved for Mathlib grammars and context-free
-languages, including existence of an exact finite semilinear witness.**
-The derivation-tree proof supports arbitrary ambient nonterminal types.
-The constructed witness expressions now have proved exact Parikh images.
-DFA regularity, converse/regular realization, executable construction with
-correctness proofs, and quantitative bounds remain in progress. Witness
-existence is a classical proof.
+An independent Lean 4 library formalizing **Parikh's theorem**: the letter-count
+vectors of a context-free language form a semilinear set. The development uses
+Mathlib's languages, context-free grammars, and semilinear sets, so its results
+can be used without translating to a separate language or grammar formalism.
 
-Start with the [public statements](Parikh/Statements.lean),
-[proof plan](docs/PROOF_PLAN.md), and [proof-status ledger](docs/PROOF_STATUS.md).
-The [build instructions](docs/BUILD.md), [Mathlib reuse audit](docs/MATHLIB_REUSE.md),
-and [contract checks](docs/CONTRACT_CHECKS.md) describe the pinned environment and
-the incremental proof workflow. All 7 remaining theorem holes are explicitly tracked.
+**The forward theorem and existence of an exact finite semilinear witness are
+proved.** The library also constructs regular expressions with those exact
+Parikh images. The remaining regular-language results, executable construction,
+and quantitative bounds are tracked in the [proof-status ledger](docs/PROOF_STATUS.md).
+A successful build may still contain explicitly tracked `sorry` obligations;
+completion of the forward theorem does not mean every planned result is finished.
 
-## References and agent handoff
+Start with the [main statements](Parikh/Statements.lean), the
+[mathematical proof (PDF)](reference/parikh_theorem.pdf), or the
+[module guide](#lean-architecture) below.
 
-- [Mathematical proof (PDF)](reference/parikh_theorem.pdf)
-- [Mathematical proof (LaTeX)](reference/parikh_theorem.tex)
-- [Codex formalization prompt](docs/CODEX_FORMALIZATION_PROMPT.md)
-- [Reference build instructions](reference/README.md)
+## The theorem
 
-Ask the Codex agent to read the formalization prompt. Its first deliverable is a
-readable, compiling statement-skeleton PR for owner review. In Codex Cloud, use
-the cloud-specific environment/authentication checks in the build instructions.
-After acceptance, each increment fills in one part of the proof without changing
-the accepted statements and is published as a separate, potentially stacked PR.
+Let $\Sigma$ be a finite alphabet. For a word $w\in\Sigma^*$, its **Parikh vector**
+$\Psi(w)\in\mathbb{N}^{\Sigma}$ records the number of occurrences of each letter:
 
-The library targets the full context-free theorem, finite semilinear witnesses, the converse regular realization, effective construction, and quantitative bounds. It does not depend on the trace-membership project.
+$$
+\Psi(w)(a)=|w|_a,
+\qquad
+\Psi(L)=\{\Psi(w)\mid w\in L\}.
+$$
+
+A set is **linear** if it consists of one base vector plus arbitrary natural
+multiples of finitely many period vectors. It is **semilinear** if it is a finite
+union of linear sets.
+
+**Parikh's theorem.** For every context-free language $L\subseteq\Sigma^*$, there
+exist $m\in\mathbb{N}$ and, for each $1\leq j\leq m$, a base
+$b_j\in\mathbb{N}^{\Sigma}$ and finitely many periods
+$p_{j,1},\ldots,p_{j,k_j}\in\mathbb{N}^{\Sigma}$ such that
+
+$$
+\Psi(L)=\bigcup_{j=1}^{m}
+\left\{b_j+\sum_{i=1}^{k_j}n_i p_{j,i}
+\;\middle|\;n_1,\ldots,n_{k_j}\in\mathbb{N}\right\}.
+$$
+
+Here $\mathbb{N}$ includes zero. An empty union represents the empty set, and a
+component with no periods is a singleton. This is an exact equality: every
+represented vector is realized by a word in $L$. The theorem is due to
+[Rohit J. Parikh (1966)](https://doi.org/10.1145/321356.321364).
+
+For example, $L=\{a^n b^n\mid n\in\mathbb{N}\}$ has the linear Parikh image
+$\{(0,0)+n(1,1)\mid n\in\mathbb{N}\}$. The regular language $(ab)^*$ has the same
+image, although its words have a different order of letters.
+
+The converse says that **every semilinear set is the Parikh image of a regular
+language**. For a linear component, choose words $u_b,u_{p_1},\ldots,u_{p_k}$
+with the required count vectors and use $u_b(u_{p_1})^*\cdots(u_{p_k})^*$;
+then take a finite union. Together the two directions imply that every
+context-free language has the same Parikh image as some regular language.
+The [ledger](docs/PROOF_STATUS.md) distinguishes the proved expression-image
+identities from the remaining DFA-regularity obligations.
+
+### Lean interface
+
+Import the library and apply its language-level theorem:
+
+```lean
+import Parikh
+
+example {T : Type*} [Finite T] [DecidableEq T]
+    (L : Language T) (hL : L.IsContextFree) :
+    IsSemilinearSet (Parikh.image L) :=
+  Parikh.contextFree_image L hL
+```
+
+`Parikh.Vector T` is `T → ℕ`, `counts w` counts letters, and
+`Parikh.image L` is `counts '' L` (the set image under counting).
+`Component T` stores a base and a finite list of periods; `Witness T` is a finite
+list of components with an exact set-valued `denotation`.
+
+The grammar-level results are `Parikh.grammar_image` and
+`Parikh.grammar_witness`. The latter returns an existential witness `W` satisfying
+`W.denotation = Parikh.image g.language`. They impose no finiteness or decidable
+equality assumption on the ambient nonterminal type `g.NT`: the finite grammar
+rules determine the relevant nonterminals. Witness existence is currently a
+classical proof; it is separate from an executable grammar-to-witness compiler.
+
+## Proof approach and attribution
+
+The mechanization follows the repository's
+[proof exposition](reference/parikh_theorem.tex), an adaptation of the
+**derivation-tree decomposition** approach. Its sources include
+[Sin'ya's presentation of Takahashi's method (2019)](https://arxiv.org/abs/1909.09393)
+and [Rubtsov's derivation-tree proof (2022)](https://arxiv.org/abs/2301.00047).
+These provide the lineage for decomposing trees and repeatedly inserting
+auxiliary trees; this is not a line-by-line formalization of Parikh's original
+paper. Sin'ya attributes the decomposition method to Takahashi's 1970 thesis.
+
+The repository exposition makes the bounded context family, activation condition,
+and size bounds explicit. Rubtsov's paper is a related, explicitly
+nonconstructive presentation; it is not the source of an executable compiler
+claim here. The Lean development separates the semantic proof from its planned
+algorithmic implementation.
+
+The forward argument has four parts:
+
+1. **Represent derivations by trees.** A `ParseTree` may contain nonterminal holes.
+   `Valid` checks its grammar productions, and `Complete` additionally requires
+   no holes. A cycle context has one hole with the same nonterminal as its root.
+2. **Decompose a complete tree.** Repeatedly cut a context from a minimal
+   non-simple subtree. This bounds the removed context's height and strictly
+   decreases the production-node count, even for empty productions or silent
+   cycles. Reconstruction starts from a simple complete tree.
+3. **Determine which contexts can coexist.** Insertion preserves existing
+   nonterminal support. First occurrences give an activation order; after each
+   chosen context has been used once, further multiplicities are independent.
+4. **Take a finite union of linear components.** For a base tree $B$ and an
+   activatable context set $D$, the component is
+
+   $$
+   \operatorname{wt}(B)+\sum_{C\in D}\operatorname{wt}(C)
+   +\left\{\sum_{C\in D}k_C\operatorname{wt}(C)
+   \;\middle|\;k_C\in\mathbb{N}\right\}.
+   $$
+
+   The first sum pays for one occurrence of every chosen context. Bounded tree
+   families make the union finite; exact reconstruction proves both inclusions.
+
+The [proof plan](docs/PROOF_PLAN.md) maps the exposition's theorem labels to Lean
+declarations. The [Mathlib reuse audit](docs/MATHLIB_REUSE.md) records existing
+library results used for counting, additive closure, finite unions, grammars,
+and automata.
+
+## Lean architecture
+
+All project declarations live in namespace `Parikh`. The proof is organized
+around the mathematical dependencies below; the arrows summarize proof flow,
+not every Lean import.
+
+```mermaid
+flowchart TD
+  Counting[Counting and semilinear witnesses] --> Trees[Grammar and tree semantics]
+  Trees --> Surgery[Plugging and subtree replacement]
+  Trees --> Finiteness[Paths and bounded tree families]
+  Surgery --> Decomposition[Bounded cut and exact decomposition]
+  Finiteness --> Decomposition
+  Surgery --> Activation[Insertion sequences and activation]
+  Decomposition --> Forward[Exact tree representation and forward theorem]
+  Activation --> Forward
+  Finiteness --> Forward
+  Counting --> Forward
+  Counting --> Regular[Regular-expression realization]
+  Forward --> Effective[Executable construction and bounds: in progress]
+  Activation --> Effective
+```
+
+| File | What it contains |
+| --- | --- |
+| [Parikh.lean](Parikh.lean) | Public import entry point. |
+| [Statements.lean](Parikh/Statements.lean) | Main grammar/language theorems and exact tree-image equality. Start here to use the library. |
+| [Counting.lean](Parikh/Counting.lean) | Parikh vectors, component/witness denotations, counting laws, and both bridges to Mathlib semilinearity. |
+| [GrammarTrees.lean](Parikh/GrammarTrees.lean) | `ParseTree`, validity, completeness, contexts, statistics, grammar/tree equivalence, and bounded-height finiteness. |
+| [TreePlugging.lean](Parikh/TreePlugging.lean) | Validity, size, terminal counts, and support when holes are filled. |
+| [TreeReplacement.lean](Parikh/TreeReplacement.lean) | Positions, matching subtree occurrences, and extraction of one-hole contexts. |
+| [ParseTreePaths.lean](Parikh/ParseTreePaths.lean) | Production-label paths, support, and the longest-path characterization of height. |
+| [BoundedCutSupport.lean](Parikh/BoundedCutSupport.lean) | Minimal non-simple subtrees, reversible replacement, and height/size facts for cutting. |
+| [Decomposition.lean](Parikh/Decomposition.lean) | Insertion, simple-tree height, the bounded-cut lemma, and exact decomposition. |
+| [InsertionSequences.lean](Parikh/InsertionSequences.lean) | Root, completeness, weight, size, and support accounting over insertion sequences. |
+| [Activation.lean](Parikh/Activation.lean) | Abstract activation, first occurrences, positive multiplicities, their realization by trees, and the linear-component equality. |
+| [FiniteRepresentation.lean](Parikh/FiniteRepresentation.lean) | Finiteness of bases and bounded cycles, and semilinearity of their union. |
+| [RegularRealization.lean](Parikh/RegularRealization.lean) | Representative words, regular expressions for components/witnesses, exact images, and converse/regular-language contracts. |
+| [Construction.lean](Parikh/Construction.lean) | Finite grammar encoding, enumeration/compiler specifications, and quantitative size/bit bounds. Algorithm implementations and bound proofs remain in progress. |
+
+The remaining folders support reading, building, and reviewing the proofs:
+
+| Path | Purpose |
+| --- | --- |
+| [reference/](reference/) | The mathematical exposition in LaTeX and PDF, with reproduction instructions. |
+| [docs/](docs/) | Detailed proof plan, status ledger, build guide, Mathlib reuse notes, contract-audit guide, and agent handoff. |
+| [docs/contracts/](docs/contracts/) | Accepted baseline, append-only declaration fingerprints, and explicit unresolved-obligation lists. |
+| [scripts/ContractAudit.lean](scripts/ContractAudit.lean) | Exports elaborated declaration contracts and axiom dependencies from Lean. |
+| [scripts/check-contracts.py](scripts/check-contracts.py) | Checks frozen contracts and both direct and transitive proof obligations. |
+| [scripts/SkeletonExamples.lean](scripts/SkeletonExamples.lean) | Small semantic examples, including empty productions, activation, and witness edge cases. |
+| [scripts/build-reference.sh](scripts/build-reference.sh) | Rebuilds the reference PDF from its preserved LaTeX source. |
+| [.github/workflows/lean.yml](.github/workflows/lean.yml) | CI for the build, contract/axiom audit, and examples. |
+| [lean-toolchain](lean-toolchain), [lakefile.toml](lakefile.toml), [lake-manifest.json](lake-manifest.json) | Pinned Lean version, Lake package configuration, and exact dependency revisions. |
+| [AGENTS.md](AGENTS.md) | Repository instructions for incremental agent-assisted development. |
+
+## Build and proof checks
+
+The project pins **Lean 4.34.1** and an exact Mathlib revision. Follow the
+[build guide](docs/BUILD.md) to install elan and fetch the selected Mathlib cache.
+Then run from the repository root:
+
+```sh
+lake build
+python3 scripts/check-contracts.py
+lake env lean scripts/SkeletonExamples.lean
+```
+
+The accepted statements and supporting definition meanings are frozen; proofs
+are completed in separate, reviewable PRs. Intermediate holes are listed
+explicitly, including declarations that depend on them indirectly. The stricter
+`python3 scripts/check-contracts.py --final` rejects all remaining project holes
+and project-added axioms; it is expected to fail while the ledger lists unfinished
+obligations. Standard Lean foundational axioms are reported separately.
+See [contract checks](docs/CONTRACT_CHECKS.md) for the full policy.
+
+## References
+
+1. Rohit J. Parikh. **On Context-Free Languages.** *Journal of the ACM* 13(4),
+   570–581, 1966. [DOI: 10.1145/321356.321364](https://doi.org/10.1145/321356.321364).
+   Original theorem.
+2. Ryoma Sin'ya. **Simple proof of Parikh's theorem à la Takahashi.** 2019.
+   [arXiv:1909.09393](https://arxiv.org/abs/1909.09393).
+   Derivation-tree decomposition, adjunct trees, and activation by first uses.
+3. Alexander Rubtsov. **The Simplest Proof of Parikh's Theorem via Derivation
+   Trees.** Submitted 30 December 2022.
+   [arXiv:2301.00047](https://arxiv.org/abs/2301.00047).
+   Related decomposition-and-pumping proof with a nonconstructive presentation.
+4. **Mathlib**, pinned revision
+   [`d13f23b`](https://github.com/leanprover-community/mathlib4/tree/d13f23b723b8a846827a245b89c10fc7d3f11612).
+   Reused formal foundations; see the [module reuse audit](docs/MATHLIB_REUSE.md).

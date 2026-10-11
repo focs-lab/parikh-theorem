@@ -7,9 +7,9 @@ rename. Its pointer and all previous contract fingerprints remain unchanged.
 All proof increments through [PR #11](https://github.com/focs-lab/parikh-theorem/pull/11)
 have merged, with CI passing.
 
-Current milestone: bounded removable-context extraction, branch `codex/bounded-cut`,
-based on merged `main` (`0d25dff22496b4b96c3e43ce8fd1cb5ba6473956`).
-Publication and CI evidence are recorded in the milestone PR.
+Current milestone: [PR #12](https://github.com/focs-lab/parikh-theorem/pull/12),
+bounded removable-context extraction, branch `codex/bounded-cut`, based on merged
+`main` (`0d25dff22496b4b96c3e43ce8fd1cb5ba6473956`). CI evidence is recorded in the PR.
 There are **13 direct `sorry` obligations**, zero project axioms, and 13 declarations
 transitively dependent on `sorryAx`, down from 14. Parikh's theorem is not yet proved.
 

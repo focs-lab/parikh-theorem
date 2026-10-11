@@ -2,8 +2,23 @@ import Parikh.Construction
 import Parikh.FiniteRepresentation
 import Parikh.RegularRealization
 
-/-! Accepted public contracts, proved incrementally as recorded in the proof ledger.
-A successful build alone does not establish that all theorem obligations are complete.
+/-!
+# Using Parikh's theorem
+
+Start with `contextFree_image` for a language known to be context-free, or
+`grammar_image` for a concrete Mathlib grammar. Both conclude semilinearity.
+`grammar_witness` supplies a finite list of linear components with exactly the
+same image, and `regular_realization` supplies a DFA-regular language with it.
+
+The proof assembles earlier modules through `treeRepresentation_eq`: the union
+of activatable tree components is exactly the grammar image. One inclusion
+reconstructs words from components; the other decomposes a derivation tree.
+The public results do not require a finite ambient nonterminal type.
+
+Witness and automaton existence are classical. Executable construction and the
+remaining library obligations are described in `docs/PROOF_STATUS.md`.
+
+Source: `thm:main`, `thm:parikh-statement`.
 -/
 namespace Parikh
 variable {T : Type*}
@@ -14,7 +29,8 @@ theorem treeRepresentation_eq [Finite T] [DecidableEq T] (g : ContextFreeGrammar
   classical
   ext v
   constructor
-  · rintro ⟨B, D, hB, _, hD, hv⟩
+  · -- Realize a component vector by insertions, then read the resulting word.
+    rintro ⟨B, D, hB, _, hD, hv⟩
     rw [← one_linear g B D hB.1 hD] at hv
     obtain ⟨t, Cs, hseq, _, hweight⟩ := hv
     obtain ⟨ht, hroot, _, _, _⟩ := hseq.accounting hB.1
@@ -22,7 +38,8 @@ theorem treeRepresentation_eq [Finite T] [DecidableEq T] (g : ContextFreeGrammar
     exact (g.mem_language_iff t.yield).mpr
       ((derives_iff_tree g g.initial t.yield).mpr
         ⟨t, ht, hroot.trans hB.2.1, rfl⟩)
-  · rintro ⟨w, hw, rfl⟩
+  · -- Decompose a word's derivation tree and collect the contexts it uses.
+    rintro ⟨w, hw, rfl⟩
     obtain ⟨t, ht, hroot, hyield⟩ :=
       (derives_iff_tree g g.initial w).mp ((g.mem_language_iff w).mp hw)
     obtain ⟨B, Cs, hB, hBroot, hsimple, hbounded, hseq⟩ := decomposition g t ht

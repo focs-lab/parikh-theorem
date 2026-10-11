@@ -1,7 +1,19 @@
 import Parikh.Activation
 
-/-! Semantic finiteness of the base/context families and their exact union
-(`lem:finite`, `thm:main`). No executable enumeration is claimed here.
+/-!
+# Turning the tree description into a finite union
+
+Decomposition and activation describe the grammar image using simple bases and
+bounded cycle contexts. To conclude semilinearity, we must show that only
+finitely many choices occur.
+
+`bases_finite` and `bounded_cycles_finite` specialize the bounded-tree theorem.
+There are then finitely many context subsets for each base, and each activatable
+choice contributes a linear set. `treeRepresentation_isSemilinearSet` combines
+these facts using Mathlib's finite-union results. This is semantic finiteness;
+an algorithm that enumerates the families is a separate task.
+
+Source: `lem:finite`, `thm:main`.
 -/
 namespace Parikh
 variable {T : Type*}

@@ -1,8 +1,17 @@
 import Parikh.TreePlugging
 
-/-! Positions select occurrences, even when several production nodes have the
-same label. Cutting out such an occurrence gives the outer one-hole context
-used in `lem:enabled` and `lem:insertion-laws`.
+/-!
+# Selecting and replacing a particular occurrence
+
+A nonterminal may occur many times in a tree. Support membership says that an
+occurrence exists; a position, given by child indices, selects which one.
+
+The results here connect these two views and extract the outer context around
+a selected subtree. Filling its hole recovers the original tree; filling it
+with a different matching subtree implements replacement. This lets later
+proofs reason about insertion locally while preserving the surrounding tree.
+
+Source: `lem:enabled`, `lem:insertion-laws`.
 -/
 namespace Parikh
 variable {T N : Type*}

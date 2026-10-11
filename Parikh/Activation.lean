@@ -1,18 +1,40 @@
 import Parikh.Decomposition
 import Parikh.InsertionSequences
 
-/-! Activation is independent of grammar syntax. The added sets and required
-labels remain indexed by operations, even when their eventual weights coincide.
+/-!
+# When can a family of cycles be used together?
+
+A context can be inserted only if its root label is already present. One
+insertion may introduce labels needed by another, so first uses require an
+order. Once a context is enabled, growing support keeps it enabled.
+
+We first study this without grammar syntax: each operation requires a label
+and adds a set of labels. `first_occurrences` reduces a valid sequence to an
+activation order, and `positive_multiplicities` permits arbitrary additional
+copies. The later results realize these operations by tree insertions.
+
+`one_linear` is the payoff: a chosen activatable family describes one linear
+set. Its base includes one copy of every chosen context; its periods describe
+extra copies. Context identities are retained throughout, because equal weights
+do not imply equal root requirements or equal added support.
+
+Source: `def:activation`, `lem:first-occurrence`, `lem:multiplicities`, `prop:one-linear`.
 -/
 namespace Parikh
 
-/-- Enabled support transitions for an ordered list of operations (`eq:activation`). -/
+/-- Execute operations in an order that makes each required label available.
+Starting with support `U`, operation `c` requires `required c ∈ U` and enlarges
+support to `U ∪ added c` before the rest of the list is considered. Nothing is
+removed, so a label that has become available stays available (`eq:activation`). -/
 def ActivationOrder {N C : Type*} (required : C → N) (added : C → Set N) :
     Set N → List C → Prop
   | _, [] => True
   | U, c :: cs => required c ∈ U ∧ ActivationOrder required added (U ∪ added c) cs
 
-/-- Each member must be introduced exactly once before arbitrary repeats. -/
+/-- A finite family admits an enabled order using each member exactly once.
+This describes the first-use phase. For cycle contexts, later repetitions are
+possible because support only grows; `positive_multiplicities` makes that
+consequence precise under its additional self-enabling hypothesis. -/
 def Activatable {N C : Type*} (required : C → N) (added : C → Set N)
     (U : Set N) (D : Finset C) : Prop :=
   ∃ order : List C, order.Nodup ∧ (∀ c, c ∈ order ↔ c ∈ D) ∧
@@ -261,7 +283,12 @@ def treeRepresentation {T : Type*} [DecidableEq T] (g : ContextFreeGrammar T) :
   {v | ∃ B D, IsBase g B ∧ (∀ C ∈ D, IsBoundedCycle g C) ∧
     ContextsActivatable g B D ∧ v ∈ (contextComponent B D).denotation}
 
-/-- One activatable subset gives exactly one linear component (`prop:one-linear`). -/
+/-- The weights obtained using exactly an activatable family of contexts form
+one linear component (`prop:one-linear`).
+Every selected context must occur at least once. These first copies are included
+in the component's base; its period coefficients count additional copies.
+The equality proves both that insertion yields only these vectors and that
+every choice of coefficients can be realized by an insertion sequence. -/
 theorem one_linear {T : Type*} [DecidableEq T] (g : ContextFreeGrammar T)
     (B : ParseTree T g.NT) (D : Finset (ParseTree T g.NT))
     (hB : Complete g B) (hD : ContextsActivatable g B D) :

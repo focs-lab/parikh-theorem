@@ -1,8 +1,20 @@
 import Parikh.Activation
 import Mathlib.Data.Nat.Log
 
-/-! Effective-construction and quantitative *specifications*. No compiler is
-implemented in this milestone, and classical witness existence is not a compiler.
+/-!
+# What an effective construction must provide
+
+Knowing that a finite witness exists does not yet give an algorithm for
+computing it. This file specifies the finite input encoding, bounded tree
+enumeration, compiler output, and quantitative guarantees such an algorithm
+must satisfy.
+
+`EncodedGrammar` supplies finite syntax. `BoundedEnumeration` and `Compiler`
+package proposed algorithms with their required correctness proofs; implementing
+values remain to be supplied. The size and bit bounds describe the intended
+output budget. Consult `docs/PROOF_STATUS.md` for outstanding proofs.
+
+Source: `sec:effective`, `eq:bound-defs`, `thm:size-bound`, `eq:bit-bound`.
 -/
 namespace Parikh
 

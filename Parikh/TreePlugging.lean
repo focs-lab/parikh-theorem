@@ -1,8 +1,18 @@
 import Parikh.GrammarTrees
 
-/-! Structural facts for filling holes (`lem:plug`). The counting and size
-formulas track every hole; the accepted one-hole contract specializes them.
-No new tree syntax or grammar semantics are introduced.
+/-!
+# Filling a context with a tree
+
+Plugging replaces each hole of an open tree by a supplied tree. For the
+one-hole contexts used later, this joins two pieces of a derivation: their
+terminal counts and production counts add, and their supports are united.
+
+This file proves structural formulas for arbitrary numbers of holes and
+establishes validity and completeness when the inserted root matches the hole
+labels. The public theorem `Parikh.plugging` in `Decomposition.lean` packages the
+one-hole consequences used by insertion.
+
+Source: `lem:plug`.
 -/
 namespace Parikh
 variable {T N : Type*}

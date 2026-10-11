@@ -1,4 +1,9 @@
-# Accepted proof plan
+# Proof map and implementation plan
+
+For a mathematical introduction, start with the [guided proof](PROOF_GUIDE.md).
+This document is the contributor reference: it maps the argument to declarations,
+source labels, and dependencies. For the public API, see the
+[README](../README.md#lean-interface).
 
 The owner accepted the statement skeleton in PR #2 on 2026-10-11.
 The forward Parikh theorem and exact finite witness existence are proved for
@@ -30,8 +35,8 @@ statements; source labels below refer to `reference/parikh_theorem.tex`.
    operations and reuses Mathlib NFA determinization.
 6. `Parikh/Construction.lean`: finite encoded input, algorithm interfaces, and all
    four size bounds plus the numerical bit budget.
-7. `PROOF_STATUS.md` and `CONTRACT_CHECKS.md`: what is incomplete and how acceptance
-   freeze the accepted contracts.
+7. `PROOF_STATUS.md` and `CONTRACT_CHECKS.md`: what is incomplete and how review
+   freezes the accepted contracts.
 
 ## Intended proof dependencies
 

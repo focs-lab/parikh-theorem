@@ -2,8 +2,19 @@ import Mathlib.Algebra.Group.Submonoid.Finsupp
 import Mathlib.Computability.Language
 import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Defs
 
-/-! Concrete counting and finite witnesses; `sec:statement`, `eq:word-add`.
-The witness records indexed periods, including duplicates and zero vectors.
+/-!
+# From words to semilinear sets
+
+The Parikh map forgets letter order and remembers how often each letter occurs.
+Its central law is `counts_append`: concatenating words adds their vectors.
+
+A `Component` describes one linear set by a base and a finite list of periods;
+a `Witness` describes a finite union of such sets. The denotations give these
+finite descriptions their mathematical meaning. The final lemmas connect them
+to Mathlib's `IsLinearSet` and `IsSemilinearSet` in both directions, so later
+proofs can use explicit witnesses without replacing Mathlib's notions.
+
+Source: `sec:statement`, `eq:word-add`.
 -/
 open scoped Pointwise
 
@@ -17,7 +28,11 @@ def counts {T : Type*} [DecidableEq T] (w : List T) : Vector T := fun a => w.cou
 /-- The exact image of a Mathlib language under terminal counting. -/
 def image {T : Type*} [DecidableEq T] (L : Language T) : Set (Vector T) := counts '' L
 
-/-- One base and an indexed finite list of periods (`sec:statement`). -/
+/-- A finite description of one linear set (`sec:statement`).
+Start at `base` and add any natural number of copies of each period.
+A Lean `List` always has finite length; no separate finiteness proof is needed.
+Duplicate and zero periods are allowed, and an empty period list describes
+just the base vector. -/
 structure Component (T : Type*) where
   base : Vector T
   periods : List (Vector T)
@@ -25,7 +40,11 @@ structure Component (T : Type*) where
 /-- A finite representation, independent of grammars and trace theory. -/
 abbrev Witness (T : Type*) := List (Component T)
 
-/-- Natural coefficients vary independently at every period-list position. -/
+/-- The vectors represented by a component.
+A coefficient function assigns a natural number to each position in the period
+list. Each coefficient is chosen independently and may be zero. Thus membership
+means exactly that the vector is the base plus a finite nonnegative combination
+of the listed periods. -/
 def Component.denotation {T : Type*} (c : Component T) : Set (Vector T) :=
   {v | ∃ k : Fin c.periods.length → ℕ,
     v = c.base + ∑ i : Fin c.periods.length, k i • c.periods[i]}

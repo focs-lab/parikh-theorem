@@ -1,7 +1,18 @@
 import Parikh.Decomposition
 
-/-! Exact accounting across a list of insertions (`cor:sequence`). The original
-subtree is retained at each step, including in zero-weight cycles.
+/-!
+# Accounting for several insertions
+
+One insertion adds a context's terminal counts and production nodes while
+preserving existing support. Along a sequence, these contributions accumulate:
+weights and sizes add, and support is the union of the labels introduced.
+
+`InsertionSequence.accounting` packages these facts together with completeness
+and root preservation. Later activation proofs use it to move between an
+abstract list of operations and an actual reconstructed tree. Zero-weight
+cycles obey the same laws: they add productions even when they add no letters.
+
+Source: `cor:sequence`.
 -/
 namespace Parikh
 variable {T : Type*}

@@ -7,9 +7,11 @@ rename. Its pointer and all previous contract fingerprints remain unchanged.
 All proof increments through [PR #16](https://github.com/focs-lab/parikh-theorem/pull/16)
 have merged, with CI passing.
 
-Current milestone: DFA regularity of witness expressions and converse realization,
+Current milestone: [PR #17](https://github.com/focs-lab/parikh-theorem/pull/17),
+DFA regularity of witness expressions and converse realization,
 branch `codex/witness-dfa-regularity`, based on merged `main`
 (`827f731822028459f17b6f83b448ae86ba27affc`).
+CI evidence is recorded in the PR.
 There are **4 direct `sorry` obligations**, zero project axioms, and 4 declarations
 transitively dependent on `sorryAx`, down from 7. The forward theorem, exact finite
 witness existence, converse, and equal-image regular realization are proved.

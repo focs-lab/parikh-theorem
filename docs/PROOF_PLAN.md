@@ -1,7 +1,7 @@
 # Accepted proof plan
 
 The owner accepted the statement skeleton in PR #2 on 2026-10-11.
-The counting/witness, grammar/tree semantics, and plugging and insertion milestones are proved; Parikh's theorem remains in progress. Read the complete reference, including appendices, alongside the
+The counting/witness, grammar/tree semantics, plugging/insertion, and abstract activation laws are proved; Parikh's theorem remains in progress. Read the complete reference, including appendices, alongside the
 statements; source labels below refer to `reference/parikh_theorem.tex`.
 
 ## Reading order and module purposes
@@ -45,7 +45,7 @@ flowchart TD
 ```
 
 These are intended dependencies for the remaining proof. The four counting/witness
-contracts, grammar/tree equivalence, and plugging and insertion now have complete proofs; the other 20 theorem bodies remain `sorry`. No forward proof depends on the converse,
+contracts, grammar/tree equivalence, plugging/insertion, and the two abstract activation laws now have complete proofs; the other 18 theorem bodies remain `sorry`. No forward proof depends on the converse,
 trace theory, a grammar normal form, or Presburger elimination. The finite-witness
 bridge to Mathlib is separate from the derivation-tree proof.
 
@@ -73,8 +73,8 @@ and algorithm values are pending.
 | `thm:decomposition`, `eq:decomposition`, `cor:finite-generation` | `decomposition` | Exact tree reconstruction for every complete tree/root | Strong induction using bounded cut; pending |
 | `def:activation`, `eq:activation` | `ActivationOrder`, `Activatable`, `ContextsActivatable` | Operations retain their identities and require previously present labels | Concrete definitions; arbitrary support sets in the abstract interface |
 | `lem:activation-realize`, `eq:activated-wt`, `eq:activated-supp` | support order plus `insertion_enabled`; future lifting helper | Introduce each context once | Sequence accounting and enabledness; helper deferred |
-| `lem:first-occurrence` | `first_occurrences` | Any enabled list of operations | Support union is insensitive to repetition; pending |
-| `lem:multiplicities` | `positive_multiplicities` | Required label belongs to added support; multiplicities positive on selected set | Abstract activation and monotonicity; pending |
+| `lem:first-occurrence` | `first_occurrences` | Any enabled list of operations | Filter later repeats whose added support is already present; proved |
+| `lem:multiplicities` | `positive_multiplicities` | Required label belongs to added support; multiplicities positive on selected set | Initial activation pass, then finite replicas with exact counts; proved |
 | `prop:one-linear`, `eq:one-linear`, `eq:component-base`, `eq:component` | `contextComponent`, `one_linear` | Complete base and activatable set | First occurrences, multiplicities, tree lifting; pending |
 | `thm:main`, `eq:main` | `treeRepresentation`, `treeRepresentation_eq`, `grammar_witness` | Finite terminal alphabet; arbitrary Mathlib nonterminal type | Exact decomposition, activation, semantics bridge; pending |
 | `thm:parikh-statement` | `grammar_image`, `contextFree_image`, `regular_realization` | Mathlib grammar/language interfaces | Main equality and witness bridge; regular realization also uses converse; pending |
@@ -124,6 +124,13 @@ branches are unchanged by plugging; support gives exactly a nonterminal subtree
 occurrence in a complete tree; cutting out a selected occurrence yields a valid
 one-hole context and an exact replacement identity. The insertion statements
 remain in their original positions in `Decomposition.lean`.
+
+`Activation.lean` provides three support lemmas for the abstract activation laws:
+filtering operations whose added support is already covered, enabling any list
+whose required labels are present, and appending operations covered by an earlier
+pass. First-occurrence reduction uses no self-support assumption; multiplicities
+use the accepted self-support hypothesis and Mathlib's existing list counting
+and sum lemmas. Tree realization and `one_linear` remain pending.
 
 ## After review
 

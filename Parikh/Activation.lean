@@ -17,12 +17,81 @@ def Activatable {N C : Type*} (required : C → N) (added : C → Set N)
   ∃ order : List C, order.Nodup ∧ (∀ c, c ∈ order ↔ c ∈ D) ∧
     ActivationOrder required added U order
 
+namespace ActivationOrder
+variable {N C : Type*} {required : C → N} {added : C → Set N}
+
+/-- An operation may be omitted when everything it adds is already present. -/
+theorem filter_of_covered {U : Set N} {cs : List C}
+    (h : ActivationOrder required added U cs) (p : C → Bool)
+    (hcovered : ∀ c ∈ cs, p c = false → added c ⊆ U) :
+    ActivationOrder required added U (cs.filter p) := by
+  induction cs generalizing U with
+  | nil => simp [ActivationOrder]
+  | cons c cs ih =>
+    cases hp : p c with
+    | false =>
+      have hU : U ∪ added c = U :=
+        Set.union_eq_left.mpr (hcovered c (by simp) hp)
+      have htail : ActivationOrder required added U cs := by
+        simpa only [hU] using h.2
+      simpa only [List.filter_cons, hp, Bool.false_eq_true, ↓reduceIte] using
+        ih htail (fun d hd hpd => hcovered d (List.mem_cons_of_mem c hd) hpd)
+    | true =>
+      simp only [List.filter_cons, hp, ↓reduceIte, ActivationOrder]
+      refine ⟨h.1, ih h.2 ?_⟩
+      intro d hd hpd x hx
+      exact Or.inl (hcovered d (List.mem_cons_of_mem c hd) hpd hx)
+
+/-- If every requested root is already present, any finite order is enabled. -/
+theorem of_forall_mem {U : Set N} {cs : List C}
+    (h : ∀ c ∈ cs, required c ∈ U) : ActivationOrder required added U cs := by
+  induction cs generalizing U with
+  | nil => simp [ActivationOrder]
+  | cons c cs ih =>
+    refine ⟨h c (by simp), ih ?_⟩
+    intro d hd
+    exact Or.inl (h d (List.mem_cons_of_mem c hd))
+
+/-- After an activation pass, append any operations whose roots it supplies. -/
+theorem append_of_covered {U : Set N} {cs ds : List C}
+    (h : ActivationOrder required added U cs)
+    (hcovered : ∀ d ∈ ds, required d ∈ U ∨ ∃ c ∈ cs, required d ∈ added c) :
+    ActivationOrder required added U (cs ++ ds) := by
+  induction cs generalizing U with
+  | nil =>
+    apply of_forall_mem
+    intro d hd
+    simpa using hcovered d hd
+  | cons c cs ih =>
+    refine ⟨h.1, ih h.2 ?_⟩
+    intro d hd
+    rcases hcovered d hd with hU | ⟨b, hb, hadded⟩
+    · exact Or.inl (Or.inl hU)
+    · rcases List.mem_cons.mp hb with rfl | hb
+      · exact Or.inl (Or.inr hadded)
+      · exact Or.inr ⟨b, hb, hadded⟩
+end ActivationOrder
+
 /-- A valid sequence's distinct first occurrences activate the same set (`lem:first-occurrence`). -/
 theorem first_occurrences {N C : Type*} [DecidableEq C]
     (required : C → N) (added : C → Set N) (U : Set N) (cs : List C)
     (h : ActivationOrder required added U cs) :
     Activatable required added U cs.toFinset := by
-  sorry
+  induction cs generalizing U with
+  | nil => exact ⟨[], by simp, by simp, by simp [ActivationOrder]⟩
+  | cons c cs ih =>
+    obtain ⟨order, hnd, hmem, horder⟩ := ih (U ∪ added c) h.2
+    have hfiltered := horder.filter_of_covered (fun d => decide (d ≠ c)) (by
+      intro d hd hp
+      have heq : d = c := by simpa using hp
+      subst d
+      exact Set.subset_union_right)
+    refine ⟨c :: order.filter (fun d => decide (d ≠ c)), ?_, ?_, h.1, hfiltered⟩
+    · exact List.nodup_cons.mpr ⟨by simp, List.Nodup.filter _ hnd⟩
+    · intro d
+      simp only [List.mem_cons, List.mem_filter, decide_eq_true_eq, hmem,
+        List.mem_toFinset]
+      tauto
 
 /-- After activation, every positive multiplicity is possible (`lem:multiplicities`). -/
 theorem positive_multiplicities {N C : Type*} [DecidableEq C]
@@ -31,7 +100,42 @@ theorem positive_multiplicities {N C : Type*} [DecidableEq C]
     (m : C → ℕ) (hm : ∀ c ∈ D, 0 < m c) :
     ∃ cs : List C, ActivationOrder required added U cs ∧
       (∀ c, c ∈ cs ↔ c ∈ D) ∧ (∀ c ∈ D, cs.count c = m c) := by
-  sorry
+  obtain ⟨order, hnd, hmem, horder⟩ := h
+  -- Pay for every operation once, then append the requested extra copies.
+  let extra := order.flatMap (fun c => List.replicate (m c - 1) c)
+  have hextra : ∀ c ∈ extra, c ∈ D := by
+    intro c hc
+    obtain ⟨d, hd, hrep⟩ := List.mem_flatMap.mp hc
+    have hcd := List.eq_of_mem_replicate hrep
+    exact hcd ▸ (hmem d).mp hd
+  have hact : ActivationOrder required added U (order ++ extra) :=
+    horder.append_of_covered (by
+      intro c hc
+      have hD := hextra c hc
+      exact Or.inr ⟨c, (hmem c).mpr hD, hself c hD⟩)
+  refine ⟨order ++ extra, hact, ?_, ?_⟩
+  · intro c
+    constructor
+    · intro hc
+      rcases List.mem_append.mp hc with hc | hc
+      · exact (hmem c).mp hc
+      · exact hextra c hc
+    · intro hc
+      exact List.mem_append_left _ ((hmem c).mpr hc)
+  · intro c hc
+    have hone : order.count c = 1 := List.count_eq_one_of_mem hnd ((hmem c).mpr hc)
+    have hcount : extra.count c = m c - 1 := by
+      dsimp only [extra]
+      rw [List.count_flatMap]
+      have hzero : ∀ d, d ≠ c → d ∈ order →
+          (List.count c ∘ fun b => List.replicate (m b - 1) b) d = 0 := by
+        intro d hdc hd
+        simp [List.count_replicate, hdc]
+      rw [List.sum_map_eq_nsmul_single c _ hzero, hone]
+      simp
+    rw [List.count_append, hone, hcount]
+    have hpositive := hm c hc
+    omega
 
 /-- A decidable finite-search implementation is a future value of this interface.
 `lem:activation-test`: no choice of an enabled operation can cause a false rejection.

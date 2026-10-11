@@ -11,7 +11,9 @@ fix in PR #21 have also merged.
 Current milestone: executable bounded-tree enumeration (`lem:finite`,
 `sec:effective`), branch `codex/bounded-tree-enumeration`, based on merged `main`
 (`d490885f9c64567a379a6036198d1bd31870e5ce`).
-The PR and CI evidence will be linked after publication.
+Published as [PR #23](https://github.com/focs-lab/parikh-theorem/pull/23);
+the PR's [checks](https://github.com/focs-lab/parikh-theorem/pull/23/checks)
+record CI evidence for the submitted head.
 There are **3 direct `sorry` obligations**, zero project axioms, and 3 declarations
 transitively dependent on `sorryAx`, unchanged here. All accepted qualitative
 Parikh results are proved. Activation testing and bounded-tree enumeration now

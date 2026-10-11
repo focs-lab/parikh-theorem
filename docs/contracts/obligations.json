@@ -2,7 +2,6 @@
   "sorry": [
     "Parikh.bounded_cut",
     "Parikh.bounded_family_bounds",
-    "Parikh.bounded_open_finite",
     "Parikh.bounded_witness",
     "Parikh.contextFree_image",
     "Parikh.converse",
@@ -20,7 +19,6 @@
   "dependent_on_unresolved": [
     "Parikh.bounded_cut",
     "Parikh.bounded_family_bounds",
-    "Parikh.bounded_open_finite",
     "Parikh.bounded_witness",
     "Parikh.contextFree_image",
     "Parikh.converse",

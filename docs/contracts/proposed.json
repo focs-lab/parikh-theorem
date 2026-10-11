@@ -4855,6 +4855,56 @@
       "unsafe": false,
       "value": null
     },
+    "Parikh.bounded_open_finite._proof_1_4": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "9c9ab07669680a833440588821cd61213109c897c36099e9dae5161faa3ff5aa",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.bounded_open_finite._proof_1_7": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "3303ebdd7383db3ed5431ecb45c703d39a1891565d31c6b6b19bf3b283053658",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.bounded_open_finite._simp_1_5": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "cf87dac1506d6846166e2a6c9067dd57487ede091462dfbf744f746c8351fca6",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.bounded_open_finite._simp_1_6": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "3113648bfec47644756dc48d12be8b942cf909b016a96d2b83a5adb35565d332",
+      "unsafe": false,
+      "value": null
+    },
     "Parikh.bounded_witness": {
       "instance": false,
       "kind": "theorem",

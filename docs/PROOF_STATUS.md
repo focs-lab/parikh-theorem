@@ -9,7 +9,7 @@ grammar/tree semantics [PR #4](https://github.com/focs-lab/parikh-theorem/pull/4
 and one-hole plugging [PR #5](https://github.com/focs-lab/parikh-theorem/pull/5)
 have merged, with CI passing.
 
-Current milestone: occurrence-based insertion, branch
+Current milestone: [occurrence-based insertion PR #6](https://github.com/focs-lab/parikh-theorem/pull/6), branch
 [`codex/insertion-laws`](https://github.com/focs-lab/parikh-theorem/tree/codex/insertion-laws),
 based on merged `main` (`5046427c6229da0e4a969d0aa463a59c7b258559`).
 There are **20 direct `sorry` obligations**, zero project axioms, and 20 declarations

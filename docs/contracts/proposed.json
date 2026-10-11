@@ -2249,6 +2249,16 @@
       "unsafe": false,
       "value": "9631775c99bc0782543c82b74003e8e35e9f9d2dc84d93b9f75aa34d9f3ab4eb"
     },
+    "Parikh.GrammarSize.vectorBits.eq_1": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "16caf25535b268dbe94f74962aff76908a5370e46bd3fa248df0052ed7fcc0b9",
+      "unsafe": false,
+      "value": null
+    },
     "Parikh.InsertionSequence": {
       "instance": false,
       "kind": "inductive",
@@ -7371,6 +7381,30 @@
       "partial": false,
       "reducibility": "opaque",
       "type": "e29f4e83dfd6c3768685260d58f662b4b68d265cd7fa93f69efbde455c201761",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.witness_bit_bound._proof_1_1": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "ed4d1bb7a449bea3f226c7fc395c362da13d0a9a6fdedb41391d797a4b602560",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.witness_bit_bound._proof_1_2": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "3eb897cfe3f54341de1e8b40e3d65912e29140ac53a4e44543afab19a298b048",
       "unsafe": false,
       "value": null
     },

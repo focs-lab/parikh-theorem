@@ -24,9 +24,9 @@ jobs:
         env:
           LEAN_NUM_THREADS: 4
         run: lake build
-      - name: Check contracts and explicit proof obligations
+      - name: Check contracts and reject all proof holes
         env:
           CONTRACT_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
-        run: python3 scripts/check-contracts.py
+        run: python3 scripts/check-contracts.py --final
       - name: Check small semantic examples
         run: lake env lean scripts/SkeletonExamples.lean

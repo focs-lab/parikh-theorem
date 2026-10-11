@@ -13,8 +13,8 @@ exact decomposition, and the exact component union. Converse and equal-image
 regular realization and regular-language specialization are also proved. Executable
 activation testing and bounded-tree enumeration are implemented with exact
 correctness. Quantitative bounded-family and leaf-weight bounds are proved.
-Exact witnesses satisfying all four size bounds are now proved.
-Compilation and the numerical bit budget remain in progress.
+Exact witnesses satisfying all four size bounds, coordinate widths and numerical
+bit budgets are proved. Executable witness compilation remains in progress.
 Read the complete reference, including appendices, alongside the
 statements; source labels below refer to `reference/parikh_theorem.tex`.
 
@@ -94,18 +94,18 @@ and `treeRepresentation_eq`. `grammar_image`, `grammar_witness`, and
 `contextFree_image` now complete the forward theorem. Representative counting
 and both inclusions of the expression-image construction are also proved, as are
 DFA regularity, `witnessExpression_correct`, `converse`, `regular_realization`, and
-`regular_image`. The remaining 3 theorem bodies
-are still `sorry`. No forward proof depends on the converse,
+`regular_image`. The quantitative family, witness-size and bit-budget theorems
+are also proved; no theorem body remains `sorry`. No forward proof depends on the converse,
 trace theory, a grammar normal form, or Presburger elimination. The finite-witness
 bridge to Mathlib is separate from the derivation-tree proof.
 
 ## Source-to-contract map
 
-Names below are in namespace `Parikh`. “Pending” means a tracked theorem hole.
+Names below are in namespace `Parikh`. No tracked theorem hole remains.
 Concrete definitions and interfaces are implemented. Activation testing and
 bounded-tree enumeration have executable values with complete correctness proofs;
-`bounded_family_bounds` and `bounded_witness` are proved; compiler construction
-and the bit-budget proof remain pending.
+`bounded_family_bounds`, `bounded_witness` and `witness_bit_bound` are proved;
+the `Compiler` interface still requires an executable implementing value.
 
 | Source labels | Lean declaration(s) | Hypotheses / meaning | Intended prerequisites; status |
 | --- | --- | --- | --- |
@@ -140,7 +140,7 @@ and the bit-budget proof remain pending.
 | `sec:effective` | `EncodedGrammar.decode`, `BoundedEnumeration`, `boundedEnumeration`, `Compiler` | Numeric finite syntax; no classical-choice compiler value | Enumeration and activation implemented with proofs; exact tree formula proved; compiler value pending |
 | `eq:bound-defs`, `lem:count-trees` | `GrammarSize`, `grammarSize`, `bounded_family_bounds` | `n` is active cardinality, `b ≥ 1`, `M = ∑ᵢ₌₀ⁿ⁺¹ bⁱ`, `K = (1+d+n+p)^M` | Finite child-function spaces, union/cardinality bounds and yield-length induction; proved |
 | `thm:size-bound` | `WithinBounds`, `bounded_witness`, `Compiler.bounded` | At most `K2^K` components, `K` periods, norms `M` / `(K+1)M` | Exact finite witness assembly, product/powerset cardinalities and norm accounting; `bounded_witness` proved, executable compiler pending |
-| `eq:bit-bound` | `coordinateBits`, `vectorBits`, `entryBits`, `witness_bit_bound` | Fixed widths using Mathlib `Nat.clog`; excludes list-length metadata | Four size bounds and nonnegative coordinates; pending |
+| `eq:bit-bound` | `coordinateBits`, `vectorBits`, `entryBits`, `witness_bit_bound` | Fixed widths using Mathlib `Nat.clog`; excludes list-length metadata | Four size bounds, ceiling-log power bound and bounded sums; proved |
 | `app:presburger` | consequence of `Witness.denotation`; formula adapter deferred | Explicit existential coefficients | Downstream arithmetic consequence, not a proof prerequisite |
 | `sec:formalization`, `app:notation` | this plan and concrete witness/tree/activation definitions | Proposed review contract | Documentation |
 
@@ -340,8 +340,11 @@ Product/powerset cardinalities bound the number of components, and
 `contextComponent_size_bounds` bounds period length and base/period norms by
 finite-sum laws. `bounded_witness` now combines these results with the proved
 family budgets to establish all four size bounds. Its accepted statement is
-unchanged. The remaining theorem hole concerns numerical bit widths; executable
-compilation remains separate.
+unchanged. `witness_bit_bound` then bounds each coordinate by its vector norm,
+uses Mathlib's ceiling-log power bound to prove the fixed width sufficient, and
+bounds the sum of listed entry widths by the component/period budgets. No named
+helper or new import is needed. All existing theorem proofs are complete;
+executable compilation remains separate.
 
 ## After review
 

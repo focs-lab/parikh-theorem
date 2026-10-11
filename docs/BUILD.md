@@ -23,16 +23,17 @@ lean --version
 lake --version
 lake exe cache get Mathlib.Algebra.Group.Submonoid.Finsupp Mathlib.Computability.ContextFreeGrammar Mathlib.Computability.RegularExpressions Mathlib.Computability.DFA Mathlib.Computability.NFA Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Defs Mathlib.Data.Nat.Log Mathlib.Data.Set.Finite.List Mathlib.Data.List.Sections
 LEAN_NUM_THREADS=4 lake build
-python3 scripts/check-contracts.py
+python3 scripts/check-contracts.py --final
 lake env lean scripts/SkeletonExamples.lean
 ```
 
 Lake fetches missing dependency checkouts from the exact manifest revisions.
 Four threads were appropriate for the onboarding cloud instance's four-CPU quota.
-Use the cache rather than rebuilding all of Mathlib. Intermediate `sorry` warnings
-are expected; the declaration allowlists are checked and unlisted assumptions
-fail the audit. Use `python3 scripts/check-contracts.py --final` for completion;
-it must fail on this skeleton.
+Use the cache rather than rebuilding all of Mathlib. The current library builds
+without `sorry` warnings. CI uses final-mode checking to reject all project holes,
+axioms and transitive unresolved dependencies; its proof allowlists are empty.
+The executable `Compiler` still lacks an implementing value, which the
+declaration audit cannot detect. See the proof-status ledger for remaining work.
 
 ## This Codex Cloud instance
 

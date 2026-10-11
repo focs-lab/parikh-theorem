@@ -1,11 +1,7 @@
 {
-  "sorry": [
-    "Parikh.witness_bit_bound"
-  ],
+  "sorry": [],
   "temporary_axioms": [],
-  "dependent_on_unresolved": [
-    "Parikh.witness_bit_bound"
-  ],
+  "dependent_on_unresolved": [],
   "compiler_generated_partial": [
     "Parikh.ActivationOrder._unsafe_rec",
     "Parikh.ParseTree.frontier._unsafe_rec",

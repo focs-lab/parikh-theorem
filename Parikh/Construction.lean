@@ -166,7 +166,36 @@ theorem witness_bit_bound {T : Type*} [Fintype T] (s : GrammarSize)
     entryBits s W ≤ s.vectorBits ∧
       (∀ c ∈ W, ∀ a, c.base a < 2 ^ s.coordinateBits) ∧
       (∀ c ∈ W, ∀ p ∈ c.periods, ∀ a, p a < 2 ^ s.coordinateBits) := by
-  sorry
+  classical
+  have hwidth : (s.trees + 1) * s.positions < 2 ^ s.coordinateBits := by
+    apply lt_of_lt_of_le (Nat.lt_succ_self _)
+    exact (Nat.le_pow_clog (by omega) _).trans
+      (Nat.pow_le_pow_right (by omega) (Nat.le_max_right _ _))
+  have hcoordinate (v : Vector T) (a : T) : v a ≤ norm v :=
+    Finset.single_le_sum (fun _ _ => Nat.zero_le _) (Finset.mem_univ a)
+  have hpositions : s.positions ≤ (s.trees + 1) * s.positions := by
+    simpa using Nat.mul_le_mul_right s.positions (Nat.le_add_left 1 s.trees)
+  refine ⟨?_, ?_, ?_⟩
+  · have hentries : entryBits s W ≤
+        W.length * ((s.trees + 1) * s.terminals * s.coordinateBits) := by
+      unfold entryBits
+      have hsum := List.sum_le_length_nsmul
+        (W.map fun c => (c.periods.length + 1) * Fintype.card T * s.coordinateBits)
+        ((s.trees + 1) * s.terminals * s.coordinateBits) (by
+          intro n hn
+          obtain ⟨c, hc, rfl⟩ := List.mem_map.mp hn
+          rw [← hd]
+          exact Nat.mul_le_mul_right _
+            (Nat.mul_le_mul_right _ (Nat.add_le_add_right (h.2 c hc).1 1)))
+      simpa only [List.length_map, Nat.nsmul_eq_mul] using hsum
+    exact hentries.trans (by
+      simpa only [GrammarSize.vectorBits, Nat.mul_assoc] using
+        Nat.mul_le_mul_right ((s.trees + 1) * s.terminals * s.coordinateBits) h.1)
+  · intro c hc a
+    exact lt_of_le_of_lt ((hcoordinate c.base a).trans (h.2 c hc).2.1) hwidth
+  · intro c hc p hp a
+    exact lt_of_le_of_lt
+      ((hcoordinate p a).trans (((h.2 c hc).2.2 p hp).trans hpositions)) hwidth
 
 /-- Finite numeric syntax for the future executable compiler; unused symbols are allowed. -/
 structure EncodedGrammar where

@@ -1,28 +1,33 @@
-# Proof status: certified executable compiler complete
+# Proof status: formalization complete on main
 
 The owner accepted the reviewed skeleton in [PR #2](https://github.com/focs-lab/parikh-theorem/pull/2)
 on 2026-10-11. The immutable baseline remains the reviewed head
 `6bff9679d7ea03e5401815b80c5a3dc1300f9d36`, including the requested `ParseTree`
 rename. Its pointer and all previously published declaration fingerprints are
-unchanged. All proof increments through [PR #26](https://github.com/focs-lab/parikh-theorem/pull/26)
+unchanged. All proof increments through [PR #27](https://github.com/focs-lab/parikh-theorem/pull/27)
 have merged, with CI passing. Documentation PRs #18/#19 and the math-rendering
 fix in PR #21 have also merged.
 
-Current milestone: the certified executable grammar-to-witness compiler
-(`sec:effective`, `eq:main`, `thm:size-bound`, `eq:bit-bound`), branch
-`codex/executable-compiler`, based on merged `main`
-(`d89ece29dadbdc519f34e8c85f09f459ab4e5201`).
-Published as [PR #27](https://github.com/focs-lab/parikh-theorem/pull/27);
-the PR's [checks](https://github.com/focs-lab/parikh-theorem/pull/27/checks)
-record CI evidence for the submitted head.
+The certified executable compiler was reviewed and merged in
+[PR #27](https://github.com/focs-lab/parikh-theorem/pull/27) on 2026-10-11 at
+23:10:05 UTC. The completed library is on `main` at
+[`5cc89dfccca61c17dda36f92fc8d8efecd247b0e`](https://github.com/focs-lab/parikh-theorem/commit/5cc89dfccca61c17dda36f92fc8d8efecd247b0e).
+The [merged-main CI run](https://github.com/focs-lab/parikh-theorem/actions/runs/38183252711)
+passes at that exact commit. The closing audit reran the build, examples, final
+contract check and public axiom inspection directly on this merged `main`.
+The completion-ledger update is published as
+[PR #28](https://github.com/focs-lab/parikh-theorem/pull/28), with its
+[checks](https://github.com/focs-lab/parikh-theorem/pull/28/checks) recording CI
+for the closing documentation commit.
+
 There are **0 direct `sorry` obligations**, **0 project axioms**, and **0
 transitively unresolved declarations**. The public `compiler` now implements
 the accepted interface with exact-denotation and all four size proofs. The
 forward theorem, exact finite witnesses, converse, regular specialization,
-executable construction and all specified quantitative bounds are complete on
-this branch, subject to the owner's PR review.
+executable construction and all specified quantitative bounds are complete and
+merged. No named proof or implementation obligation remains.
 
-## Completed in this milestone
+## Certified compiler (merged PR #27)
 
 `ExecutableCompiler.lean` supplies `EncodedGrammar.compile` and the public
 `compiler : Compiler`. The computed witness satisfies:
@@ -114,12 +119,17 @@ no `native_decide` or runtime proof override is introduced.
 
 - [PR #26](https://github.com/focs-lab/parikh-theorem/pull/26): `witness_bit_bound`, proving fixed-width coordinate fit and total numerical entry-bit bounds; CI now requires final-mode checking (`eq:bit-bound`).
 
-## Remaining work
+- [PR #27](https://github.com/focs-lab/parikh-theorem/pull/27): executable `compiler`, exact base/cycle filters, list-component and activation bridges, and computed-output correctness, size and bit-budget proofs (`sec:effective`, `eq:main`, `thm:size-bound`, `eq:bit-bound`).
+
+## Completion and optional follow-up
 
 No named mathematical proof or executable-construction obligation remains.
 `ActivationTest`, `BoundedEnumeration` and `Compiler` all have computable
 implementing values with complete correctness fields. The theorem-hole and
-project-axiom allowlists are empty. This increment awaits owner review and merge.
+project-axiom allowlists are empty. The compiler increment is reviewed and merged.
+This closing audit changes documentation and CI display labels only; all **737
+published declaration contracts**, the baseline, checker, allowlists and pins
+remain unchanged.
 
 The construction is deliberately coarse: tree enumeration and the context
 powerset can be very large. Optimization, additional convenience interfaces
@@ -127,16 +137,49 @@ and release packaging are optional follow-up work, not missing formalization
 contracts. The repository has no selected license metadata; release publication
 and license choice remain owner decisions.
 
-## Validation
+## Completion criteria
 
-- Affected compiler modules and full `lake build` pass without proof-hole warnings.
+| Requirement from the handoff | Completed API / evidence |
+| --- | --- |
+| Mathlib grammar/language forward theorem | `grammar_image`, `contextFree_image` |
+| Grammar derivations connected to tree semantics | `derives_iff_tree` |
+| Exact finite semilinear witnesses | `grammar_witness`, `bounded_witness` |
+| Converse and equal-image regular realization | `converse`, `regular_realization` |
+| Regular-language specialization | `regular_image` |
+| Executable construction for encoded input | `activationTest`, `boundedEnumeration`, `compiler` |
+| Size and numerical bit guarantees | `compiler.bounded`, `witness_bit_bound`, `EncodedGrammar.compile_bit_bound` |
+| Documentation and concrete execution | `COMPILER.md`, `PROOF_GUIDE.md`, `SkeletonExamples.lean` |
+| No project-specific or unresolved assumptions | Final audit: **737 declarations; 0 / 0 / 0** |
+
+## Obsolete branch cleanup
+
+The following five branches were deleted locally and on GitHub after verifying
+that each tip exactly matched its merged PR head, was an ancestor of the audited
+`main`, was unprotected, and had no active PR. Remote deletions used an atomic
+push with a separate expected-tip lease for each branch. All commits remain in
+`main` history.
+
+| Removed branch | Merged PR |
+| --- | --- |
+| `codex/bounded-tree-enumeration` | #23 |
+| `codex/bounded-family-bounds` | #24 |
+| `codex/bounded-witness` | #25 |
+| `codex/witness-bit-bound` | #26 |
+| `codex/executable-compiler` | #27 |
+
+At cleanup time, `main` was retained and no feature PR was open. The new
+`codex/completion-audit` documentation branch is retained while its PR is active.
+
+## Validation on merged main
+
+- Full `lake build` passes at merged `main` (`5cc89df`, 1330 jobs), without proof-hole warnings.
 - `lake env lean scripts/SkeletonExamples.lean` passes. It checks the public compiler fields and asserts computed outputs for empty rules, epsilon/empty alphabets, distinct silent contexts, duplicate productions, unreachable cycles and unary recursion. All earlier examples pass.
 - The unary example executes to `[([0], []), ([1], [[1]]), ([2], [[2]]), ([3], [[1], [2]])]`; empty rules give no component, epsilon gives one zero component, and separate silent contexts retain two independent zero-period positions.
-- `python3 scripts/check-contracts.py --final` audits 737 declarations, preserves all 661 prior fingerprints and reports direct holes / transitive holes / project axioms as **0 / 0 / 0**.
-- `#print axioms` for `EncodedGrammar.compile`, `compile_correct`, `compile_bounded` and `compiler` reports only standard Lean foundations (`propext`, `Classical.choice`, `Quot.sound`), with no `sorryAx` or project axioms. The same audit checks all new helper declarations.
+- `python3 scripts/check-contracts.py --final` audits 737 declarations, preserves all 737 published fingerprints and reports direct holes / transitive holes / project axioms as **0 / 0 / 0**.
+- `#print axioms` for 17 central semantic, witness, converse, regular, bound and executable declarations reports only standard Lean foundations (`propext`, `Classical.choice`, `Quot.sound`), with no `sorryAx` or project axioms. The final checker audits every project declaration, including helpers and unused assumptions.
 - The previously audited partial-helper set is unchanged at eleven entries. No unsafe declaration or unlisted runtime helper is added.
-- `git diff --check` passes; Lean 4.34.1 / Lake 5.0.0 and pinned Mathlib/GitHub access are verified in Codex Cloud. Final-head CI evidence is reported in the PR.
+- `git diff --check` passes; Lean 4.34.1 / Lake 5.0.0 and pinned Mathlib/GitHub access are verified in Codex Cloud. The merged-main CI run above independently passes the same build/audit/example checks.
 
 Read [COMPILER.md](COMPILER.md) for the public executable API, a complete small
 execution, the correctness/budget fields and the implementation's practical
-limits. Preserve all accepted contracts and stop for the owner's review.
+limits. Future maintenance must preserve accepted contracts and use reviewed PRs.

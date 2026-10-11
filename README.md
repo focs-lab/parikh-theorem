@@ -198,16 +198,18 @@ existence with all four size bounds, coordinate widths and numerical bit budgets
 are proved. No theorem holes or project axioms remain. The executable
 grammar-to-witness `compiler` is implemented with exact-denotation and size
 proofs. The formalization's mathematical and effective-construction obligations
-are complete on this branch. The [proof-status ledger](docs/PROOF_STATUS.md)
-records validation and PR review status. The algorithm follows the deliberately
-coarse finite construction; its output need not be minimal and enumeration can
-be expensive. [Compiler usage](docs/COMPILER.md) gives a small executable example.
+are complete and merged on `main`. The [proof-status ledger](docs/PROOF_STATUS.md)
+records the final audit, completed requirements and branch cleanup. The algorithm
+follows the deliberately coarse finite construction; its output need not be
+minimal and enumeration can be expensive. [Compiler usage](docs/COMPILER.md)
+gives a small executable example.
 
 Contributors should use the [proof plan](docs/PROOF_PLAN.md) to locate a result
 and the [contract guide](docs/CONTRACT_CHECKS.md) to understand statement stability.
-The accepted statements and definition meanings stay fixed while separate PRs
-complete proofs. The [agent handoff](docs/CODEX_FORMALIZATION_PROMPT.md) describes
-the incremental development workflow.
+The accepted statements and definition meanings stay fixed. Future maintenance
+must use separate, reviewed PRs. The
+[agent handoff](docs/CODEX_FORMALIZATION_PROMPT.md) describes the incremental
+development workflow.
 
 ## Build and proof checks
 

@@ -13,7 +13,7 @@ The audit searched the actual sources before choosing the interfaces.
 | `Data/List/Count.lean` and finite-sum infrastructure | Reuse `List.count`, lists, `Fin`, `Finset`, natural scalar multiplication and sums. Plugging uses `List.count_flatten` to reduce terminal counts to child sums. No custom vector arithmetic. |
 | `Algebra/BigOperators/Group/List/Basic.lean`, `Algebra/BigOperators/Ring/List.lean` | Reuse `List.sum_map_add` and `List.sum_map_mul_right` for production/count accounting, and core `List.length_flatten`, `List.flatten_eq_nil_iff`, `List.forall_mem_map`, `List.mem_flatMap` for holes and support. These are already available through the pinned imports; no new Mathlib dependency is needed. |
 | `Computability/RegularExpressions.lean` | Reuse concrete `RegularExpression` constructors and `matches'`. The source explicitly reports no general equivalence with DFAs/NFAs. This project needs only regularity of the constructed finite unions of `u v₁* … vₖ*`; a full equivalence theorem is unnecessary. |
-| `Computability/DFA.lean`, `NFA.lean`, `EpsilonNFA.lean` | Reuse `Language.IsRegular`, `NFA.toDFA_correct` and `εNFA.toNFA_correct` where applicable. A specialized finite automaton for the witness expressions can avoid reproving determinization. The converse does not require a grammar. |
+| `Computability/DFA.lean`, `NFA.lean`, `EpsilonNFA.lean` | Reuse `Language.IsRegular`, `NFA.toDFA_correct` and `εNFA.toNFA_correct` where applicable. The proved finite continuation-language NFA for witness expressions reuses `NFA.toDFA_correct` directly. The converse does not require a grammar. |
 | `Data/Nat/Log.lean` | Reuse `Nat.clog` for the document's fixed-width bit bound. |
 | `Data/Set/Finite/List.lean` | Reuse `List.finite_length_eq` over a finite subtype for production child lists, with finite images and unions for bounded-tree finiteness. No parallel list-enumeration or generic tree-finiteness theory. |
 | `Data/Tree/Basic.lean`, `Data/W/*` | Existing binary trees/W-types do not directly provide ordered variable-arity production nodes, nonterminal holes, local RHS-root matching or grammar semantics. A small raw syntax with a separate validity predicate keeps these meanings explicit. |
@@ -181,8 +181,28 @@ parallel semantics or algebra is introduced. All facts are available through
 the existing pinned imports, so no dependency or cache change is needed.
 The pinned `RegularExpressions.lean` explicitly lacks regex-to-DFA equivalence,
 and `DFA.lean` provides no regular concatenation/star closure. This increment
-proves the exact-image half independently; DFA regularity of the constructed
-word-block expressions remains tracked in `witnessExpression_correct`.
+proved the exact-image half independently. The following milestone completes
+DFA regularity and the combined `witnessExpression_correct` theorem.
+
+The DFA-regularity milestone searches `DFA`, `NFA`, `EpsilonNFA`, and
+`MyhillNerode` before adding infrastructure. The pinned sources provide
+`NFA.toDFA_correct` and regular union, but no word-prefix, concatenation/star
+regularity, or equivalent finite continuation-cover lemma. One immediately
+proved cover adapter constructs an ordinary Mathlib NFA locally from an existing
+finite subtype of languages; `NFA.evalFrom_cons`, `mem_stepSet`, and
+`mem_accepts` prove its exact language. `Language.isRegular_iff` reuses universe
+lifting for the determinized finite-state DFA. No determinization or automaton
+semantics is reproved. Two specialized prefix adapters use the existing DFA's
+`acceptsFrom` state languages and `List.tails`, `List.mem_tails`,
+`List.suffix_cons`, and finite set images/unions. `Language.mem_mul`,
+`one_add_self_mul_kstar_eq_kstar`, and `kstar_one` supply word-prefix and star
+semantics. `Language.IsRegular.add` combines the finite witness union. The
+existing image and witness bridges finish the converse. A full regex-equivalence
+theorem and generic regular concatenation/star development are unnecessary.
+`Computability.NFA` and `Data.Set.Finite.Range` are the new Mathlib imports;
+NFA adds one cached module to the existing selection, with all dependency pins
+unchanged. Classical finite language equality and inclusion establish existence,
+not an executable automaton or grammar compiler.
 
 No trace-membership dependency, replacement semilinearity predicate, or generic
 automata-equivalence development is introduced. Re-audit Mathlib before adding

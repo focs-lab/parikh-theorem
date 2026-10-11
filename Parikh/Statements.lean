@@ -55,6 +55,6 @@ theorem contextFree_image [Finite T] [DecidableEq T] (L : Language T) (hL : L.Is
 /-- Every CFL has a DFA-regular language with the same image (`thm:parikh-statement`). -/
 theorem regular_realization [Finite T] [DecidableEq T] (g : ContextFreeGrammar T) :
     ∃ R : Language T, R.IsRegular ∧ image R = image g.language := by
-  sorry
+  exact converse (image g.language) (grammar_image g)
 
 end Parikh

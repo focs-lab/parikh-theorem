@@ -1,6 +1,7 @@
 import Parikh.Counting
 import Mathlib.Computability.RegularExpressions
 import Mathlib.Computability.DFA
+import Parikh.WordBlockAutomata
 
 /-! Concrete regular expressions; regularity means Mathlib's finite-state DFA
 predicate, not a new project-specific substitute.
@@ -125,7 +126,7 @@ theorem periodExpressions_image [DecidableEq T] (alphabet : AlphabetOrder T)
     simp only [Set.mem_add, SetLike.mem_coe, AddSubmonoid.mem_sup]
 
 /-- The component expression has exactly the frozen indexed linear denotation
-(`lem:linear-regular`); DFA regularity is a separate obligation. -/
+(`lem:linear-regular`); DFA regularity is proved separately. -/
 theorem componentExpression_image [DecidableEq T] (alphabet : AlphabetOrder T)
     (c : Component T) :
     image (componentExpression alphabet c).matches' = c.denotation := by
@@ -144,7 +145,7 @@ theorem componentExpression_image [DecidableEq T] (alphabet : AlphabetOrder T)
     vadd_eq_add, exists_eq_left]
 
 /-- Exact-image half of `witnessExpression_correct`, proved independently of the
-remaining DFA clause (`eq:regular-construction`, `thm:converse`). -/
+DFA clause (`eq:regular-construction`, `thm:converse`). -/
 theorem witnessExpression_image [DecidableEq T] (alphabet : AlphabetOrder T) (W : Witness T) :
     image (witnessExpression alphabet W).matches' = W.denotation := by
   induction W with
@@ -164,17 +165,52 @@ theorem witnessExpression_image [DecidableEq T] (alphabet : AlphabetOrder T) (W 
     rw [hunion]
     rw [componentExpression_image, ih, hcons]
 
+/-- Each ordered starred-period product is DFA-regular (`lem:linear-regular`). -/
+theorem periodExpressions_regular (alphabet : AlphabetOrder T) (periods : List (Vector T)) :
+    (periods.foldr (fun p (rest : RegularExpression T) =>
+      .comp (.star (wordExpression (representative alphabet p))) rest) .epsilon).matches'.IsRegular := by
+  induction periods with
+  | nil => exact isRegular_one
+  | cons p ps ih =>
+    change ((wordExpression (representative alphabet p)).star.matches' *
+      (ps.foldr (fun q (rest : RegularExpression T) =>
+        .comp (.star (wordExpression (representative alphabet q))) rest) .epsilon).matches').IsRegular
+    rw [RegularExpression.matches'_star, wordExpression_matches]
+    exact isRegular_word_star_mul _ _ ih
+
+/-- The base-word prefix preserves the regularity of the period product. -/
+theorem componentExpression_regular (alphabet : AlphabetOrder T) (c : Component T) :
+    (componentExpression alphabet c).matches'.IsRegular := by
+  change ((wordExpression (representative alphabet c.base)).matches' *
+    (c.periods.foldr (fun p (rest : RegularExpression T) =>
+      .comp (.star (wordExpression (representative alphabet p))) rest) .epsilon).matches').IsRegular
+  rw [wordExpression_matches]
+  exact isRegular_word_mul _ _ (periodExpressions_regular alphabet c.periods)
+
+/-- Mathlib's existing finite-union regularity combines the component automata. -/
+theorem witnessExpression_regular (alphabet : AlphabetOrder T) (W : Witness T) :
+    (witnessExpression alphabet W).matches'.IsRegular := by
+  induction W with
+  | nil => exact isRegular_zero
+  | cons c W ih =>
+    exact (componentExpression_regular alphabet c).add ih
+
 /-- The constructed expression realizes the exact witness and is DFA-regular (`thm:converse`). -/
 theorem witnessExpression_correct [DecidableEq T] (alphabet : AlphabetOrder T) (W : Witness T) :
     image (witnessExpression alphabet W).matches' = W.denotation ∧
       (witnessExpression alphabet W).matches'.IsRegular := by
-  refine ⟨witnessExpression_image alphabet W, ?_⟩
-  sorry
+  exact ⟨witnessExpression_image alphabet W, witnessExpression_regular alphabet W⟩
 
 /-- Abstract semilinear sets are regular Parikh images (`thm:converse`). -/
 theorem converse [Finite T] [DecidableEq T] (X : Set (Vector T)) (hX : IsSemilinearSet X) :
     ∃ R : Language T, R.IsRegular ∧ image R = X := by
-  sorry
+  classical
+  let : Fintype T := Fintype.ofFinite T
+  let alphabet : AlphabetOrder T :=
+    ⟨Finset.univ.toList, Finset.nodup_toList _, by intro a; simp⟩
+  obtain ⟨W, hW⟩ := exists_witness X hX
+  obtain ⟨himage, hregular⟩ := witnessExpression_correct alphabet W
+  exact ⟨(witnessExpression alphabet W).matches', hregular, himage.trans hW⟩
 
 /-- Regular-language specialization using Mathlib's DFA semantics (`thm:parikh-statement`). -/
 theorem regular_image [Finite T] [DecidableEq T] (R : Language T) (hR : R.IsRegular) :

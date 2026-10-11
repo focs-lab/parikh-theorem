@@ -5,12 +5,18 @@ vectors of a context-free language form a semilinear set. The development uses
 Mathlib's languages, context-free grammars, and semilinear sets, so its results
 can be used without translating to a separate language or grammar formalism.
 
-**The forward theorem and existence of an exact finite semilinear witness are
-proved.** The library also constructs regular expressions with those exact
-Parikh images. The remaining regular-language results, executable construction,
-and quantitative bounds are tracked in the [proof-status ledger](docs/PROOF_STATUS.md).
-A successful build may still contain explicitly tracked `sorry` obligations;
-completion of the forward theorem does not mean every planned result is finished.
+**The forward theorem, exact finite semilinear witnesses, and converse regular
+realization are proved.** Over a finite terminal alphabet, every semilinear set
+is the exact Parikh image of a Mathlib DFA-regular language, and every Mathlib
+grammar has a regular language with the same image. The derivation-tree proof
+supports arbitrary ambient nonterminal types. Witness and automaton existence
+are classical proofs.
+
+Regular-language specialization, executable construction with correctness
+proofs, and quantitative bounds remain in progress. All **4 remaining theorem
+holes** are tracked in the [proof-status ledger](docs/PROOF_STATUS.md).
+A successful build may still contain these explicitly tracked `sorry`
+obligations; algorithm implementations are also still outstanding.
 
 Start with the [main statements](Parikh/Statements.lean), the
 [mathematical proof (PDF)](reference/parikh_theorem.pdf), or the
@@ -56,8 +62,10 @@ language**. For a linear component, choose words $u_b,u_{p_1},\ldots,u_{p_k}$
 with the required count vectors and use $u_b(u_{p_1})^*\cdots(u_{p_k})^*$;
 then take a finite union. Together the two directions imply that every
 context-free language has the same Parikh image as some regular language.
-The [ledger](docs/PROOF_STATUS.md) distinguishes the proved expression-image
-identities from the remaining DFA-regularity obligations.
+Both directions and the equal-image regular realization are proved in Lean.
+The separate `regular_image` theorem, which specializes semilinearity to an
+arbitrary DFA-regular language, remains an obligation in the
+[ledger](docs/PROOF_STATUS.md).
 
 ### Lean interface
 
@@ -83,6 +91,9 @@ The grammar-level results are `Parikh.grammar_image` and
 equality assumption on the ambient nonterminal type `g.NT`: the finite grammar
 rules determine the relevant nonterminals. Witness existence is currently a
 classical proof; it is separate from an executable grammar-to-witness compiler.
+`Parikh.converse` realizes any semilinear set as a DFA-regular language, and
+`Parikh.regular_realization` gives a regular language with the same image as a
+given grammar. These are also classical existence results.
 
 ## Proof approach and attribution
 
@@ -125,6 +136,12 @@ The forward argument has four parts:
    The first sum pays for one occurrence of every chosen context. Bounded tree
    families make the union finite; exact reconstruction proves both inclusions.
 
+For the converse, ordered representative words realize each base and period.
+The construction proves both the exact image of the resulting expression and
+DFA regularity. Specialized finite NFAs handle literal-word and starred-word
+prefixes; Mathlib's subset construction and finite-union results supply the
+remaining automata steps.
+
 The [proof plan](docs/PROOF_PLAN.md) maps the exposition's theorem labels to Lean
 declarations. The [Mathlib reuse audit](docs/MATHLIB_REUSE.md) records existing
 library results used for counting, additive closure, finite unions, grammars,
@@ -148,7 +165,11 @@ flowchart TD
   Activation --> Forward
   Finiteness --> Forward
   Counting --> Forward
-  Counting --> Regular[Regular-expression realization]
+  Counting --> Regular[Exact regular-expression images]
+  Automata[Word-block NFAs and Mathlib determinization] --> Converse[Converse regular realization]
+  Regular --> Converse
+  Forward --> EqualImage[Equal-image regular language]
+  Converse --> EqualImage
   Forward --> Effective[Executable construction and bounds: in progress]
   Activation --> Effective
 ```
@@ -167,7 +188,8 @@ flowchart TD
 | [InsertionSequences.lean](Parikh/InsertionSequences.lean) | Root, completeness, weight, size, and support accounting over insertion sequences. |
 | [Activation.lean](Parikh/Activation.lean) | Abstract activation, first occurrences, positive multiplicities, their realization by trees, and the linear-component equality. |
 | [FiniteRepresentation.lean](Parikh/FiniteRepresentation.lean) | Finiteness of bases and bounded cycles, and semilinearity of their union. |
-| [RegularRealization.lean](Parikh/RegularRealization.lean) | Representative words, regular expressions for components/witnesses, exact images, and converse/regular-language contracts. |
+| [WordBlockAutomata.lean](Parikh/WordBlockAutomata.lean) | Finite continuation-language NFAs and DFA regularity for fixed-word and starred-word prefixes, reusing Mathlib determinization. |
+| [RegularRealization.lean](Parikh/RegularRealization.lean) | Representative words, component/witness expressions, exact images, DFA regularity, and the proved converse. The `regular_image` specialization remains open. |
 | [Construction.lean](Parikh/Construction.lean) | Finite grammar encoding, enumeration/compiler specifications, and quantitative size/bit bounds. Algorithm implementations and bound proofs remain in progress. |
 
 The remaining folders support reading, building, and reviewing the proofs:

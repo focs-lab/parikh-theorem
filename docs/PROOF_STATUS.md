@@ -13,7 +13,9 @@ fix [PR #21](https://github.com/focs-lab/parikh-theorem/pull/21), have also merg
 Current milestone: executable activation testing (`lem:activation-test`),
 branch `codex/executable-activation-test`, based on merged `main`
 (`73ff517a0cd9cabc38932497b798ef0d337eeeb4`).
-The PR and CI evidence will be linked after publication.
+Published as [PR #22](https://github.com/focs-lab/parikh-theorem/pull/22);
+the PR's [checks](https://github.com/focs-lab/parikh-theorem/pull/22/checks)
+record CI evidence for the submitted head.
 There are **3 direct `sorry` obligations**, zero project axioms, and 3 declarations
 transitively dependent on `sorryAx`, unchanged in this milestone. All accepted
 qualitative Parikh results are proved. This increment implements the first

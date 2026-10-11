@@ -1,7 +1,7 @@
 # Accepted proof plan
 
 The owner accepted the statement skeleton in PR #2 on 2026-10-11.
-The counting/witness milestone is proved; Parikh's theorem remains in progress. Read the complete reference, including appendices, alongside the
+The counting/witness and grammar/tree semantics milestones are proved; Parikh's theorem remains in progress. Read the complete reference, including appendices, alongside the
 statements; source labels below refer to `reference/parikh_theorem.tex`.
 
 ## Reading order and module purposes
@@ -45,7 +45,7 @@ flowchart TD
 ```
 
 These are intended dependencies for the remaining proof. The four counting/witness
-contracts now have complete proofs; the other 24 theorem bodies remain `sorry`. No forward proof depends on the converse,
+contracts and grammar/tree equivalence now have complete proofs; the other 23 theorem bodies remain `sorry`. No forward proof depends on the converse,
 trace theory, a grammar normal form, or Presburger elimination. The finite-witness
 bridge to Mathlib is separate from the derivation-tree proof.
 
@@ -60,8 +60,8 @@ and algorithm values are pending.
 | `sec:statement`, `eq:word-add` | `counts`, `image`, `counts_append` | Terminal equality; counts are `List.count` | Mathlib `List.count_append`; proved |
 | `sec:statement`, `eq:preview` | `Component.denotation`, `Witness.denotation`, `component_isLinearSet`, `witness_isSemilinearSet`, `exists_witness` | Independent natural coefficients over indexed period lists | Mathlib finite-range additive closure and finite unions; all bridges proved |
 | `def:tree`, `def:statistics` | `ParseTree`, `Valid`, `Complete`, `ParseTree.frontier`, `yield`, `weight`, `productionSize`, `height`, `support` | Exact production membership and ordered child-root matching | Mathlib grammar rules and symbols; concrete |
-| `prop:tree-word`, `app:derivations` | `derives_iff_tree` | Every grammar, root and word; no finite `g.NT` hypothesis | Partial-tree expansion and existing rewrite context lemmas; pending |
-| `eq:word-context` | reused `ContextFreeRule.Rewrites.append_left`, `append_right` and grammar derivation adapters | Prefix/suffix closure | Mathlib already supplies one-step machinery; multistep adapter deferred |
+| `prop:tree-word`, `app:derivations` | `derives_iff_tree` | Every grammar, root and word; no finite `g.NT` hypothesis | Partial-tree expansion and existing rewrite context lemmas; proved |
+| `eq:word-context` | reused `ContextFreeRule.Rewrites.append_left`, `append_right` and grammar derivation adapters | Prefix/suffix closure | Reuse Mathlib one-step and multistep prefix/suffix closure directly; no parallel adapter needed |
 | `def:cycle`, `eq:cycle-root` | `OneHole`, `Cycle` | Exactly one matching hole, positive production count | Root-in-support consequence deferred; definitions concrete |
 | `lem:plug`, `eq:plug-wt`, `eq:plug-size`, `eq:plug-supp` | `plugging` | Valid one-hole context and matching complete tree | Induction on hole path; pending |
 | `def:insertion`, `lem:enabled` | `Inserts`, `insertion_enabled` | Position selects an internal matching subtree | Plugging and occurrence existence; pending |

@@ -33,7 +33,9 @@ merged. No named proof or implementation obligation remains.
 The mathematical and executable-construction scope above remains complete.
 The current optional increment adds a JSON CLI on branch `codex/witness-cli`,
 based on merged `main` at `def51ce8e0877969cac39408cce3318a26edf00d` (PR #28).
-Publication and final-head CI evidence will be recorded when the PR is opened.
+Published as [PR #29](https://github.com/focs-lab/parikh-theorem/pull/29);
+its [checks](https://github.com/focs-lab/parikh-theorem/pull/29/checks) record CI
+for the submitted head.
 
 `bin/parikh` accepts a grammar file or standard input and prints JSON base/period
 coordinate arrays. `Parikh/Cli.lean` validates all finite labels and invokes the

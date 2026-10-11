@@ -76,8 +76,9 @@ The grammar-level results are `Parikh.grammar_image` and
 `Parikh.grammar_witness`. The latter returns an existential witness `W` satisfying
 `W.denotation = Parikh.image g.language`. They impose no finiteness or decidable
 equality assumption on the ambient nonterminal type `g.NT`: the finite grammar
-rules determine the relevant nonterminals. Witness existence is currently a
-classical proof; it is separate from an executable grammar-to-witness compiler.
+rules determine the relevant nonterminals. General witness existence uses a
+classical proof. For finite encoded input, `Parikh.compiler` computes a witness
+with proved exact denotation and size bounds; see [running the compiler](docs/COMPILER.md).
 `Parikh.converse` realizes any semilinear set as a DFA-regular language, and
 `Parikh.regular_realization` gives a regular language with the same image as a
 given grammar. These are also classical existence results.
@@ -108,8 +109,8 @@ an adaptation of the derivation-tree approach presented by
 [Rubtsov (2022)](https://arxiv.org/abs/2301.00047). Sin'ya attributes the
 underlying decomposition method to Takahashi's 1970 thesis. This is not a
 line-by-line formalization of Parikh's original paper. Rubtsov's related proof
-is explicitly nonconstructive; the planned executable compiler is a separate
-part of this library. The [proof plan](docs/PROOF_PLAN.md) maps source labels to
+is explicitly nonconstructive; this library also supplies a certified executable
+compiler from the finite tree construction. The [proof plan](docs/PROOF_PLAN.md) maps source labels to
 Lean declarations, and the [Mathlib reuse audit](docs/MATHLIB_REUSE.md) explains
 which existing library results are used.
 
@@ -138,7 +139,7 @@ flowchart TD
   Converse --> EqualImage
   DFAGrammar[Exact DFA to grammar bridge] --> Specialization[Regular-language specialization]
   Forward --> Specialization
-  Forward --> Effective[Executable construction and bounds: in progress]
+  Forward --> Effective[Certified executable construction and bounds]
   Activation --> Effective
 ```
 
@@ -165,6 +166,10 @@ flowchart TD
 | [FiniteWitness.lean](Parikh/FiniteWitness.lean) | Classical assembly from exact finite tree families, with proved denotation and component-count bounds. |
 | [BoundedFamilySupport.lean](Parikh/BoundedFamilySupport.lean) | Finite syntax covers and height induction for quantitative tree counts and terminal-yield length. |
 | [BoundedEnumeration.lean](Parikh/BoundedEnumeration.lean) | Executable enumeration of valid open trees up to any height, with an exact membership proof. |
+| [CompilerSupport.lean](Parikh/CompilerSupport.lean) | Computable tree equality, list-component denotation and grammar activation adapters. |
+| [CompilerTrees.lean](Parikh/CompilerTrees.lean) | Executable exact base/cycle lists, with only duplicate syntax removed. |
+| [CompilerBounds.lean](Parikh/CompilerBounds.lean) | Declared-size bounds for those lists, reusing the proved counting cover. |
+| [ExecutableCompiler.lean](Parikh/ExecutableCompiler.lean) | `compiler`, with exact Parikh-image equality, all four size bounds and a bit-budget corollary. |
 
 The remaining folders support reading, building, and reviewing the proofs:
 
@@ -191,9 +196,12 @@ Executable activation testing and bounded-tree enumeration are implemented with
 correctness proofs. Base/cycle cardinalities, leaf-weight bounds and exact witness
 existence with all four size bounds, coordinate widths and numerical bit budgets
 are proved. No theorem holes or project axioms remain. The executable
-grammar-to-witness compiler still needs an implementing value with correctness
-and size proofs. The [proof-status ledger](docs/PROOF_STATUS.md) distinguishes
-this missing implementation from completed theorem proofs.
+grammar-to-witness `compiler` is implemented with exact-denotation and size
+proofs. The formalization's mathematical and effective-construction obligations
+are complete on this branch. The [proof-status ledger](docs/PROOF_STATUS.md)
+records validation and PR review status. The algorithm follows the deliberately
+coarse finite construction; its output need not be minimal and enumeration can
+be expensive. [Compiler usage](docs/COMPILER.md) gives a small executable example.
 
 Contributors should use the [proof plan](docs/PROOF_PLAN.md) to locate a result
 and the [contract guide](docs/CONTRACT_CHECKS.md) to understand statement stability.
@@ -217,9 +225,9 @@ The accepted statements and supporting definition meanings are frozen; proofs
 are completed in separate, reviewable PRs. CI uses
 `python3 scripts/check-contracts.py --final` to reject every project hole,
 project-added axiom and transitive unresolved dependency. This check now passes;
-it audits declarations, so it does not establish that the `Compiler` interface
-has an executable implementing value. Standard Lean foundational axioms are
-reported separately.
+the public `compiler` value supplies the implementation and its proofs, and
+the example script checks concrete execution. Standard Lean foundational axioms
+are reported separately.
 See [contract checks](docs/CONTRACT_CHECKS.md) for the full policy.
 
 ## References

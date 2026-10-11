@@ -229,11 +229,10 @@ state. It can finish precisely when that state is accepting.
 exactly the same words. The shared forward result in `GrammarImage.lean` then
 gives semilinearity, and `RegularRealization.lean` exposes `regular_image`.
 
-The existence proofs use classical reasoning. Computing a witness from a finite
-grammar encoding, together with proved resource bounds, is a further obligation.
+The existence proofs use classical reasoning. The public `compiler` also
+computes a witness from finite grammar input, with proved resource bounds.
 [Construction.lean](../Parikh/Construction.lean) specifies those requirements;
-the [status ledger](PROOF_STATUS.md) distinguishes them from the completed
-semantic results.
+[ExecutableCompiler.lean](../Parikh/ExecutableCompiler.lean) implements them.
 
 ## 10. Computing whether a context family can activate
 
@@ -253,7 +252,7 @@ removes operations, so the original number of selected operations gives enough
 rounds. The executable value `activationTest` packages this procedure with a
 proof that its Boolean result is `true` exactly when `Activatable` holds.
 Only the supplied input sets must be finite; labels and operation types may be
-infinite. The full grammar compiler remains a separate implementation task.
+infinite. The full grammar compiler specializes this test to actual cycle trees.
 
 ## 11. Computing the finite tree families
 
@@ -275,8 +274,8 @@ value proves that a tree appears exactly when it is valid for the decoded
 grammar and its height is within the requested bound. This includes open trees
 and holes for unused declared symbols. Duplicate productions may repeat trees;
 the contract concerns membership, so it does not require a unique listing.
-Filtering these trees into bases and contexts, assembling the witness with the
-activation test, and proving its quantitative bounds remain compiler work.
+`CompilerTrees.lean` filters these trees into exact base and context lists and
+removes duplicate syntax. The compiler then assembles their activatable subsets.
 
 ## 12. Bounding how many trees and terminals occur
 
@@ -301,7 +300,7 @@ lengths gives the next budget. Summing a tree's terminal counts equals its
 yield length, so the same bound applies to weight norm. The accepted
 `bounded_family_bounds` theorem in [Construction.lean](../Parikh/Construction.lean)
 now proves these claims. The following steps bound the resulting witness and
-its numerical encoding; executable compilation remains.
+its numerical encoding and prove the executable compiler's guarantees.
 
 ## 13. Bounding the complete witness
 
@@ -322,7 +321,7 @@ exact denotation using the existing tree formula. The accepted `bounded_witness`
 theorem in [Construction.lean](../Parikh/Construction.lean) now combines that
 assembly with the family and norm budgets. This proves that an exact witness
 with all four size bounds exists. The assembly uses classical choices;
-computing the witness from encoded grammar input is still a separate task.
+the executable compiler supplies the encoded-input computation separately.
 
 ## 14. Bounding the numerical encoding
 
@@ -342,5 +341,33 @@ bits even when the witness contains components and zero periods.
 The accepted `witness_bit_bound` theorem in
 [Construction.lean](../Parikh/Construction.lean) proves both coordinate fit and
 the total budget using Mathlib's logarithm and bounded-sum results. All named
-theorem obligations are now proved. Producing the witness by an executable
-grammar compiler, with exact denotation and size proofs, remains the next task.
+theorem obligations are proved. The executable compiler uses this theorem for
+its computed output, as the following final step explains.
+
+## 15. The certified executable compiler
+
+For an `EncodedGrammar`, enumerate syntax through the declared nonterminal
+count plus one. Filter complete simple start trees into bases, and nontrivial
+same-root/hole contexts into cycles. The cycle filter uses the computed active
+alphabet so it matches the exact family in the general grammar theorem, even
+when some declared symbols are unused. Remove repeated trees caused by duplicate
+productions, retaining different contexts that happen to have equal weights.
+
+For each base, list every sublist of the duplicate-free cycle family. These
+sublists represent all context subsets exactly once. Test activation using the
+contexts' root labels and finite production-label supports. For every successful
+pair, sum the original base weight and the first copy of each selected context;
+list their weights as independently indexed periods.
+
+`listComponent_denotation` proves that this list order has the same denotation
+as the mathematical `contextComponent`. `contextActivation_correct` identifies
+the Boolean test with `ContextsActivatable`. Exact base/cycle membership then
+lets `compile_correct` reuse the proved tree representation to obtain equality
+with the grammar's Parikh image. The same counting cover at the declared height
+bounds family lengths and weights; `compile_bounded` transfers these bounds to
+the actual output list, and `compile_bit_bound` supplies coordinate widths.
+
+The public `compiler` value packages the executable function with both proofs
+required by `Compiler`. [Compiler usage](COMPILER.md) shows a small execution.
+The construction is finite and certified, but deliberately coarse: overlapping
+components and expensive enumeration are allowed by the contract.

@@ -1,5 +1,8 @@
 # Proof status: statement skeleton, awaiting owner review
 
+Review: [PR #2](https://github.com/focs-lab/parikh-theorem/pull/2), branch
+`codex/readable-statement-skeleton`, based on `main` after merged handoff PR #1.
+
 The library builds with **28 named direct `sorry` obligations**, no project axioms,
 and 28 declarations transitively dependent on `sorryAx`. No main mathematical
 proof has been implemented. Foundational data definitions are concrete. The

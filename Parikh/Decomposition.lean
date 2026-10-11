@@ -1,5 +1,6 @@
 import Parikh.GrammarTrees
 import Parikh.TreePlugging
+import Parikh.TreeReplacement
 
 /-! A compact family of internal surgery/decomposition contracts.
 Context identity, positions, roots and support survive until activation.
@@ -52,7 +53,20 @@ theorem plugging [DecidableEq T] (g : ContextFreeGrammar T) (E t : ParseTree T g
 theorem insertion_enabled (g : ContextFreeGrammar T) (t C : ParseTree T g.NT)
     (A : g.NT) (ht : Complete g t) (hC : Cycle g C A) :
     (∃ t', Inserts g t C t') ↔ A ∈ t.support := by
-  sorry
+  classical
+  constructor
+  · rintro ⟨t', _, _, B, hCB, q, u, hpos, hu, _⟩
+    have hBA : B = A := Symbol.nonterminal.inj (hCB.2.1.symm.trans hC.2.1)
+    subst B
+    exact (ht.mem_support_iff_subtree A).mpr ⟨q, u, hpos, hu⟩
+  · intro hA
+    obtain ⟨q, u, hpos, hu⟩ := (ht.mem_support_iff_subtree A).mp hA
+    obtain ⟨huc, E, hE, _, _, hreplace⟩ := ht.subtree_context q u hpos A hu
+    have hCu := plugging g C u A hC.1 huc hu
+    have hCuRoot : (C.plug u).root = .nonterminal A := hCu.2.1.trans hC.2.1
+    have hwhole := plugging g E (C.plug u) A hE hCu.1 hCuRoot
+    exact ⟨E.plug (C.plug u), ht, hwhole.1, A, hC, q, u, hpos, hu,
+      hreplace (C.plug u)⟩
 
 /-- Exact accounting, including zero-weight cycles (`lem:insertion-laws`). -/
 theorem insertion_accounting [DecidableEq T] (g : ContextFreeGrammar T)
@@ -60,7 +74,24 @@ theorem insertion_accounting [DecidableEq T] (g : ContextFreeGrammar T)
     t'.root = t.root ∧ t'.weight = t.weight + C.weight ∧
       t'.productionSize = t.productionSize + C.productionSize ∧
       t'.support = t.support ∪ C.support := by
-  sorry
+  obtain ⟨ht, _, A, hC, q, u, hpos, hu, hreplace⟩ := h
+  obtain ⟨huc, E, hE, hroot, hplug, houter⟩ := ht.subtree_context q u hpos A hu
+  have hCu := plugging g C u A hC.1 huc hu
+  have hCuRoot : (C.plug u).root = .nonterminal A := hCu.2.1.trans hC.2.1
+  have hbefore := plugging g E u A hE huc hu
+  have hafter := plugging g E (C.plug u) A hE hCu.1 hCuRoot
+  have hresult : E.plug (C.plug u) = t' :=
+    Option.some.inj ((houter (C.plug u)).symm.trans hreplace)
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · rw [← hresult, hafter.2.1, hroot]
+  · rw [← hresult, hafter.2.2.1, hCu.2.2.1, ← hplug, hbefore.2.2.1]
+    ac_rfl
+  · rw [← hresult, hafter.2.2.2.1, hCu.2.2.2.1, ← hplug, hbefore.2.2.2.1]
+    omega
+  · rw [← hresult, hafter.2.2.2.2, hCu.2.2.2.2, ← hplug, hbefore.2.2.2.2]
+    ext B
+    simp only [Set.mem_union]
+    tauto
 
 /-- Simple complete trees have bounded production height (`lem:simple-height`). -/
 theorem simple_height (g : ContextFreeGrammar T) (t : ParseTree T g.NT)

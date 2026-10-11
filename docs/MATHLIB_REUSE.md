@@ -31,6 +31,19 @@ and root when hole labels match. No equivalent theorem for this production-tree
 syntax exists in Mathlib. Ordinary list sums and membership handle the child
 forests; no new forest representation, statistic, or instance is introduced.
 
+The insertion milestone reuses core `List.mem_iff_getElem?`,
+`List.mem_of_getElem?`, `List.getElem?_eq_some_iff`, and
+`Option.bind_eq_some_iff` to connect membership with indexed occurrences.
+`List.mem_or_eq_of_mem_set`, `List.map_set`, `List.set_getElem_self`, and
+`List.set_eq_take_append_cons_drop` handle a single selected child; existing
+list-map/flatten lemmas preserve untouched complete branches and exactly one
+hole. There is no existing equivalent for this grammar-specific tree syntax.
+Three structural adapters establish unchanged no-hole branches, support versus
+subtree occurrences, and the outer one-hole context. The accepted plugging
+contract then supplies all insertion statistics; ordinary addition and set
+union laws finish the proof. No new syntax, statistic, instance, or dependency
+is introduced.
+
 No trace-membership dependency, replacement semilinearity predicate, or generic
 automata-equivalence development is introduced. Re-audit Mathlib before adding
 helpers in each accepted proof milestone; these identified gaps are not permission

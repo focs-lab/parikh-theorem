@@ -170,4 +170,85 @@ example : Complete plugGrammar (nestedContext.plug insertedWordTree) ∧
       outerPlugRule, middlePlugRule, wordPlugRule]
     tauto
 
+/-! Occurrence-based insertion: two siblings have the same label, both are empty
+productions, and a zero-weight unit cycle wraps only the second occurrence. -/
+
+def forkRule : ContextFreeRule Bool ℕ := ⟨0, [.nonterminal 1, .nonterminal 1]⟩
+def emptyRule : ContextFreeRule Bool ℕ := ⟨1, []⟩
+def loopRule : ContextFreeRule Bool ℕ := ⟨1, [.nonterminal 1]⟩
+abbrev insertionGrammar : ContextFreeGrammar Bool := ⟨ℕ, 0, {forkRule, emptyRule, loopRule}⟩
+def emptyChild : ParseTree Bool ℕ := .node emptyRule []
+def repeatedTree : ParseTree Bool ℕ := .node forkRule [emptyChild, emptyChild]
+def silentCycle : ParseTree Bool ℕ := .node loopRule [.hole 1]
+def wrappedTree : ParseTree Bool ℕ :=
+  .node forkRule [emptyChild, silentCycle.plug emptyChild]
+
+theorem insertion_data : Complete insertionGrammar repeatedTree ∧
+    Cycle insertionGrammar silentCycle 1 := by
+  have hc : Valid insertionGrammar emptyChild :=
+    Valid.node (g := insertionGrammar) _ [] (by simp [insertionGrammar])
+      (by simp) (by simp [emptyRule])
+  constructor
+  · refine ⟨Valid.node (g := insertionGrammar) _ _ (by simp [insertionGrammar]) ?_ ?_, ?_⟩
+    · intro c h
+      have heq : c = emptyChild := by simpa using h
+      exact heq.symm ▸ hc
+    · simp [ParseTree.root, emptyChild, forkRule, emptyRule]
+    · simp [repeatedTree, emptyChild, ParseTree.holes]
+  · refine ⟨⟨Valid.node (g := insertionGrammar) _ _ (by simp [insertionGrammar]) ?_ ?_, ?_⟩,
+      rfl, ?_⟩
+    · intro c h
+      have heq : c = .hole 1 := by simpa using h
+      subst c
+      exact Valid.hole (g := insertionGrammar) (1 : ℕ)
+    · simp [ParseTree.root, loopRule]
+    · simp [silentCycle, ParseTree.holes]
+    · simp [silentCycle, ParseTree.productionSize]
+
+example : (∃ t', Inserts insertionGrammar repeatedTree silentCycle t') ∧
+    2 ∉ repeatedTree.support := by
+  constructor
+  · apply (insertion_enabled insertionGrammar repeatedTree silentCycle 1
+      insertion_data.1 insertion_data.2).mpr
+    simp [repeatedTree, emptyChild, ParseTree.support, ParseTree.productionLabels,
+      forkRule, emptyRule]
+  · simp [repeatedTree, emptyChild, ParseTree.support, ParseTree.productionLabels,
+      forkRule, emptyRule]
+
+example : Inserts insertionGrammar repeatedTree silentCycle wrappedTree ∧
+    wrappedTree.subtree [0] = some emptyChild ∧
+    wrappedTree.subtree [1] = some (silentCycle.plug emptyChild) ∧
+    repeatedTree.replaceAt [2] (silentCycle.plug emptyChild) = none ∧
+    wrappedTree.root = repeatedTree.root ∧ wrappedTree.weight = repeatedTree.weight ∧
+    wrappedTree.productionSize = 4 ∧ wrappedTree.support = repeatedTree.support := by
+  have hpos : repeatedTree.subtree [1] = some emptyChild := by
+    simp [repeatedTree, ParseTree.subtree]
+  obtain ⟨hc, E, hE, _, _, hr⟩ :=
+    insertion_data.1.subtree_context [1] emptyChild hpos 1 rfl
+  have hCu := plugging insertionGrammar silentCycle emptyChild 1 insertion_data.2.1 hc rfl
+  have hcomplete := plugging insertionGrammar E (silentCycle.plug emptyChild) 1 hE hCu.1
+    (hCu.2.1.trans insertion_data.2.2.1)
+  have hreplace : repeatedTree.replaceAt [1] (silentCycle.plug emptyChild) =
+      some wrappedTree := by simp [repeatedTree, wrappedTree, ParseTree.replaceAt]
+  have heq := Option.some.inj ((hr (silentCycle.plug emptyChild)).symm.trans hreplace)
+  have hi : Inserts insertionGrammar repeatedTree silentCycle wrappedTree :=
+    ⟨insertion_data.1, heq ▸ hcomplete.1, 1, insertion_data.2, [1], emptyChild,
+      hpos, rfl, hreplace⟩
+  have ha := insertion_accounting _ _ _ _ hi
+  refine ⟨hi, ?_, ?_, ?_, ha.1, ?_, ?_, ?_⟩
+  · simp [wrappedTree, ParseTree.subtree]
+  · simp [wrappedTree, ParseTree.subtree]
+  · simp [repeatedTree, ParseTree.replaceAt]
+  · rw [ha.2.1]
+    have hz : silentCycle.weight = 0 := by
+      funext a
+      simp [silentCycle, ParseTree.weight, counts, ParseTree.yield]
+    rw [hz, add_zero]
+  · rw [ha.2.2.1]
+    simp [repeatedTree, emptyChild, silentCycle, ParseTree.productionSize]
+  · rw [ha.2.2.2]
+    ext A
+    simp [repeatedTree, emptyChild, silentCycle, ParseTree.support,
+      ParseTree.productionLabels, forkRule, emptyRule, loopRule]
+
 end SkeletonExamples

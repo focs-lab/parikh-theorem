@@ -319,6 +319,20 @@ target, datatype, global instance, project axiom, partial helper or pin change i
 needed. Classical finite-set listing remains confined to the existence proof;
 the implementing `compiler` executes list assembly.
 
+The command-line increment reuses Lean's `Lean.Data.Json` parser, object/array
+accessors, natural-number validation and printer, plus standard `Except.mapError`
+and finite-label construction. Core `List.ofFn`, `List.getElem?_ofFn`,
+`List.map_map` and `List.map_id'` prove lossless conversion of finite vectors,
+components and whole indexed witnesses to numeric coordinates. The adapters
+reuse `compiler.correct` and `compiler.bounded`; no second compilation algorithm
+is introduced. A plain coordinate component is the necessary JSON-facing data
+representation, with a proved round trip to the existing function-valued
+component. No new Mathlib import/cache target, instance or partial helper is
+needed. The Bash launcher uses `lake env lean --run`, so the frozen
+`lakefile.toml`, manifest and toolchain pins remain unchanged. The IO/text
+boundary is covered by actual-process tests rather than a claimed formal IO
+semantics theorem.
+
 No trace-membership dependency, replacement semilinearity predicate, or generic
 automata-equivalence development is introduced. Re-audit Mathlib before adding
 helpers in each accepted proof milestone; these identified gaps are not permission

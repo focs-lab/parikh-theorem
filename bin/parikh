@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+parikh_caller_dir=$PWD
+parikh_repo_dir=$(CDPATH='' cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+parikh_args=("$@")
+# Preserve a caller-relative input path when Lake runs from the repository.
+if [[ ${#parikh_args[@]} -eq 1 && ${parikh_args[0]} != -* && ${parikh_args[0]} != /* ]]; then
+  parikh_args[0]="$parikh_caller_dir/${parikh_args[0]}"
+fi
+cd -- "$parikh_repo_dir"
+exec lake env lean --run cli/Main.lean "${parikh_args[@]}"

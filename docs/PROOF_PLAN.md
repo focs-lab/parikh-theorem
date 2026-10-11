@@ -55,6 +55,8 @@ statements; source labels below refer to `reference/parikh_theorem.tex`.
    `CompilerTrees.lean` computes exact duplicate-free families;
    `CompilerBounds.lean` specializes counting to declared finite syntax;
    `ExecutableCompiler.lean` implements and certifies `compiler`.
+   `Cli.lean` validates JSON grammar input and proves lossless coordinate
+   encoding for the optional command-line interface.
 7. `PROOF_STATUS.md` and `CONTRACT_CHECKS.md`: what is incomplete and how review
    freezes the accepted contracts.
 
@@ -393,3 +395,10 @@ Future fixes or optional usability/performance work must preserve every accepted
 statement and supporting definition meaning, retain final-mode CI, and arrive
 as a coherent reviewed PR. Release publication and license selection remain
 owner decisions.
+
+The optional CLI follow-up adds `Parikh/Cli.lean` and `bin/parikh`. Input labels
+are checked into the existing `EncodedGrammar`, with no modulo conversion.
+Core finite-vector/list laws prove the numeric witness round trip; the existing
+compiler proofs then certify exact denotation and size. The entry point uses
+Lean JSON and IO libraries, with process-level regression checks for the text/IO
+boundary. The Lake configuration and all existing contracts remain frozen.

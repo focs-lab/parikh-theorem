@@ -27,6 +27,45 @@ forward theorem, exact finite witnesses, converse, regular specialization,
 executable construction and all specified quantitative bounds are complete and
 merged. No named proof or implementation obligation remains.
 
+
+## Optional follow-up: command-line interface
+
+The mathematical and executable-construction scope above remains complete.
+The current optional increment adds a JSON CLI on branch `codex/witness-cli`,
+based on merged `main` at `def51ce8e0877969cac39408cce3318a26edf00d` (PR #28).
+Publication and final-head CI evidence will be recorded when the PR is opened.
+
+`bin/parikh` accepts a grammar file or standard input and prints JSON base/period
+coordinate arrays. `Parikh/Cli.lean` validates all finite labels and invokes the
+existing `compiler`. `parseIndex_value` proves that accepted labels keep their
+numeric value. The vector/component/witness round-trip theorems recover the
+entire original witness, preserving all component and indexed-period positions.
+`compileCoordinates_correct` and `compileCoordinates_bounded` transfer the
+compiler's exact-image and size guarantees to the numeric output.
+`runJson_of_parseGrammar` connects successful validation to that grammar's
+encoded output. JSON text handling and IO remain runtime adapters exercised by
+actual-process tests, not a claimed formal IO semantics proof.
+
+All **737 prior declaration contracts** are preserved. The manifest appends
+**56 entries** (26 named declarations and 30 generated constructor/projection,
+recursor, matcher and proof helpers), for **793 declarations**. No existing
+statement or definition, accepted baseline, checker, allowlist or pin changes.
+The launcher uses `lake env lean --run`; the frozen `lakefile.toml` stays intact.
+No new Mathlib import/cache target, global instance, partial helper, project
+axiom or proof hole is introduced. Final auditing reports **0 / 0 / 0**.
+
+Validation: full `lake build` passes (1331 jobs), all existing semantic/runtime
+examples pass, and `python3 scripts/test-cli.py` checks actual CLI processes.
+Cases cover file/stdin input, help and diagnostics, paths with spaces from
+outside the checkout, coordinate order, empty/epsilon alphabets and languages,
+distinct zero periods, duplicate rules, unused symbols, unreachable cycles,
+and malformed schema or labels. `#print axioms` for all seven new named proofs
+reports only standard Lean foundations. `git diff --check` and launcher shell
+syntax checking pass. CI retains final-mode auditing and adds the CLI tests.
+
+See [CLI.md](CLI.md) for a runnable example, the JSON schema, exit statuses,
+correctness boundary and practical limits.
+
 ## Certified compiler (merged PR #27)
 
 `ExecutableCompiler.lean` supplies `EncodedGrammar.compile` and the public
@@ -127,9 +166,10 @@ No named mathematical proof or executable-construction obligation remains.
 `ActivationTest`, `BoundedEnumeration` and `Compiler` all have computable
 implementing values with complete correctness fields. The theorem-hole and
 project-axiom allowlists are empty. The compiler increment is reviewed and merged.
-This closing audit changes documentation and CI display labels only; all **737
-published declaration contracts**, the baseline, checker, allowlists and pins
-remain unchanged.
+The closing audit in PR #28 changed documentation and CI display labels only,
+preserving all 737 then-published contracts. The optional CLI increment above
+extends the manifest without changing those contracts, the baseline, checker,
+allowlists or pins.
 
 The construction is deliberately coarse: tree enumeration and the context
 powerset can be very large. Optimization, additional convenience interfaces
@@ -168,9 +208,10 @@ push with a separate expected-tip lease for each branch. All commits remain in
 | `codex/executable-compiler` | #27 |
 
 At cleanup time, `main` was retained and no feature PR was open. The new
-`codex/completion-audit` documentation branch is retained while its PR is active.
+`codex/completion-audit` documentation branch was then removed after PR #28
+merged. The active optional CLI branch is `codex/witness-cli`.
 
-## Validation on merged main
+## Original completion validation on merged main
 
 - Full `lake build` passes at merged `main` (`5cc89df`, 1330 jobs), without proof-hole warnings.
 - `lake env lean scripts/SkeletonExamples.lean` passes. It checks the public compiler fields and asserts computed outputs for empty rules, epsilon/empty alphabets, distinct silent contexts, duplicate productions, unreachable cycles and unary recursion. All earlier examples pass.

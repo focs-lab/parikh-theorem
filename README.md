@@ -83,6 +83,21 @@ with proved exact denotation and size bounds; see [running the compiler](docs/CO
 `Parikh.regular_realization` gives a regular language with the same image as a
 given grammar. These are also classical existence results.
 
+
+## Command-line use
+
+After `lake build`, compile a finite grammar without writing Lean code:
+
+```sh
+./bin/parikh examples/cli/unary.json
+cat examples/cli/unary.json | ./bin/parikh
+```
+
+The input declares finite alphabet sizes, a start label and tagged production
+symbols. The output is JSON containing base/period coordinate arrays, with the
+same exact denotation as the certified compiler's witness. See
+[CLI usage](docs/CLI.md) for the input/output formats, examples and validation.
+
 ## How the proof works
 
 The proof asks where the bases and periods of a semilinear set come from.
@@ -169,6 +184,7 @@ flowchart TD
 | [CompilerSupport.lean](Parikh/CompilerSupport.lean) | Computable tree equality, list-component denotation and grammar activation adapters. |
 | [CompilerTrees.lean](Parikh/CompilerTrees.lean) | Executable exact base/cycle lists, with only duplicate syntax removed. |
 | [CompilerBounds.lean](Parikh/CompilerBounds.lean) | Declared-size bounds for those lists, reusing the proved counting cover. |
+| [Cli.lean](Parikh/Cli.lean) | Validated JSON grammar adapters and proved preservation of numeric witness coordinates. |
 | [ExecutableCompiler.lean](Parikh/ExecutableCompiler.lean) | `compiler`, with exact Parikh-image equality, all four size bounds and a bit-budget corollary. |
 
 The remaining folders support reading, building, and reviewing the proofs:
@@ -177,6 +193,8 @@ The remaining folders support reading, building, and reviewing the proofs:
 | --- | --- |
 | [reference/](reference/) | The mathematical exposition in LaTeX and PDF, with reproduction instructions. |
 | [docs/](docs/) | Detailed proof plan, status ledger, build guide, Mathlib reuse notes, contract-audit guide, and agent handoff. |
+| [bin/parikh](bin/parikh), [cli/Main.lean](cli/Main.lean) | CLI launcher and file/stdin JSON entry point. |
+| [docs/CLI.md](docs/CLI.md), [examples/cli/](examples/cli/) | Command-line formats and small runnable grammars. |
 | [docs/contracts/](docs/contracts/) | Accepted baseline, append-only declaration fingerprints, and explicit unresolved-obligation lists. |
 | [scripts/ContractAudit.lean](scripts/ContractAudit.lean) | Exports elaborated declaration contracts and axiom dependencies from Lean. |
 | [scripts/check-contracts.py](scripts/check-contracts.py) | Checks frozen contracts and both direct and transitive proof obligations. |
@@ -221,6 +239,7 @@ Then run from the repository root:
 lake build
 python3 scripts/check-contracts.py --final
 lake env lean scripts/SkeletonExamples.lean
+python3 scripts/test-cli.py
 ```
 
 The accepted statements and supporting definition meanings are frozen; proofs

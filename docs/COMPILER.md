@@ -1,5 +1,8 @@
 # Running the certified compiler
 
+For file or stdin JSON input, use the [CLI](CLI.md):
+`./bin/parikh examples/cli/unary.json`.
+
 Import `Parikh` and call `Parikh.compiler.compile` on an `EncodedGrammar`.
 The result is a finite `Witness`: a list of components, each with a base vector
 and an indexed list of periods. Terminal and nonterminal labels use `Fin`.

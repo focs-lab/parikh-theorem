@@ -25,6 +25,7 @@ lake exe cache get Mathlib.Algebra.Group.Submonoid.Finsupp Mathlib.Computability
 LEAN_NUM_THREADS=4 lake build
 python3 scripts/check-contracts.py --final
 lake env lean scripts/SkeletonExamples.lean
+python3 scripts/test-cli.py
 ```
 
 Lake fetches missing dependency checkouts from the exact manifest revisions.
@@ -34,7 +35,9 @@ without `sorry` warnings. CI uses final-mode checking to reject all project hole
 axioms and transitive unresolved dependencies; its proof allowlists are empty.
 The public `compiler` value implements `Compiler` with exact-denotation and size
 proofs. The example script includes runtime assertions on its computed outputs.
-See [compiler usage](COMPILER.md) and the proof-status ledger for review status.
+The CLI launcher `./bin/parikh examples/cli/unary.json` runs through the same
+Lean/Lake environment. See [compiler usage](COMPILER.md), [CLI usage](CLI.md) and
+the proof-status ledger for review status.
 
 ## This Codex Cloud instance
 

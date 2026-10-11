@@ -8,10 +8,11 @@ All proof increments through [PR #17](https://github.com/focs-lab/parikh-theorem
 have merged, with CI passing. The independent README guide in
 [PR #18](https://github.com/focs-lab/parikh-theorem/pull/18) has also merged.
 
-Current milestone: regular-language specialization (`regular_image`),
+Current milestone: [PR #20](https://github.com/focs-lab/parikh-theorem/pull/20),
+regular-language specialization (`regular_image`),
 branch `codex/regular-language-image`, based on merged `main`
 (`08d1dfbb1177505ae936a722da8580ea900e5b66`).
-The PR and CI evidence will be linked after publication.
+CI evidence is recorded in the PR.
 There are **3 direct `sorry` obligations**, zero project axioms, and 3 declarations
 transitively dependent on `sorryAx`, down from 4. All accepted qualitative Parikh
 results are now proved: forward semilinearity, exact finite witness existence,

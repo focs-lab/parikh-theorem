@@ -11,7 +11,9 @@ fix in PR #21 have also merged.
 Current milestone: fixed coordinate widths and the numerical entry-bit budget
 (`eq:bit-bound`), branch `codex/witness-bit-bound`, based on merged `main`
 (`afd1f37e93a0dec0db2562b45408e31660bdc9b7`).
-Publication and final-head CI evidence will be recorded when the PR is opened.
+Published as [PR #26](https://github.com/focs-lab/parikh-theorem/pull/26);
+the PR's [checks](https://github.com/focs-lab/parikh-theorem/pull/26/checks)
+record CI evidence for the submitted head.
 There are **0 direct `sorry` obligations**, **0 project axioms**, and **0
 transitively unresolved declarations**. The completed `witness_bit_bound` removes
 the last entry from both proof-hole allowlists. All qualitative Parikh results,

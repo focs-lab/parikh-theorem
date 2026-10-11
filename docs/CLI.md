@@ -85,6 +85,44 @@ Successful output is a single JSON value on stdout. Diagnostics go to stderr.
 Exit status is `0` for success/help, `2` for invalid input or command arguments,
 and `1` for file/IO errors. No partial witness is printed on input failure.
 
+## Examples with two terminals
+
+These three grammars use terminal labels `0 = a`, `1 = b`, and nonterminal
+`0 = S`. In the table, `n`, `i` and `j` range over nonnegative integers.
+Each pair gives the counts of `a` and `b`, in that order.
+
+| Input file | Grammar | Exact Parikh image |
+| --- | --- | --- |
+| [balanced.json](../examples/cli/balanced.json) | `S → epsilon \| aSb` | `{(n, n)}` |
+| [even-palindromes.json](../examples/cli/even-palindromes.json) | `S → epsilon \| aSa \| bSb` | `{(2i, 2j)}` |
+| [offset-rays.json](../examples/cli/offset-rays.json) | `S → a \| b \| aaSbb` | `{(2n+1, 2n)} ∪ {(2n, 2n+1)}` |
+
+```sh
+./bin/parikh examples/cli/balanced.json
+./bin/parikh examples/cli/even-palindromes.json
+./bin/parikh examples/cli/offset-rays.json
+```
+
+The balanced grammar generates exactly `a^n b^n`, including the empty word.
+Its image is one linear set with base `(0, 0)` and period `(1, 1)`.
+
+The palindrome grammar generates all even-length palindromes over `a` and `b`.
+Each wrapping step adds two equal letters, so its image has base `(0, 0)` and
+independent periods `(2, 0)` and `(0, 2)`. Letter order disappears from the
+image: `abba` is a generated palindrome and `aabb` is not, but both have counts
+`(2, 2)`.
+
+The final grammar generates `a^(2n+1) b^(2n)` or `a^(2n) b^(2n+1)`. Its image
+is a union of two linear sets with bases `(1, 0)` and `(0, 1)` and shared period
+`(2, 2)`. This union cannot be a single linear set: any base would have to lie
+coordinatewise below both `(1, 0)` and `(0, 1)`, forcing `(0, 0)`, which is absent.
+
+These are compact mathematical descriptions. The compiler preserves context
+identities and may print more overlapping components: these inputs produce
+4, 64 and 8 components respectively. The CLI tests compare the represented
+vectors with the formulas above throughout the coordinate box `[0, 12]^2`;
+the generic compiler correctness theorem supplies the exact-image guarantee.
+
 ## Correctness boundary
 
 [`Parikh/Cli.lean`](../Parikh/Cli.lean) validates labels by constructing `Fin`
@@ -121,4 +159,5 @@ python3 scripts/test-cli.py
 CI runs all four checks. The CLI process tests cover file and stdin input,
 help/errors, caller-relative paths with spaces, coordinate order, empty and
 epsilon grammars, zero periods, repeated rules, unreachable cycles, and schema
-and label failures.
+and label failures. They also check the three two-terminal examples against
+their expected Parikh images in a bounded coordinate box.

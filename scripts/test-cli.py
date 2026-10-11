@@ -34,6 +34,31 @@ def grammar(d=0, n=1, rules=None):
             'rules': [] if rules is None else rules}
 
 
+def bounded_image(witness, limit):
+    """Enumerate the represented vectors in [0, limit]^d, including zero periods."""
+    dimension = witness['terminalCount']
+    points = set()
+    for component in witness['components']:
+        base = tuple(component['base'])
+        periods = [tuple(period) for period in component['periods']]
+        for vector in [base, *periods]:
+            assert len(vector) == dimension, vector
+            assert all(type(value) is int and value >= 0 for value in vector), vector
+        if any(value > limit for value in base):
+            continue
+        reached = {base}
+        pending = [base]
+        while pending:
+            point = pending.pop()
+            for period in periods:
+                following = tuple(x + y for x, y in zip(point, period))
+                if all(value <= limit for value in following) and following not in reached:
+                    reached.add(following)
+                    pending.append(following)
+        points.update(reached)
+    return points
+
+
 def main():
     help_result = invoke(['--help'])
     assert help_result.returncode == 0 and 'Usage:' in help_result.stdout
@@ -60,6 +85,20 @@ def main():
     assert success(['examples/cli/empty.json']) == {'terminalCount': 0, 'components': []}
     zero = {'terminalCount': 0, 'components': [{'base': [], 'periods': []}]}
     assert success(['examples/cli/epsilon.json']) == zero
+
+    # Compare denotations, allowing the compiler's overlapping components.
+    limit = 12
+    images = {
+        'balanced': {(n, n) for n in range(limit + 1)},
+        'even-palindromes': {(a, b) for a in range(0, limit + 1, 2)
+                             for b in range(0, limit + 1, 2)},
+        'offset-rays': {(a, b) for a in range(limit + 1) for b in range(limit + 1)
+                        if abs(a - b) == 1 and min(a, b) % 2 == 0},
+    }
+    for name, expected_image in images.items():
+        witness = success([f'examples/cli/{name}.json'])
+        assert witness['terminalCount'] == 2, name
+        assert bounded_image(witness, limit) == expected_image, name
 
     epsilon = {'input': 0, 'output': []}
     silent = {'input': 0, 'output': [{'nonterminal': 0}]}

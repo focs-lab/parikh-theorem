@@ -61,7 +61,11 @@ examples pass, and `python3 scripts/test-cli.py` checks actual CLI processes.
 Cases cover file/stdin input, help and diagnostics, paths with spaces from
 outside the checkout, coordinate order, empty/epsilon alphabets and languages,
 distinct zero periods, duplicate rules, unused symbols, unreachable cycles,
-and malformed schema or labels. `#print axioms` for all seven new named proofs
+and malformed schema or labels. Six runnable JSON grammars include balanced
+counts, even palindromes and a union of offset rays; process tests compare
+those three two-terminal witnesses with their expected images in `[0, 12]^2`.
+The generic compiler correctness theorem applies to all validated inputs.
+`#print axioms` for all seven new named proofs
 reports only standard Lean foundations. `git diff --check` and launcher shell
 syntax checking pass. CI retains final-mode auditing and adds the CLI tests.
 

@@ -12,7 +12,9 @@ Current milestone: the certified executable grammar-to-witness compiler
 (`sec:effective`, `eq:main`, `thm:size-bound`, `eq:bit-bound`), branch
 `codex/executable-compiler`, based on merged `main`
 (`d89ece29dadbdc519f34e8c85f09f459ab4e5201`).
-Publication and final-head CI evidence will be recorded when the PR is opened.
+Published as [PR #27](https://github.com/focs-lab/parikh-theorem/pull/27);
+the PR's [checks](https://github.com/focs-lab/parikh-theorem/pull/27/checks)
+record CI evidence for the submitted head.
 There are **0 direct `sorry` obligations**, **0 project axioms**, and **0
 transitively unresolved declarations**. The public `compiler` now implements
 the accepted interface with exact-denotation and all four size proofs. The

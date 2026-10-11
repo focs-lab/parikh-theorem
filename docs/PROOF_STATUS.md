@@ -1,76 +1,68 @@
-# Proof status: executable bounded-tree enumeration
+# Proof status: bounded-family cardinality and leaf-weight bounds
 
 The owner accepted the reviewed skeleton in [PR #2](https://github.com/focs-lab/parikh-theorem/pull/2)
 on 2026-10-11. The immutable baseline remains the reviewed head
 `6bff9679d7ea03e5401815b80c5a3dc1300f9d36`, including the requested `ParseTree`
 rename. Its pointer and all previous contract fingerprints remain unchanged.
-All proof increments through [PR #22](https://github.com/focs-lab/parikh-theorem/pull/22)
+All proof increments through [PR #23](https://github.com/focs-lab/parikh-theorem/pull/23)
 have merged, with CI passing. Documentation PRs #18/#19 and the math-rendering
 fix in PR #21 have also merged.
 
-Current milestone: executable bounded-tree enumeration (`lem:finite`,
-`sec:effective`), branch `codex/bounded-tree-enumeration`, based on merged `main`
-(`d490885f9c64567a379a6036198d1bd31870e5ce`).
-Published as [PR #23](https://github.com/focs-lab/parikh-theorem/pull/23);
-the PR's [checks](https://github.com/focs-lab/parikh-theorem/pull/23/checks)
+Current milestone: quantitative bounded-family and leaf-weight bounds
+(`lem:count-trees`), branch `codex/bounded-family-bounds`, based on merged `main`
+(`d6472d423d4248db5bb294ab2f626fc90788e686`).
+Published as [PR #24](https://github.com/focs-lab/parikh-theorem/pull/24);
+the PR's [checks](https://github.com/focs-lab/parikh-theorem/pull/24/checks)
 record CI evidence for the submitted head.
-There are **3 direct `sorry` obligations**, zero project axioms, and 3 declarations
-transitively dependent on `sorryAx`, unchanged here. All accepted qualitative
-Parikh results are proved. Activation testing and bounded-tree enumeration now
-have executable implementations with complete correctness proofs. Full witness
-compilation and quantitative bounds remain.
+There are **2 direct `sorry` obligations**, zero project axioms, and 2 declarations
+transitively dependent on `sorryAx`. This milestone removes `bounded_family_bounds`
+from both unresolved lists. All accepted qualitative Parikh results are proved;
+activation testing and bounded-tree enumeration have executable implementations
+with complete correctness proofs. Witness compilation and the witness size/bit
+bounds remain.
 
 ## Completed in this milestone
 
-`boundedEnumeration` is a computable value of the accepted `BoundedEnumeration`
-interface. For every encoded grammar `g`, height `H` and tree `t`, its checked
-`correct` field proves:
+The accepted `bounded_family_bounds` theorem now proves all three conclusions:
 
-```lean
-t ∈ boundedEnumeration.enumerate g H ↔ Valid g.decode t ∧ t.height ≤ H
-```
+- A finite family contains exactly the bases, and has cardinality at most `K`.
+- A finite family contains exactly the bounded cycles, and has cardinality at most `K`.
+- Each base or bounded cycle has terminal-count norm at most `M`.
 
-The result includes valid open trees with arbitrary declared holes, not only
-complete trees or trees rooted at the start symbol. Unused terminal and
-nonterminal declarations are included. Duplicate productions may cause repeated
-trees; the accepted list contract requires exact membership, not `Nodup`.
-Production identity and child order remain part of the original `ParseTree`.
+Here `n` counts active nonterminals, `d` terminals, `p` distinct productions,
+`b` is at least one and bounds every production's arity, `M` is the sum of `b^i`
+for `i = 0, …, n+1`, and `K = (1+d+n+p)^M`. The ambient nonterminal type remains
+arbitrary, including infinite types. No grammar normalization is assumed.
 
-The new `BoundedEnumeration.lean` module contains nine named declarations:
+`BoundedFamilySupport.lean` constructs a classical finite covering family for
+counting. At height zero it contains terminal leaves and active holes. At the
+next height it includes production nodes with all child tuples of that
+production's fixed arity. Dropping child-root compatibility only enlarges the
+family. Mathlib's finite function-space cardinality bounds each tuple family,
+and its finite union bounds yield the recurrence
+`card(F_(H+1)) ≤ q * (q^P_H)^b`, where `P_H = ∑ i≤H, b^i` and `q = 1+d+n+p`.
+The identity `P_(H+1) = 1 + b*P_H` gives `card(F_H) ≤ q^P_H` by induction.
+Filtering the cover yields the exact base and cycle families. This cover is
+noncomputable proof support; the earlier executable enumerator remains the
+algorithm for valid trees and preserves ordered child roots.
 
-| Declaration (namespace `Parikh`) | Role |
-| --- | --- |
-| `ParseTree.height_node_eq` | Express a node's height as one plus its largest child height. |
-| `ParseTree.height_node_le_iff` | A node fits bound `H+1` exactly when each child fits `H`. |
-| `ParseTree.mem_root_sections` | Root-filtered Cartesian products preserve child membership and ordered root matching. |
-| `Valid.node_iff` | Eliminate node validity into rule membership, child validity and exact ordered roots. |
-| `EncodedGrammar.leaves` | Enumerate all declared terminal and nonterminal leaves using `List.finRange`. |
-| `EncodedGrammar.leaves_correct` | The leaf list is exactly the valid height-zero family. |
-| `EncodedGrammar.enumerateTrees` | Enumerate larger trees by finite production choices and Mathlib `List.sections`. |
-| `EncodedGrammar.enumerateTrees_correct` | Prove both directions of the exact membership contract by height induction. |
-| `boundedEnumeration` | Package the runtime with its complete correctness field. |
+A separate height induction bounds terminal-yield length by `P_H`, using
+Mathlib's bounded-list-sum inequality. The total terminal-count norm equals
+yield length by Mathlib's occurrence-count sum law. Simple bases have height
+at most `n`; bounded cycles have height at most `n+1`, and their unique holes
+are active by the proved root-in-support result. Together these give the
+frozen theorem without extra assumptions.
 
-At height zero, only terminal leaves and holes are possible. At the successor
-bound, each production fixes an ordered list of required child roots. Filter the
-previous family by each root, take its ordered Cartesian product, and map each
-child list to that production node. Mathlib's product membership law and the
-child-height equivalence prove soundness and completeness. An empty output has
-one empty child tuple and therefore generates a height-one production node.
-The algorithm terminates by explicit `Nat.rec` on the height bound.
-
-The two runtime definitions, `leaves` and `enumerateTrees`, have no axiom
-dependencies. The proofs and packaged interface depend only on standard Lean
-foundations (`propext`, `Classical.choice`, `Quot.sound`); none depends on `sorryAx`
-or a project axiom. There is no classical runtime selection, new tree datatype,
-instance, partial helper or unsafe declaration.
-
-All 587 earlier contract entries are preserved. The manifest appends 22 entries:
-nine named declarations and thirteen generated proof/equation/matcher helpers,
-for **609 declarations** in total. Baseline, checker, obligation allowlists,
-existing statements and definition meanings, and Lean/Mathlib pins are unchanged.
-`Construction.lean` changes only explanatory comments. The sole new Mathlib
-import/cache target is `Mathlib.Data.List.Sections`, included in CI and the build
-guide; the selected cache was fetched successfully in Codex Cloud.
+All previously published declarations remain in their original modules.
+The counting proof uses the existing generated height, holes and yield equations,
+keeping the executable enumerator and its helpers untouched. Every earlier
+signature and definition fingerprint is preserved by the contract audit.
+No new datatype, instance, Mathlib import, cache target, partial runtime helper,
+unsafe declaration or project axiom is introduced. Lean/Mathlib pins, the
+baseline and checker remain unchanged. All **609 earlier entries** are preserved.
+The manifest appends **35 entries** (15 named counting declarations and 20
+generated proof/equation helpers), for **644 declarations** in total. Only the
+completed theorem's direct and transitive obligation-list entries are removed.
 
 ## Previously completed
 
@@ -101,10 +93,7 @@ guide; the selected cache was fetched successfully in Codex Cloud.
 
 - [PR #22](https://github.com/focs-lab/parikh-theorem/pull/22): executable `activationTest`, exact sufficient-fuel correctness, support monotonicity, and enabled-operation/batch removal equivalences (`lem:activation-test`).
 
-All prior statements, definition meanings and proof bodies are unchanged here.
-The grammar/tree bridge still supports arbitrary derivation order and ambient
-nonterminal types. Classical semantic existence is distinguished from the two
-implemented executable interfaces.
+- [PR #23](https://github.com/focs-lab/parikh-theorem/pull/23): executable `boundedEnumeration`, exact height-bounded membership, ordered child-root products, and declared-leaf enumeration (`lem:finite`, `sec:effective`).
 
 ## Remaining named theorem obligations
 
@@ -113,28 +102,27 @@ allowlists in `docs/contracts/obligations.json` are authoritative for CI.
 
 | Module | Outstanding declarations |
 | --- | --- |
-| Construction | `bounded_family_bounds`, `bounded_witness`, `witness_bit_bound` |
+| Construction | `bounded_witness`, `witness_bit_bound` |
 
-`ActivationTest` and `BoundedEnumeration` now have executable implementing values
+`ActivationTest` and `BoundedEnumeration` have executable implementing values
 with proved correctness fields. `Compiler` still has no implementing value;
-its `correct` and `bounded` fields remain requirements, not assumed theorems.
-The small remaining theorem-hole count does not account for that missing compiler.
-In particular, enumeration alone does not yet compute a semilinear witness.
+its `correct` and `bounded` fields remain requirements. The theorem-hole count
+does not account for that missing compiler. Enumeration alone does not yet
+compute a semilinear witness.
 
 ## Validation
 
-- Affected modules and full `lake build` pass, with only the three tracked bounds-hole warnings in `Construction.lean`.
-- `lake env lean scripts/SkeletonExamples.lean` passes. Kernel-checked examples cover all declared height-zero roots, a duplicate production, a unit cycle, empty alphabets/productions and no productions. The exact correctness field proves inclusion at height two, exclusion at height one, and exclusion of reversed child order. Compiled evaluation returns tree counts `[4, 8, 14]` at successive height bounds and epsilon-tree `(height, hole-count)` pairs `[(0, 1), (1, 0)]`. Earlier examples still pass.
-- `python3 scripts/check-contracts.py` audits 609 declarations, preserving all 587 earlier fingerprints with an append-only manifest extension. Direct holes / transitive holes / project axioms remain **3 / 3 / 0**.
-- `#print axioms` for all nine new named declarations reports no unresolved dependencies; the two runtime definitions have no axioms.
+- Affected modules and full `lake build` pass, with only the two tracked bounds-hole warnings in `Construction.lean`.
+- `lake env lean scripts/SkeletonExamples.lean` passes, including numeric `M = 4`, `K = 625` and exact bounded families for an empty terminal alphabet with infinite ambient nonterminals and an empty production. All earlier examples still pass.
+- Contract checking audits 644 declarations, preserves every earlier fingerprint and reports direct holes / transitive holes / project axioms as **2 / 2 / 0**.
+- `#print axioms` for the completed theorem and counting/leaf-weight support reports only standard Lean foundations (`propext`, `Classical.choice`, `Quot.sound`), with no `sorryAx` or project axioms.
 - `git diff --check` passes.
-- Final-mode contract checking continues to reject the three outstanding bounds holes. Whole-project completion also requires exact executable witness compilation.
+- Final-mode checking still rejects the two outstanding theorem holes. Whole-project completion also requires exact executable witness compilation.
 - Cloud Lean 4.34.1 / Lake 5.0.0, pinned dependency/cache access and GitHub read/write access are available. CI evidence is reported separately in the PR.
 
-Next eligible theorem work: the quantitative finite-family cardinality and
-leaf-weight bounds in `bounded_family_bounds` (`lem:count-trees`). These support
-witness bounds and a complete `Compiler` value, whose accepted interface requires
-both exact denotation and size bounds. Executable witness assembly must retain
-context identities, handle duplicate input productions, and reuse the proved
-enumerator and activation test. Keep accepted contracts unchanged and publish
-each coherent increment as a new PR.
+Next eligible milestone: construct an exact semilinear witness satisfying
+`WithinBounds`, using the proved finite-family and leaf-weight budgets. The
+executable compiler must reuse enumeration and activation testing, retain
+context identities and handle duplicate input productions. The separate bit
+budget proof also remains. Keep accepted contracts unchanged and publish one
+coherent increment per PR, stopping for review.

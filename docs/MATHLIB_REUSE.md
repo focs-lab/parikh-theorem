@@ -254,6 +254,23 @@ natural-number recursion without partial helpers. `Mathlib.Data.List.Sections`
 is the sole new import/cache target, added to CI and the build guide; all pins
 and proof allowlists remain unchanged.
 
+The quantitative-family milestone searches pinned finite-set, finite-function,
+list-sum and occurrence-count sources. Mathlib supplies finite function-space
+cardinalities (used through `simp`), `Finset.card_image_le`, `card_union_le`,
+`card_biUnion_le`, `sum_le_sum`, `card_filter_le`, `le_sup`, and natural-power
+monotonicity. These count production child tuples without another tree datatype
+or a separate cardinality theory. Core `List.ofFn_getElem` and list extensionality
+recover an ordered tuple from an existing child list. `Finset.sum_range_succ'`
+and `mul_sum` give the geometric position recurrence. `List.sum_le_length_nsmul`
+bounds child-yield sums, while `List.sum_toFinset_count_eq_length`,
+`Finset.sum_subset` and `List.count_eq_zero` identify total weight with yield
+length. New cover/height adapters specialize these laws to the frozen tree
+syntax; they are proof support, distinct from the executable enumerator. The
+existing generated tree equations supply the height and yield formulas, and
+the new strict child-height lemma avoids reproving the later enumeration equivalence.
+No new Mathlib import/cache target, instance, project axiom or partial helper
+is needed; the pins remain unchanged.
+
 No trace-membership dependency, replacement semilinearity predicate, or generic
 automata-equivalence development is introduced. Re-audit Mathlib before adding
 helpers in each accepted proof milestone; these identified gaps are not permission

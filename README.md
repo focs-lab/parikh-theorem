@@ -15,11 +15,11 @@ The [module guide](#lean-architecture) locates each part in the source.
 Let $\Sigma$ be a finite alphabet. For a word $w\in\Sigma^*$, its **Parikh vector**
 $\Psi(w)\in\mathbb{N}^{\Sigma}$ records the number of occurrences of each letter:
 
-$$
+```math
 \Psi(w)(a)=|w|_a,
 \qquad
-\Psi(L)=\{\Psi(w)\mid w\in L\}.
-$$
+\Psi(L)=\lbrace \Psi(w)\mid w\in L\rbrace.
+```
 
 A set is **linear** if it consists of one base vector plus arbitrary natural
 multiples of finitely many period vectors. It is **semilinear** if it is a finite
@@ -30,19 +30,19 @@ exist $m\in\mathbb{N}$ and, for each $1\leq j\leq m$, a base
 $b_j\in\mathbb{N}^{\Sigma}$ and finitely many periods
 $p_{j,1},\ldots,p_{j,k_j}\in\mathbb{N}^{\Sigma}$ such that
 
-$$
+```math
 \Psi(L)=\bigcup_{j=1}^{m}
-\left\{b_j+\sum_{i=1}^{k_j}n_i p_{j,i}
-\;\middle|\;n_1,\ldots,n_{k_j}\in\mathbb{N}\right\}.
-$$
+\left\lbrace b_j+\sum_{i=1}^{k_j}n_i p_{j,i}
+\;\middle|\;n_1,\ldots,n_{k_j}\in\mathbb{N}\right\rbrace.
+```
 
 Here $\mathbb{N}$ includes zero. An empty union represents the empty set, and a
 component with no periods is a singleton. This is an exact equality: every
 represented vector is realized by a word in $L$. The theorem is due to
 [Rohit J. Parikh (1966)](https://doi.org/10.1145/321356.321364).
 
-For example, $L=\{a^n b^n\mid n\in\mathbb{N}\}$ has the linear Parikh image
-$\{(0,0)+n(1,1)\mid n\in\mathbb{N}\}$. The regular language $(ab)^*$ has the same
+For example, $L=\lbrace a^n b^n\mid n\in\mathbb{N}\rbrace$ has the linear Parikh image
+$\lbrace (0,0)+n(1,1)\mid n\in\mathbb{N}\rbrace$. The regular language $(ab)^*$ has the same
 image, although its words have a different order of letters.
 
 The converse says that **every semilinear set is the Parikh image of a regular

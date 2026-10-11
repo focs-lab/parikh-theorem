@@ -21,7 +21,9 @@ For a word $w$, write $\Psi(w)$ for its vector of letter counts. For example,
 with coordinates ordered as $(a,b,c)$, both `acb` and `abc` have vector $(1,1,1)$.
 The essential identity is
 
-$$\Psi(uv)=\Psi(u)+\Psi(v).$$
+```math
+\Psi(uv)=\Psi(u)+\Psi(v).
+```
 
 Consequently, inserting a fixed piece of a derivation adds a fixed vector,
 regardless of where its terminal letters appear in the word. Repeated insertions
@@ -37,15 +39,19 @@ finiteness. A `Witness` is a finite list of components, interpreted as their uni
 
 Consider the grammar with start symbol $S$ and productions
 
-$$S\to aASb\mid\varepsilon,\qquad A\to cA\mid\varepsilon.$$
+```math
+S\to aASb\mid\varepsilon,\qquad A\to cA\mid\varepsilon.
+```
 
 Every use of the first $S$ production contributes one `a`, one `b`, and a place
 where some `c`s may be generated. The empty word is possible. Every other word
 has equally many `a`s and `b`s, at least one of each, and any number of `c`s.
 Its Parikh image is therefore
 
-$$\{(0,0,0)\}\;\cup\;
-\{(1,1,0)+n(1,1,0)+k(0,0,1)\mid n,k\in\mathbb N\}.$$
+```math
+\lbrace (0,0,0)\rbrace\;\cup\;
+\lbrace (1,1,0)+n(1,1,0)+k(0,0,1)\mid n,k\in\mathbb N\rbrace.
+```
 
 We will recover this description by manipulating trees. The example also
 explains why a list of available period vectors alone is not enough: a context
@@ -68,7 +74,7 @@ size and height are both one. It is different from a hole labelled $S$, which
 still awaits expansion and has production size and height zero.
 
 The **support** of a tree consists of its production-node labels. The tree for
-$S\to\varepsilon$ thus has support $\{S\}$, despite producing no letters. Holes
+$S\to\varepsilon$ thus has support $\lbrace S\rbrace$, despite producing no letters. Holes
 contribute no support. These conventions are defined in
 [GrammarTrees.lean](../Parikh/GrammarTrees.lean).
 
@@ -83,8 +89,8 @@ For our grammar, choose these two contexts:
 
 | Context | Construction | Required root | Added support | Weight in $(a,b,c)$ |
 | --- | --- | --- | --- | --- |
-| $C$ | Use $S\to aASb$, expand $A\to\varepsilon$, and leave the $S$ child as a hole. | $S$ | $\{S,A\}$ | $(1,1,0)$ |
-| $E$ | Use $A\to cA$ and leave the final $A$ as a hole. | $A$ | $\{A\}$ | $(0,0,1)$ |
+| $C$ | Use $S\to aASb$, expand $A\to\varepsilon$, and leave the $S$ child as a hole. | $S$ | $\lbrace S,A\rbrace$ | $(1,1,0)$ |
+| $E$ | Use $A\to cA$ and leave the final $A$ as a hole. | $A$ | $\lbrace A\rbrace$ | $(0,0,1)$ |
 
 Start with the complete base $B$ consisting of $S\to\varepsilon$. Inserting $C$
 around it gives a tree for `ab`; inserting $E$ around the newly present
@@ -119,10 +125,10 @@ possible. These are `first_occurrences` and `positive_multiplicities`.
 
 For a fixed complete base $B$ and activatable set $D$, the resulting component is
 
-$$
+```math
 \operatorname{wt}(B)+\sum_{C\in D}\operatorname{wt}(C)
-+\left\{\sum_{C\in D}k_C\operatorname{wt}(C)\mid k_C\in\mathbb N\right\}.
-$$
++\left\lbrace \sum_{C\in D}k_C\operatorname{wt}(C)\mid k_C\in\mathbb N\right\rbrace.
+```
 
 The first sum accounts for the compulsory first copy of each chosen context.
 The second accounts for arbitrary extra copies. This is the content of
@@ -133,10 +139,10 @@ For our chosen base and contexts, the three possible families give:
 | Selected family | Vectors obtained |
 | --- | --- |
 | $\varnothing$ | $(0,0,0)$ |
-| $\{C\}$ | $(1,1,0)+n(1,1,0)$ |
-| $\{C,E\}$ | $(1,1,1)+n(1,1,0)+k(0,0,1)$ |
+| $\lbrace C\rbrace$ | $(1,1,0)+n(1,1,0)$ |
+| $\lbrace C,E\rbrace$ | $(1,1,1)+n(1,1,0)+k(0,0,1)$ |
 
-The family $\{E\}$ is unavailable from this base. The last two rows together
+The family $\lbrace E\rbrace$ is unavailable from this base. The last two rows together
 are the nonempty-word component in Section 2. This small example admits a
 simplified witness; the general tree construction can produce additional,
 overlapping components and does not promise a minimal representation.
@@ -192,7 +198,9 @@ The converse is simpler mathematically. Fix an order of the terminal alphabet
 and represent a vector by blocks of letters in that order. For a base $b$ and
 periods $p_1,\ldots,p_r$, use the regular expression
 
-$$u_b(u_{p_1})^*\cdots(u_{p_r})^*.$$
+```math
+u_b(u_{p_1})^*\cdots(u_{p_r})^*.
+```
 
 Its count vectors are exactly the linear component: each star chooses the
 coefficient of one period. A finite union realizes a semilinear witness.

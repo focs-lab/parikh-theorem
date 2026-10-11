@@ -11,7 +11,8 @@ Mathlib grammars and context-free languages. The derivation-tree proof includes
 grammar/tree semantics, insertion and activation, bounded-family finiteness,
 exact decomposition, and the exact component union. Converse and equal-image
 regular realization and regular-language specialization are also proved. Executable
-construction and quantitative bounds remain in progress.
+activation testing is implemented with exact correctness. Bounded enumeration,
+compilation and quantitative bounds remain in progress.
 Read the complete reference, including appendices, alongside the
 statements; source labels below refer to `reference/parikh_theorem.tex`.
 
@@ -27,6 +28,8 @@ statements; source labels below refer to `reference/parikh_theorem.tex`.
 4. `Parikh/InsertionSequences.lean` and `Activation.lean`: sequence accounting,
    syntax-independent support transitions, first occurrences, positive
    multiplicities, their tree realization, and the proved exact component formula.
+   `ActivationAlgorithm.lean` implements finite activation testing, proving that
+   any enabled operation or enabled batch may be processed first.
    `FiniteRepresentation.lean` specializes bounded-tree finiteness to the base and
    cycle families and proves semilinearity of their activatable-component union.
    `GrammarImage.lean` supplies shared exact-equality/semilinearity support while
@@ -117,7 +120,7 @@ and algorithm values are pending.
 | `eq:representative` | `AlphabetOrder`, `representative`, `representative_counts` | Explicit exhaustive, repetition-free alphabet list | Mathlib list counting and the alphabet occurrence law; proved |
 | `lem:linear-regular`, `thm:converse`, `eq:regular-construction` | `componentExpression`, `witnessExpression`, `componentExpression_image`, `witnessExpression_image`, `witnessExpression_correct`, `converse` | Finite alphabet; exact image and Mathlib DFA regularity | Exact images, finite continuation NFA, Mathlib determinization, and finite regular union; all proved |
 | regular specialization of `thm:parikh-statement` | `regular_image` | Any Mathlib DFA-regular language | Exact DFA-to-Mathlib-grammar bridge and shared forward theorem; proved |
-| `lem:activation-test` | `ActivationTest` | Finite operation data with decidable equality | Finite enabled-operation search; algorithm value pending |
+| `lem:activation-test` | `ActivationTest`, `activationTest`, `activationRounds_correct`, `Activatable.erase_iff_of_enabled`, `Activatable.batch_iff_of_enabled` | Finite input supports and operations with decidable equality; ambient types may be infinite | Executable enabled-batch search, support monotonicity, exact removal equivalence and strict remaining-cardinality decrease; implemented and proved |
 | `sec:effective` | `EncodedGrammar.decode`, `BoundedEnumeration`, `Compiler` | Numeric finite syntax; no classical-choice compiler value | Enumeration, activation test, exact tree formula; implementation pending |
 | `eq:bound-defs`, `lem:count-trees` | `GrammarSize`, `grammarSize`, `bounded_family_bounds` | `n` is active cardinality, `b ≥ 1`, `M = ∑ᵢ₌₀ⁿ⁺¹ bⁱ`, `K = (1+d+n+p)^M` | Injection into bounded position records; pending |
 | `thm:size-bound` | `WithinBounds`, `bounded_witness`, `Compiler.bounded` | At most `K2^K` components, `K` periods, norms `M` / `(K+1)M` | Bounded syntax and exact construction; pending |
@@ -277,6 +280,19 @@ forward proof in `GrammarImage.lean`. No earlier theorem moves: the existing
 The shared support module imports `FiniteRepresentation`, not `Statements` or
 `RegularRealization`, keeping dependencies acyclic. This is semantic existence;
 executable construction is still required separately.
+
+`ActivationAlgorithm.lean` implements the accepted finite-search interface.
+An enabled operation can go first because adding support never disables an order;
+filtering out that already-paid operation recovers an exact order for the rest.
+Finite-set induction lifts this equivalence to an entire enabled batch.
+The executable function filters remaining operations, accumulates their labels
+with `Finset.biUnion`, and subtracts the batch. Structural recursion on a round
+budget guarantees termination; positive batches reduce cardinality, making the
+initial operation count sufficient. An empty remaining set accepts; a stalled
+nonempty set has no possible first operation and rejects. `activationTest.correct`
+proves exact equivalence with `Activatable`, including operations that do not add
+their own roots. No ordering, classical runtime selection or finite ambient-type
+assumption is needed. Bounded enumeration and the compiler remain separate work.
 
 ## After review
 

@@ -234,3 +234,24 @@ grammar encoding, together with proved resource bounds, is a further obligation.
 [Construction.lean](../Parikh/Construction.lean) specifies those requirements;
 the [status ledger](PROOF_STATUS.md) distinguishes them from the completed
 semantic results.
+
+## 10. Computing whether a context family can activate
+
+The compatibility condition also has an executable test. Starting from the
+base's available labels, find all selected operations whose required labels are
+already present. Add their supports and remove them from the remaining work.
+Repeat until no work remains, or until work remains with no enabled operation.
+
+For the example above, the family $\lbrace C,E\rbrace$ first enables $C$, then $E$, and
+succeeds. The family $\lbrace E\rbrace$ immediately stalls. A mutually dependent cycle
+with no initially available root also stalls; it cannot supply its own first step.
+
+[ActivationAlgorithm.lean](../Parikh/ActivationAlgorithm.lean) proves that any
+enabled operation may go first without changing whether an activation order
+exists. This justifies processing a whole enabled batch. Each nonempty batch
+removes operations, so the original number of selected operations gives enough
+rounds. The executable value `activationTest` packages this procedure with a
+proof that its Boolean result is `true` exactly when `Activatable` holds.
+Only the supplied input sets must be finite; labels and operation types may be
+infinite. Bounded-tree enumeration and the full grammar compiler are still
+separate implementation tasks.

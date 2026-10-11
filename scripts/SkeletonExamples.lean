@@ -926,4 +926,50 @@ example : [] ∈ (dfaGrammar (emptyAlphabetDFA true)).language ∧
     regular_image _ ⟨Unit, inferInstance, emptyAlphabetDFA true, rfl⟩,
     regular_image _ ⟨Unit, inferInstance, emptyAlphabetDFA false, rfl⟩⟩
 
+/-! Executable activation (`lem:activation-test`): the earlier support example
+now runs an algorithm whose `correct` field proves the result is exact. -/
+def finiteAdded : Bool → Finset ℕ := fun operation => if operation then {1} else {0, 1}
+
+-- C enables E; E cannot introduce its own prerequisite before it is enabled.
+example : (activationTest ℕ Bool).run required finiteAdded {0} {false, true} = true ∧
+    (activationTest ℕ Bool).run required finiteAdded {0} {true} = false := by decide
+
+example : Activatable required (fun c => (finiteAdded c : Set ℕ)) {0} {false, true} := by
+  simpa only [Finset.coe_singleton] using
+    ((activationTest ℕ Bool).correct required finiteAdded {0} {false, true}).mp (by decide)
+
+example : ¬ Activatable required (fun c => (finiteAdded c : Set ℕ)) {0} {true} := by
+  intro h
+  have h' : Activatable required (fun c => (finiteAdded c : Set ℕ))
+      (({0} : Finset ℕ) : Set ℕ) {true} := by simpa only [Finset.coe_singleton] using h
+  have hrun := ((activationTest ℕ Bool).correct required finiteAdded {0} {true}).mpr h'
+  have hfalse : (activationTest ℕ Bool).run required finiteAdded {0} {true} = false := by decide
+  rw [hfalse] at hrun
+  contradiction
+
+-- Empty work succeeds even without labels. A blocked cycle does not bootstrap;
+-- giving it one initial label makes the same operations activatable.
+def cycleRequired : Bool → ℕ := fun c => if c then 1 else 0
+def cycleAdded : Bool → Finset ℕ := fun c => if c then {0} else {1}
+
+example : (activationTest ℕ Bool).run cycleRequired cycleAdded ∅ ∅ = true ∧
+    (activationTest ℕ Bool).run cycleRequired cycleAdded ∅ {false, true} = false ∧
+    (activationTest ℕ Bool).run cycleRequired cycleAdded {0} {false, true} = true := by decide
+
+-- No operation adds its own required label. The chain uses the entire round
+-- budget and both ambient types are infinite; only the input sets are finite.
+example : activationRounds (id : ℕ → ℕ) (fun c => {c + 1}) 3 {0} (Finset.range 4) = false ∧
+    (activationTest ℕ ℕ).run id (fun c => {c + 1}) {0} (Finset.range 4) = true := by decide
+
+-- A whole enabled batch may add overlapping or empty support sets. Selecting
+-- no new labels is still progress because the selected operations are removed.
+example : (activationTest ℕ ℕ).run (fun _ => 0) (fun _ => ∅) {0} {2, 5, 8} = true ∧
+    (activationTest ℕ ℕ).run (fun c => if c = 2 then 1 else 0)
+      (fun _ => {1}) {0} {0, 1, 2} = true := by decide
+
+-- Compiled evaluation supplements the kernel-checked examples and general proof.
+#eval [(activationTest ℕ Bool).run required finiteAdded {0} {false, true},
+  (activationTest ℕ Bool).run required finiteAdded {0} {true},
+  (activationTest ℕ ℕ).run id (fun c => {c + 1}) {0} (Finset.range 4)]
+
 end SkeletonExamples

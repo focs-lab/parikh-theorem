@@ -1,1 +1,2 @@
 import Parikh.Statements
+import Parikh.ActivationAlgorithm

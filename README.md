@@ -155,6 +155,7 @@ flowchart TD
 | [Decomposition.lean](Parikh/Decomposition.lean) | Insertion, simple-tree height, the bounded-cut lemma, and exact decomposition. |
 | [InsertionSequences.lean](Parikh/InsertionSequences.lean) | Root, completeness, weight, size, and support accounting over insertion sequences. |
 | [Activation.lean](Parikh/Activation.lean) | Abstract activation, first occurrences, positive multiplicities, their realization by trees, and the linear-component equality. |
+| [ActivationAlgorithm.lean](Parikh/ActivationAlgorithm.lean) | Executable activation testing with a proved exact Boolean result, using finite enabled batches. |
 | [FiniteRepresentation.lean](Parikh/FiniteRepresentation.lean) | Finiteness of bases and bounded cycles, and semilinearity of their union. |
 | [GrammarImage.lean](Parikh/GrammarImage.lean) | Shared exact tree-image equality and forward semilinearity, keeping public declarations in `Statements.lean`. |
 | [DFAGrammar.lean](Parikh/DFAGrammar.lean) | A finite DFA as a Mathlib right-linear grammar, with proved equality of their word languages. |
@@ -183,8 +184,10 @@ The forward theorem, exact finite semilinear witnesses, converse, equal-image
 regular realization, and regular-language specialization are proved. These results
 allow arbitrary ambient nonterminal types; witness and automaton existence use classical reasoning.
 
-Three theorem obligations remain, all concerning quantitative bounds. Executable algorithms with correctness proofs also remain
-to be implemented. The [proof-status ledger](docs/PROOF_STATUS.md) lists the exact
+Executable activation testing is implemented with a correctness proof.
+Bounded-tree enumeration and grammar-to-witness compilation remain, together
+with three theorem obligations concerning quantitative bounds.
+The [proof-status ledger](docs/PROOF_STATUS.md) lists the exact
 obligations; a successful build can still contain these tracked `sorry`s.
 
 Contributors should use the [proof plan](docs/PROOF_PLAN.md) to locate a result

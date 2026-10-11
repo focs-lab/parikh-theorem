@@ -13,7 +13,8 @@ exact decomposition, and the exact component union. Converse and equal-image
 regular realization and regular-language specialization are also proved. Executable
 activation testing and bounded-tree enumeration are implemented with exact
 correctness. Quantitative bounded-family and leaf-weight bounds are proved.
-Compilation and witness size/bit bounds remain in progress.
+Exact witnesses satisfying all four size bounds are now proved.
+Compilation and the numerical bit budget remain in progress.
 Read the complete reference, including appendices, alongside the
 statements; source labels below refer to `reference/parikh_theorem.tex`.
 
@@ -47,6 +48,8 @@ statements; source labels below refer to `reference/parikh_theorem.tex`.
    membership proof, using Mathlib's ordered list Cartesian products.
    `BoundedFamilySupport.lean` proves cardinality and yield-length budgets,
    reusing the existing generated tree equations.
+   `FiniteWitness.lean` assembles exact components from finite tree families
+   and bounds their number using product/powerset cardinalities.
 7. `PROOF_STATUS.md` and `CONTRACT_CHECKS.md`: what is incomplete and how review
    freezes the accepted contracts.
 
@@ -74,7 +77,11 @@ flowchart TD
   Enumeration --> Compiler
   Activation --> Compiler
   Main --> Compiler
-  Compiler --> Bounds[Compiler bounds and bit budget]
+  Bounded --> Witness[Exact witness with size bounds]
+  Main --> Witness
+  Witness --> Compiler
+  Witness --> Bits[Coordinate widths and bit budget]
+  Compiler --> Bounds[Executable compiler bounds]
   Main --> Regular[Regular-language specialization]
   DFAGrammar[Exact finite DFA to Mathlib grammar bridge] --> Regular
 ```
@@ -97,8 +104,8 @@ bridge to Mathlib is separate from the derivation-tree proof.
 Names below are in namespace `Parikh`. “Pending” means a tracked theorem hole.
 Concrete definitions and interfaces are implemented. Activation testing and
 bounded-tree enumeration have executable values with complete correctness proofs;
-`bounded_family_bounds` is proved; compiler construction and the two witness
-size/bit bounds proofs remain pending.
+`bounded_family_bounds` and `bounded_witness` are proved; compiler construction
+and the bit-budget proof remain pending.
 
 | Source labels | Lean declaration(s) | Hypotheses / meaning | Intended prerequisites; status |
 | --- | --- | --- | --- |
@@ -132,7 +139,7 @@ size/bit bounds proofs remain pending.
 | `lem:activation-test` | `ActivationTest`, `activationTest`, `activationRounds_correct`, `Activatable.erase_iff_of_enabled`, `Activatable.batch_iff_of_enabled` | Finite input supports and operations with decidable equality; ambient types may be infinite | Executable enabled-batch search, support monotonicity, exact removal equivalence and strict remaining-cardinality decrease; implemented and proved |
 | `sec:effective` | `EncodedGrammar.decode`, `BoundedEnumeration`, `boundedEnumeration`, `Compiler` | Numeric finite syntax; no classical-choice compiler value | Enumeration and activation implemented with proofs; exact tree formula proved; compiler value pending |
 | `eq:bound-defs`, `lem:count-trees` | `GrammarSize`, `grammarSize`, `bounded_family_bounds` | `n` is active cardinality, `b ≥ 1`, `M = ∑ᵢ₌₀ⁿ⁺¹ bⁱ`, `K = (1+d+n+p)^M` | Finite child-function spaces, union/cardinality bounds and yield-length induction; proved |
-| `thm:size-bound` | `WithinBounds`, `bounded_witness`, `Compiler.bounded` | At most `K2^K` components, `K` periods, norms `M` / `(K+1)M` | Bounded syntax and exact construction; pending |
+| `thm:size-bound` | `WithinBounds`, `bounded_witness`, `Compiler.bounded` | At most `K2^K` components, `K` periods, norms `M` / `(K+1)M` | Exact finite witness assembly, product/powerset cardinalities and norm accounting; `bounded_witness` proved, executable compiler pending |
 | `eq:bit-bound` | `coordinateBits`, `vectorBits`, `entryBits`, `witness_bit_bound` | Fixed widths using Mathlib `Nat.clog`; excludes list-length metadata | Four size bounds and nonnegative coordinates; pending |
 | `app:presburger` | consequence of `Witness.denotation`; formula adapter deferred | Explicit existential coefficients | Downstream arithmetic consequence, not a proof prerequisite |
 | `sec:formalization`, `app:notation` | this plan and concrete witness/tree/activation definitions | Proposed review contract | Documentation |
@@ -325,6 +332,16 @@ terminal-yield length, and Mathlib's occurrence sum identifies it with weight
 norm. `bounded_family_bounds` specializes these results at height `n+1`, with
 no finite ambient-nonterminal hypothesis. Existing tree equations supply the
 height and yield formulas; every accepted declaration remains in its module.
+
+`FiniteWitness.lean` assembles a classical witness from all base/subset pairs
+that satisfy the existing activation predicate. Membership keeps context
+identities; exact denotation follows from the existing tree representation.
+Product/powerset cardinalities bound the number of components, and
+`contextComponent_size_bounds` bounds period length and base/period norms by
+finite-sum laws. `bounded_witness` now combines these results with the proved
+family budgets to establish all four size bounds. Its accepted statement is
+unchanged. The remaining theorem hole concerns numerical bit widths; executable
+compilation remains separate.
 
 ## After review
 

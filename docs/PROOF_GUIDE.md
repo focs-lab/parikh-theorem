@@ -300,5 +300,26 @@ whose terminal yields satisfy the preceding height budget. Summing their
 lengths gives the next budget. Summing a tree's terminal counts equals its
 yield length, so the same bound applies to weight norm. The accepted
 `bounded_family_bounds` theorem in [Construction.lean](../Parikh/Construction.lean)
-now proves these claims. Witness assembly, its component/period budgets, and
-the final numerical bit budget are the remaining steps.
+now proves these claims. The following step bounds the resulting witness;
+the numerical bit budget and executable compilation remain.
+
+## 13. Bounding the complete witness
+
+There is one candidate component for each base $B$ and subset $D$ of bounded
+contexts. Activation filtering keeps only compatible pairs. With at most $K$
+bases and $K$ contexts, this gives at most $K2^K$ components. Each component
+lists one period for each selected context, so it has at most $K$ periods,
+each with norm at most $M$.
+
+The component's base pays for the base tree and one copy of every selected
+context. Norms add because all coordinates are natural numbers. Thus its
+norm is at most $M + |D|M \leq (K+1)M$. Two contexts with equal weights still
+occupy two list positions, and zero weights remain valid periods.
+
+[FiniteWitness.lean](../Parikh/FiniteWitness.lean) constructs the finite list
+using Mathlib's product, powerset and filtering operations, and proves its
+exact denotation using the existing tree formula. The accepted `bounded_witness`
+theorem in [Construction.lean](../Parikh/Construction.lean) now combines that
+assembly with the family and norm budgets. This proves that an exact witness
+with all four size bounds exists. The assembly uses classical choices;
+computing the witness from encoded grammar input is still a separate task.

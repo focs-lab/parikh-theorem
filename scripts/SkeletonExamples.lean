@@ -1068,4 +1068,31 @@ example : ∃ bases cycles : Finset (ParseTree (Fin 0) ℕ),
       GrammarSize.positions, GrammarSize.trees, GrammarSize.records]
   exact ⟨bases, cycles, hb, hc, by simpa [hK] using hbc, by simpa [hK] using hcc⟩
 
+/-! Quantitative witness assembly: empty input families produce no components,
+and distinct zero-weight contexts retain two independently indexed periods. -/
+example : familyWitness noProductionsGrammar ∅ ∅ = [] := by
+  classical
+  simp [familyWitness]
+
+example : ∃ D : Finset (ParseTree Bool ℕ), D.card = 2 ∧
+    (contextComponent activationBase D).periods.length = 2 ∧
+    norm (contextComponent activationBase D).base = 0 ∧
+    ∀ p ∈ (contextComponent activationBase D).periods, norm p = 0 := by
+  classical
+  have hB : norm activationBase.weight ≤ 0 := by
+    rw [ParseTree.norm_weight_eq_length]
+    simp [activationBase, ParseTree.yield]
+  have hD : ∀ C ∈ ({openingCycle, silentCycle} : Finset (ParseTree Bool ℕ)),
+      norm C.weight ≤ 0 := by
+    intro C hC
+    simp only [Finset.mem_insert, Finset.mem_singleton] at hC
+    rcases hC with rfl | rfl <;> rw [ParseTree.norm_weight_eq_length]
+    · simp [openingCycle, emptyChild, ParseTree.yield]
+    · simp [silentCycle, ParseTree.yield]
+  have hcard : ({openingCycle, silentCycle} : Finset (ParseTree Bool ℕ)).card = 2 := by
+    simp [openingCycle, silentCycle, openingRule, loopRule]
+  obtain ⟨hlen, hbase, hperiod⟩ := contextComponent_size_bounds activationBase _ 0 hB hD
+  exact ⟨{openingCycle, silentCycle}, hcard, by simpa [hcard] using hlen, by simpa using hbase,
+    fun p hp => Nat.eq_zero_of_le_zero (hperiod p hp)⟩
+
 end SkeletonExamples

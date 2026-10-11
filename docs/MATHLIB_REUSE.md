@@ -271,6 +271,21 @@ the new strict child-height lemma avoids reproving the later enumeration equival
 No new Mathlib import/cache target, instance, project axiom or partial helper
 is needed; the pins remain unchanged.
 
+The bounded-witness milestone searches pinned finite-product, powerset,
+finite-list and finite-sum sources. `Finset.card_product`, `card_powerset` and
+`card_filter_le` bound candidate components. `List.length_map` and
+`Finset.length_toList` count indexed periods without collapsing equal weights.
+`List.mem_map`, `Finset.mem_toList`, `mem_filter`, `mem_product` and
+`mem_powerset` connect listed components to their base/context identities.
+The existing `treeRepresentation_correct` supplies exact semantic equality;
+no new grammar or semilinearity proof is needed. `Finset.sum_apply`,
+`sum_add_distrib`, `sum_comm` and `sum_le_sum` supply norm accounting, while
+natural-power/product monotonicity enlarges the family budgets. The five named
+adapters specialize these existing laws to the frozen witness and activation
+predicates. No new Mathlib import/cache target, datatype, instance or partial
+runtime helper is added. Classical finite-set listing/filtering is explicitly
+separate from the future executable compiler; the pins remain unchanged.
+
 No trace-membership dependency, replacement semilinearity predicate, or generic
 automata-equivalence development is introduced. Re-audit Mathlib before adding
 helpers in each accepted proof milestone; these identified gaps are not permission

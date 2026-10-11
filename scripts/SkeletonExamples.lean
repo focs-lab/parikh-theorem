@@ -753,4 +753,33 @@ example : ∃ B Cs, Complete insertionGrammar B ∧ B.root = .nonterminal 1 ∧
   change _ = (0 : ℕ)
   omega
 
+/-! Main equality distinguishes an empty language from one containing the
+empty word, including an empty terminal alphabet and infinite nonterminals. -/
+
+example : treeRepresentation noProductionsGrammar = ∅ := by
+  rw [treeRepresentation_eq]
+  have hl := ContextFreeGrammar.language_eq_zero_of_forall_input_ne_initial
+    (g := noProductionsGrammar) (by simp [noProductionsGrammar])
+  simp [image, hl, Language.zero_def]
+
+example : treeRepresentation unitGrammar = {0} := by
+  rw [treeRepresentation_eq]
+  ext v
+  constructor
+  · intro _
+    apply Set.mem_singleton_iff.mpr
+    funext a
+    exact Fin.elim0 a
+  · intro hv
+    have heq : v = 0 := Set.mem_singleton_iff.mp hv
+    subst v
+    refine ⟨[], ?_, ?_⟩
+    · apply (unitGrammar.mem_language_iff []).mpr
+      exact (ContextFreeGrammar.Produces.single (g := unitGrammar) ⟨unitProduction,
+        by simp [unitGrammar], ContextFreeRule.Rewrites.input_output⟩).trans
+        (ContextFreeGrammar.Produces.single (g := unitGrammar) ⟨eraseProduction,
+          by simp [unitGrammar], ContextFreeRule.Rewrites.input_output⟩)
+    · funext a
+      exact Fin.elim0 a
+
 end SkeletonExamples

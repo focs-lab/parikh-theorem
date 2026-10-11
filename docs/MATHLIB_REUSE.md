@@ -138,6 +138,18 @@ has transitivity, but does not record the context list in this project's
 concatenation by induction on the existing constructors. No new syntax,
 induction principle, statistics, imports, instances, or dependency pins are needed.
 
+The main equality reuses Mathlib's `ContextFreeGrammar.mem_language_iff` and
+core set-image membership, together with the existing grammar/tree bridge,
+decomposition, first-occurrence activation, and `one_linear`. `List.mem_toFinset`
+identifies the distinct context set without identifying contexts with equal
+weights. Mathlib has no equivalent for this project's insertion relation;
+one proved `InsertionSequence.contextsActivatable` adapter extracts the cycles
+from actual insertion steps and reuses `activationOrder_iff_insertionSequence`
+and `first_occurrences`. Root selection is local classical choice, so it adds
+no public finite or decidable-equality assumption on nonterminals and makes
+no claim to implement an activation algorithm. No new imports, definitions,
+instances, statistics, or dependency pins are needed.
+
 No trace-membership dependency, replacement semilinearity predicate, or generic
 automata-equivalence development is introduced. Re-audit Mathlib before adding
 helpers in each accepted proof milestone; these identified gaps are not permission

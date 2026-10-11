@@ -5,13 +5,10 @@
     "Parikh.bounded_open_finite",
     "Parikh.bounded_witness",
     "Parikh.complete_support_active",
-    "Parikh.component_isLinearSet",
     "Parikh.contextFree_image",
     "Parikh.converse",
-    "Parikh.counts_append",
     "Parikh.decomposition",
     "Parikh.derives_iff_tree",
-    "Parikh.exists_witness",
     "Parikh.first_occurrences",
     "Parikh.grammar_image",
     "Parikh.grammar_witness",
@@ -26,8 +23,7 @@
     "Parikh.simple_height",
     "Parikh.treeRepresentation_eq",
     "Parikh.witnessExpression_correct",
-    "Parikh.witness_bit_bound",
-    "Parikh.witness_isSemilinearSet"
+    "Parikh.witness_bit_bound"
   ],
   "temporary_axioms": [],
   "dependent_on_unresolved": [
@@ -36,13 +32,10 @@
     "Parikh.bounded_open_finite",
     "Parikh.bounded_witness",
     "Parikh.complete_support_active",
-    "Parikh.component_isLinearSet",
     "Parikh.contextFree_image",
     "Parikh.converse",
-    "Parikh.counts_append",
     "Parikh.decomposition",
     "Parikh.derives_iff_tree",
-    "Parikh.exists_witness",
     "Parikh.first_occurrences",
     "Parikh.grammar_image",
     "Parikh.grammar_witness",
@@ -57,8 +50,7 @@
     "Parikh.simple_height",
     "Parikh.treeRepresentation_eq",
     "Parikh.witnessExpression_correct",
-    "Parikh.witness_bit_bound",
-    "Parikh.witness_isSemilinearSet"
+    "Parikh.witness_bit_bound"
   ],
   "compiler_generated_partial": [
     "Parikh.ActivationOrder._unsafe_rec",

@@ -1,7 +1,7 @@
-# Proposed statement skeleton
+# Accepted proof plan
 
-This PR proposes the mathematical contract for owner review. It does not prove
-Parikh's theorem. Read the complete reference, including appendices, alongside the
+The owner accepted the statement skeleton in PR #2 on 2026-10-11.
+The counting/witness milestone is proved; Parikh's theorem remains in progress. Read the complete reference, including appendices, alongside the
 statements; source labels below refer to `reference/parikh_theorem.tex`.
 
 ## Reading order and module purposes
@@ -20,7 +20,7 @@ statements; source labels below refer to `reference/parikh_theorem.tex`.
 6. `Parikh/Construction.lean`: finite encoded input, algorithm interfaces, and all
    four size bounds plus the numerical bit budget.
 7. `PROOF_STATUS.md` and `CONTRACT_CHECKS.md`: what is incomplete and how acceptance
-   will freeze the contracts.
+   freeze the accepted contracts.
 
 ## Intended proof dependencies
 
@@ -44,8 +44,8 @@ flowchart TD
   Main --> Regular[Regular-language specialization]
 ```
 
-These are intended dependencies, not completed Lean proofs. All theorem bodies
-are directly `sorry` in the skeleton. No forward proof depends on the converse,
+These are intended dependencies for the remaining proof. The four counting/witness
+contracts now have complete proofs; the other 24 theorem bodies remain `sorry`. No forward proof depends on the converse,
 trace theory, a grammar normal form, or Presburger elimination. The finite-witness
 bridge to Mathlib is separate from the derivation-tree proof.
 
@@ -57,8 +57,8 @@ and algorithm values are pending.
 
 | Source labels | Lean declaration(s) | Hypotheses / meaning | Intended prerequisites; status |
 | --- | --- | --- | --- |
-| `sec:statement`, `eq:word-add` | `counts`, `image`, `counts_append` | Terminal equality; counts are `List.count` | Mathlib list counting; definition concrete, law pending |
-| `sec:statement`, `eq:preview` | `Component.denotation`, `Witness.denotation`, `component_isLinearSet`, `witness_isSemilinearSet`, `exists_witness` | Independent natural coefficients over indexed period lists | Finite sums, additive closure and finite unions; bridges pending |
+| `sec:statement`, `eq:word-add` | `counts`, `image`, `counts_append` | Terminal equality; counts are `List.count` | Mathlib `List.count_append`; proved |
+| `sec:statement`, `eq:preview` | `Component.denotation`, `Witness.denotation`, `component_isLinearSet`, `witness_isSemilinearSet`, `exists_witness` | Independent natural coefficients over indexed period lists | Mathlib finite-range additive closure and finite unions; all bridges proved |
 | `def:tree`, `def:statistics` | `ParseTree`, `Valid`, `Complete`, `ParseTree.frontier`, `yield`, `weight`, `productionSize`, `height`, `support` | Exact production membership and ordered child-root matching | Mathlib grammar rules and symbols; concrete |
 | `prop:tree-word`, `app:derivations` | `derives_iff_tree` | Every grammar, root and word; no finite `g.NT` hypothesis | Partial-tree expansion and existing rewrite context lemmas; pending |
 | `eq:word-context` | reused `ContextFreeRule.Rewrites.append_left`, `append_right` and grammar derivation adapters | Prefix/suffix closure | Mathlib already supplies one-step machinery; multistep adapter deferred |
@@ -116,9 +116,8 @@ base. Both inclusions of each equality remain explicit obligations.
 
 ## After review
 
-Do not begin the main proofs until the owner accepts this skeleton. Record the
-accepted commit in the next authorized PR. Then complete one coherent milestone
-per PR: counting/witness bridges; tree semantics; surgery; abstract activation;
+The accepted baseline is `6bff9679d7ea03e5401815b80c5a3dc1300f9d36`.
+Complete one coherent milestone per PR: counting/witness bridges; tree semantics; surgery; abstract activation;
 bounded syntax/cut; decomposition; main equality; regular realization; executable
 construction; bounds. Add only helpers needed by the current milestone. Public
 statements and supporting meanings remain frozen after acceptance.

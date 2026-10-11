@@ -9,10 +9,8 @@ structural expression representations, not theorem-line text. The full current
 expressions and per-declaration axiom reports are in `.lake/contract-audit.json`.
 Pins and the complete dependency manifest are also frozen by fingerprint.
 
-The submitted proposal is `docs/contracts/proposed.json`. The owner-accepted
-baseline is deliberately pending in `baseline.json`. This initial PR does not
-claim acceptance. In the next authorized proof PR, set `accepted_commit` to the
-full owner-accepted skeleton SHA. The checker then reads the proposal directly
+The submitted proposal is `docs/contracts/proposed.json`. The owner accepted PR #2 on 2026-10-11; `baseline.json` records its reviewed
+head `6bff9679d7ea03e5401815b80c5a3dc1300f9d36` as `accepted_commit`. The checker then reads the proposal directly
 from that Git commit, independently of the working file. Existing entries must
 match it. For new declarations, extend the current proposal manifest explicitly
 and preserve all older entries; do not regenerate an accepted baseline. Review

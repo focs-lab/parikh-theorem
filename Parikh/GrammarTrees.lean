@@ -2,8 +2,21 @@ import Parikh.Counting
 import Mathlib.Computability.ContextFreeGrammar
 import Mathlib.Data.Set.Finite.List
 
-/-! Grammar-specific syntax missing from the pinned Mathlib. Production labels
-and child order are retained; empty productions are nodes, not holes.
+/-!
+# Parse trees, unfinished derivations, and their meaning
+
+To decompose a derivation, we need to retain its production nodes and child
+order. `ParseTree` provides this syntax. A hole represents an unexpanded
+nonterminal; `Valid` checks the grammar rules, and `Complete` rules out holes.
+An empty production is still a production node, even though its frontier is empty.
+
+The first part defines tree statistics and contexts. Later results show that
+complete trees describe exactly Mathlib's derivations (`derives_iff_tree`) and
+that trees of bounded height form a finite family when their labels are
+restricted appropriately (`bounded_open_finite`). These are the semantic and
+finiteness foundations for decomposition.
+
+Source: `def:tree`, `def:statistics`, `prop:tree-word`, `lem:finite`.
 -/
 namespace Parikh
 
@@ -22,7 +35,10 @@ def root : ParseTree T N → Symbol T N
   | .hole A => .nonterminal A
   | .node r _ => .nonterminal r.input
 
-/-- Production labels are omitted from the frontier; holes appear as nonterminals. -/
+/-- Read the leaves from left to right, retaining holes as nonterminals.
+At a production node we concatenate the children's frontiers. In particular,
+an empty production has no children and contributes the empty list: its root
+label records a rule application, not a remaining symbol in the frontier. -/
 def frontier : ParseTree T N → List (Symbol T N)
   | .terminal a => [.terminal a]
   | .hole A => [.nonterminal A]
@@ -44,6 +60,10 @@ def productionSize : ParseTree T N → ℕ
   | .terminal _ | .hole _ => 0
   | .node _ children => 1 + (children.map productionSize).sum
 
+/-- The maximum number of production nodes on a downward path.
+Terminal leaves and holes have height zero. A production node adds one to its
+largest child height; with no children, the maximum is zero, so an empty
+production has height one. -/
 def height : ParseTree T N → ℕ
   | .terminal _ | .hole _ => 0
   | .node _ children => 1 + (children.map height).foldl max 0
@@ -57,7 +77,12 @@ def support (t : ParseTree T N) : Set N := {A | A ∈ t.productionLabels}
 
 def weight [DecidableEq T] (t : ParseTree T N) : Vector T := counts t.yield
 
-/-- All production-label paths, including prefixes; repeated siblings are allowed. -/
+/-- Production labels along downward paths, including nonempty prefixes at nodes.
+A terminal or hole contributes the empty label path. At a node, `[r.input]`
+records the path stopping there, and prepending `r.input` to each child path
+records paths continuing below it. The explicit singleton also handles an
+empty production. Labels repeated in different sibling branches are allowed;
+`Simple` excludes repetitions only within a single path. -/
 def labelPaths : ParseTree T N → List (List N)
   | .terminal _ | .hole _ => [[]]
   | .node r children => [r.input] ::
@@ -89,7 +114,11 @@ end ParseTree
 
 variable {T : Type*}
 
-/-- Use exactly Mathlib's production membership and right-hand-side symbols. -/
+/-- A tree follows the grammar, although it may still contain holes.
+Terminal leaves and holes are valid on their own. A production node is valid
+when its rule belongs to the grammar, all children are valid, and their roots
+match the rule's right-hand side in order. For an empty right-hand side, this
+last condition forces the child list to be empty. -/
 inductive Valid (g : ContextFreeGrammar T) : ParseTree T g.NT → Prop where
   | terminal (a) : Valid g (.terminal a)
   | hole (A) : Valid g (.hole A)
@@ -97,12 +126,22 @@ inductive Valid (g : ContextFreeGrammar T) : ParseTree T g.NT → Prop where
       (children_valid : ∀ t ∈ children, Valid g t)
       (roots_match : children.map ParseTree.root = r.output) : Valid g (.node r children)
 
+/-- A valid tree with no unexpanded nonterminal leaves.
+Its terminal yield is therefore a fully derived word. The root condition for
+a grammar's start symbol is imposed separately where needed. -/
 def Complete (g : ContextFreeGrammar T) (t : ParseTree T g.NT) : Prop :=
   Valid g t ∧ t.holes = []
 
+/-- A valid context with exactly one hole, labelled `A`.
+A matching complete tree can be placed in that hole to finish the context. -/
 def OneHole (g : ContextFreeGrammar T) (E : ParseTree T g.NT) (A : g.NT) : Prop :=
   Valid g E ∧ E.holes = [A]
 
+/-- A derivation context that returns to its starting nonterminal (`def:cycle`).
+The unique hole and the root both have label `A`, so the context can wrap a
+subtree rooted at `A` and can be inserted repeatedly. Positive production size
+excludes the bare hole. A cycle may nevertheless produce no terminal letters;
+then insertion enlarges the tree without changing its Parikh vector. -/
 def Cycle (g : ContextFreeGrammar T) (C : ParseTree T g.NT) (A : g.NT) : Prop :=
   OneHole g C A ∧ C.root = .nonterminal A ∧ 0 < C.productionSize
 

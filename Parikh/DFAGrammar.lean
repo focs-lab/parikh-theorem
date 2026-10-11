@@ -1,8 +1,19 @@
 import Mathlib.Computability.ContextFreeGrammar
 import Mathlib.Computability.DFA
 
-/-! A finite DFA as a Mathlib right-linear grammar, with exact word semantics.
-There is no regex conversion or replacement grammar/language datatype here.
+/-!
+# Reading a finite automaton as a grammar
+
+A DFA state describes what remains to be read. Use states as nonterminals:
+a transition from `q` to `q'` on `a` becomes the production `q → a q'`, and an
+accepting state may produce the empty word. Each derivation follows a run of
+the automaton and stops only at an accepting state.
+
+`dfaGrammar_derives_iff` proves this correspondence from any starting state;
+`dfaGrammar_language` gives equality of the complete word languages. Applying
+the forward Parikh theorem to this grammar establishes semilinearity for a
+regular language. This adapter uses Mathlib's existing DFA and grammar types;
+its finite production set is defined classically.
 -/
 namespace Parikh
 variable {T : Type*} {σ : Type} [Fintype T] [Fintype σ]

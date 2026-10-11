@@ -5,23 +5,10 @@ vectors of a context-free language form a semilinear set. The development uses
 Mathlib's languages, context-free grammars, and semilinear sets, so its results
 can be used without translating to a separate language or grammar formalism.
 
-**The forward theorem, exact finite semilinear witnesses, converse regular
-realization, and regular-language specialization are proved.** Over a finite
-terminal alphabet, every semilinear set
-is the exact Parikh image of a Mathlib DFA-regular language, and every Mathlib
-grammar has a regular language with the same image. The derivation-tree proof
-supports arbitrary ambient nonterminal types. Witness and automaton existence
-are classical proofs.
-
-Executable construction with correctness proofs and quantitative bounds
-remain in progress. All **3 remaining theorem
-holes** are tracked in the [proof-status ledger](docs/PROOF_STATUS.md).
-A successful build may still contain these explicitly tracked `sorry`
-obligations; algorithm implementations are also still outstanding.
-
-Start with the [main statements](Parikh/Statements.lean), the
-[mathematical proof (PDF)](reference/parikh_theorem.pdf), or the
-[module guide](#lean-architecture) below.
+To use the library, start with the [Lean interface](#lean-interface) below.
+To learn the argument, read the [guided proof](docs/PROOF_GUIDE.md), which follows
+one grammar from derivation trees to a finite union of linear sets.
+The [module guide](#lean-architecture) locates each part in the source.
 
 ## The theorem
 
@@ -95,57 +82,36 @@ classical proof; it is separate from an executable grammar-to-witness compiler.
 `Parikh.regular_realization` gives a regular language with the same image as a
 given grammar. These are also classical existence results.
 
-## Proof approach and attribution
+## How the proof works
 
-The mechanization follows the repository's
-[proof exposition](reference/parikh_theorem.tex), an adaptation of the
-**derivation-tree decomposition** approach. Its sources include
-[Sin'ya's presentation of Takahashi's method (2019)](https://arxiv.org/abs/1909.09393)
-and [Rubtsov's derivation-tree proof (2022)](https://arxiv.org/abs/2301.00047).
-These provide the lineage for decomposing trees and repeatedly inserting
-auxiliary trees; this is not a line-by-line formalization of Parikh's original
-paper. Sin'ya attributes the decomposition method to Takahashi's 1970 thesis.
+The proof asks where the bases and periods of a semilinear set come from.
+A complete derivation tree can be cut into a small **base tree** and bounded
+**cycle contexts**. A context has a hole with the same nonterminal as its root,
+so it can be inserted around a matching subtree repeatedly. Each insertion adds
+the same terminal-count vector: this is a period.
 
-The repository exposition makes the bounded context family, activation condition,
-and size bounds explicit. Rubtsov's paper is a related, explicitly
-nonconstructive presentation; it is not the source of an executable compiler
-claim here. The Lean development separates the semantic proof from its planned
-algorithmic implementation.
+There is one complication: a context may need a nonterminal introduced by an
+earlier insertion. An **activation order** records how a chosen family becomes
+available. Once every chosen context has been inserted once, further repetitions
+are independent. Their compulsory first copies contribute to the base vector;
+extra copies contribute arbitrary multiples of the periods.
 
-The forward argument has four parts:
+There are finitely many bounded bases and contexts. Taking the union over their
+activatable choices gives a finite union of linear sets. Decomposing trees proves
+that every word is represented; reconstructing trees proves that every represented
+vector comes from a word. The [guided proof](docs/PROOF_GUIDE.md) develops these
+steps through an example, including empty productions and zero-weight cycles.
 
-1. **Represent derivations by trees.** A `ParseTree` may contain nonterminal holes.
-   `Valid` checks its grammar productions, and `Complete` additionally requires
-   no holes. A cycle context has one hole with the same nonterminal as its root.
-2. **Decompose a complete tree.** Repeatedly cut a context from a minimal
-   non-simple subtree. This bounds the removed context's height and strictly
-   decreases the production-node count, even for empty productions or silent
-   cycles. Reconstruction starts from a simple complete tree.
-3. **Determine which contexts can coexist.** Insertion preserves existing
-   nonterminal support. First occurrences give an activation order; after each
-   chosen context has been used once, further multiplicities are independent.
-4. **Take a finite union of linear components.** For a base tree $B$ and an
-   activatable context set $D$, the component is
-
-   $$
-   \operatorname{wt}(B)+\sum_{C\in D}\operatorname{wt}(C)
-   +\left\{\sum_{C\in D}k_C\operatorname{wt}(C)
-   \;\middle|\;k_C\in\mathbb{N}\right\}.
-   $$
-
-   The first sum pays for one occurrence of every chosen context. Bounded tree
-   families make the union finite; exact reconstruction proves both inclusions.
-
-For the converse, ordered representative words realize each base and period.
-The construction proves both the exact image of the resulting expression and
-DFA regularity. Specialized finite NFAs handle literal-word and starred-word
-prefixes; Mathlib's subset construction and finite-union results supply the
-remaining automata steps.
-
-The [proof plan](docs/PROOF_PLAN.md) maps the exposition's theorem labels to Lean
-declarations. The [Mathlib reuse audit](docs/MATHLIB_REUSE.md) records existing
-library results used for counting, additive closure, finite unions, grammars,
-and automata.
+The mechanization follows the repository's [proof exposition](reference/parikh_theorem.tex),
+an adaptation of the derivation-tree approach presented by
+[Sin'ya (2019)](https://arxiv.org/abs/1909.09393) and
+[Rubtsov (2022)](https://arxiv.org/abs/2301.00047). Sin'ya attributes the
+underlying decomposition method to Takahashi's 1970 thesis. This is not a
+line-by-line formalization of Parikh's original paper. Rubtsov's related proof
+is explicitly nonconstructive; the planned executable compiler is a separate
+part of this library. The [proof plan](docs/PROOF_PLAN.md) maps source labels to
+Lean declarations, and the [Mathlib reuse audit](docs/MATHLIB_REUSE.md) explains
+which existing library results are used.
 
 ## Lean architecture
 
@@ -210,6 +176,22 @@ The remaining folders support reading, building, and reviewing the proofs:
 | [.github/workflows/lean.yml](.github/workflows/lean.yml) | CI for the build, contract/axiom audit, and examples. |
 | [lean-toolchain](lean-toolchain), [lakefile.toml](lakefile.toml), [lake-manifest.json](lake-manifest.json) | Pinned Lean version, Lake package configuration, and exact dependency revisions. |
 | [AGENTS.md](AGENTS.md) | Repository instructions for incremental agent-assisted development. |
+
+## Current status and contributing
+
+The forward theorem, exact finite semilinear witnesses, converse, equal-image
+regular realization, and regular-language specialization are proved. These results
+allow arbitrary ambient nonterminal types; witness and automaton existence use classical reasoning.
+
+Three theorem obligations remain, all concerning quantitative bounds. Executable algorithms with correctness proofs also remain
+to be implemented. The [proof-status ledger](docs/PROOF_STATUS.md) lists the exact
+obligations; a successful build can still contain these tracked `sorry`s.
+
+Contributors should use the [proof plan](docs/PROOF_PLAN.md) to locate a result
+and the [contract guide](docs/CONTRACT_CHECKS.md) to understand statement stability.
+The accepted statements and definition meanings stay fixed while separate PRs
+complete proofs. The [agent handoff](docs/CODEX_FORMALIZATION_PROMPT.md) describes
+the incremental development workflow.
 
 ## Build and proof checks
 

@@ -1,8 +1,19 @@
 import Parikh.ParseTreePaths
 import Parikh.TreeReplacement
 
-/-! Structural adapters for the bounded cut (`lem:cut`). Positions retain
-occurrences, and production count—not terminal yield—is the decreasing measure.
+/-!
+# Finding a small context inside a non-simple tree
+
+A repeated label on a path suggests a removable cycle, but an arbitrary
+choice could leave very large side branches in that cycle. We instead find
+a minimal non-simple subtree: all its children are simple, so their heights
+are bounded. A repeated occurrence of its root then determines a bounded cut.
+
+These lemmas justify the selection, bounds, and reversible replacement used
+by `bounded_cut`. Progress is measured by production nodes, because removing
+a cycle need not shorten the terminal word.
+
+Source: `lem:cut`.
 -/
 namespace Parikh
 variable {T N : Type*}

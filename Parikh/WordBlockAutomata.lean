@@ -1,9 +1,21 @@
 import Mathlib.Computability.NFA
 import Mathlib.Data.Set.Finite.Range
 
-/-! DFA regularity for the literal-word prefixes and starred-word prefixes used
-in the witness construction. A finite family of continuation languages supplies
-NFA states; Mathlib's subset construction supplies the DFA.
+/-!
+# Automata for the words used in a linear component
+
+The converse construction needs languages consisting of fixed words followed
+by repetitions of other fixed words. We prove regularity of these particular
+operations using finite families of continuation languages.
+
+Think of a state as the language of suffixes still to be read. A finite family
+that covers every one-letter continuation supplies an NFA; its transition
+condition ensures soundness and the cover property ensures completeness.
+Mathlib's existing subset construction turns this NFA into a DFA.
+
+Fixed-word and starred-word prefixes are obtained by adding finitely many
+suffix states. These are classical existence proofs of automata, not an
+executable implementation of a grammar compiler.
 -/
 open scoped Computability
 

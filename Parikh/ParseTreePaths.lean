@@ -1,7 +1,17 @@
 import Parikh.GrammarTrees
 
-/-! Structural path adapters for the simple-tree height bound (`lem:simple-height`).
-The existing paths count production nodes, excluding terminals and holes.
+/-!
+# Why simple trees have bounded height
+
+A simple tree has no repeated production label along any downward path.
+To turn this condition into a height bound, we need two facts: every path
+label belongs to the tree's support, and some label path has length equal
+to the tree's height. Terminals and holes contribute no production label.
+
+This file proves those facts. `simple_height` in `Decomposition.lean` then
+compares the longest path with the finite set of active nonterminals.
+
+Source: `lem:simple-height`.
 -/
 namespace Parikh.ParseTree
 variable {T N : Type*}

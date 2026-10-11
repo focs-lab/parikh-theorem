@@ -4,8 +4,20 @@ import Parikh.TreePlugging
 import Parikh.TreeReplacement
 import Parikh.BoundedCutSupport
 
-/-! A compact family of internal surgery/decomposition contracts.
-Context identity, positions, roots and support survive until activation.
+/-!
+# Reconstructing trees from a base and bounded cycles
+
+Insertion wraps a matching subtree in a cycle context while retaining the
+original subtree in its hole. The first results show when insertion is possible
+and how it changes weight, size, and support.
+
+The main result, `decomposition`, reverses this process: cut a bounded cycle
+from a non-simple complete tree, repeat on the smaller tree, and stop at a
+simple base. Strong induction on production count ensures termination even
+when a removed cycle produces no terminals. The recorded insertion sequence
+reconstructs the exact original tree, not just its count vector.
+
+Source: `lem:plug`, `lem:cut`, `thm:decomposition`.
 -/
 namespace Parikh
 variable {T : Type*}
@@ -108,7 +120,11 @@ theorem simple_height (g : ContextFreeGrammar T) (t : ParseTree T g.NT)
   rw [← hlen, ← List.toFinset_card_of_nodup (hs path hp)]
   exact Finset.card_le_card hsubset
 
-/-- A minimal non-simple subtree yields a bounded removable context (`lem:cut`). -/
+/-- Remove a bounded cycle from a non-simple complete tree (`lem:cut`).
+The smaller tree remains complete and has the same root. Inserting the returned
+context reconstructs the original tree, and production size strictly decreases.
+Choosing a minimal non-simple subtree bounds the context's side branches as
+well as the path between repeated labels. -/
 theorem bounded_cut (g : ContextFreeGrammar T) (t : ParseTree T g.NT)
     (ht : Complete g t) (hs : ¬ t.Simple) :
     ∃ smaller C, Complete g smaller ∧ smaller.root = t.root ∧
@@ -189,7 +205,12 @@ theorem InsertionSequence.append {g : ContextFreeGrammar T}
   | nil _ => simpa only [List.nil_append] using second
   | cons step _ ih => exact .cons step (ih second)
 
-/-- Exact reconstruction by strong induction on production count (`thm:decomposition`). -/
+/-- Every complete tree can be rebuilt from a simple complete tree by inserting
+bounded cycle contexts (`thm:decomposition`).
+The insertion list retains actual contexts and their order, so reconstruction
+recovers the tree itself. The proof repeatedly applies `bounded_cut`, using
+production count for strong induction; zero-weight cycles still decrease this
+measure when removed. The simple tree has the same root as the original. -/
 theorem decomposition (g : ContextFreeGrammar T) (t : ParseTree T g.NT)
     (ht : Complete g t) :
     ∃ B Cs, Complete g B ∧ B.root = t.root ∧ B.Simple ∧

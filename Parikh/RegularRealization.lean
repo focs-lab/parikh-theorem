@@ -5,8 +5,22 @@ import Parikh.WordBlockAutomata
 import Parikh.GrammarImage
 import Parikh.DFAGrammar
 
-/-! Concrete regular expressions; regularity means Mathlib's finite-state DFA
-predicate, not a new project-specific substitute.
+/-!
+# Giving a semilinear set a regular language
+
+For a vector, choose a word containing exactly the prescribed letters. For a
+linear component, concatenate its base word with a starred word for each period.
+Taking the union of these expressions realizes a finite semilinear witness.
+
+There are two things to prove: the expression has exactly the requested Parikh
+image, and its language satisfies Mathlib's finite-state DFA predicate.
+The image proofs use counting laws; `WordBlockAutomata.lean` supplies the
+specialized automata constructions. Together they establish `converse`.
+The `regular_image` specialization goes in the other direction: it converts
+a DFA to a grammar with the same word language and applies the shared forward
+theorem.
+
+Source: `eq:representative`, `lem:linear-regular`, `thm:converse`.
 -/
 open scoped Computability Pointwise
 
@@ -20,14 +34,25 @@ structure AlphabetOrder (T : Type*) where
   nodup : letters.Nodup
   complete : ∀ a : T, a ∈ letters
 
-/-- Ordered blocks, including the empty alphabet (`eq:representative`). -/
+/-- Choose a word with count vector `v` by writing one block per letter.
+For alphabet order `[a, b]` and counts `v a = 2`, `v b = 1`, the blocks are
+`[a, a]` and `[b]`, giving `[a, a, b]` after flattening. A zero count contributes
+an empty block; an empty alphabet gives the empty word (`eq:representative`). -/
 def representative (alphabet : AlphabetOrder T) (v : Vector T) : List T :=
   (alphabet.letters.map fun a => List.replicate (v a) a).flatten
 
+/-- The regular expression accepting exactly the given word.
+The right fold concatenates each character with the expression for the remaining
+suffix. Its initial value is epsilon, so the empty list accepts just the empty
+word; `[a, b]` gives the expression `a · (b · ε)`. -/
 def wordExpression (w : List T) : RegularExpression T :=
   w.foldr (fun a rest => .comp (.char a) rest) .epsilon
 
-/-- Base word followed by one starred word per indexed period (`lem:linear-regular`). -/
+/-- Realize a linear component as `u_base · (u_p₁)* · ... · (u_pₖ)*`.
+The base word appears once. Each period word can appear any number of times,
+independently of the other periods. Concatenation adds their count vectors,
+so the resulting image is exactly the component's denotation. With no periods,
+the trailing expression is epsilon (`lem:linear-regular`). -/
 def componentExpression (alphabet : AlphabetOrder T) (c : Component T) : RegularExpression T :=
   .comp (wordExpression (representative alphabet c.base))
     (c.periods.foldr (fun p rest =>

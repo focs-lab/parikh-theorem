@@ -1,14 +1,14 @@
 # Parikh theorem
 
 An independent, reusable Lean 4 library for Parikh's theorem.
-**The current milestone is a compiling statement skeleton, awaiting review.
-Parikh's theorem has not yet been proved in Lean.**
+**The statement skeleton is accepted. The counting and finite-witness bridges
+are proved; Parikh's theorem itself remains in progress.**
 
 Start with the [public statements](Parikh/Statements.lean),
 [proof plan](docs/PROOF_PLAN.md), and [proof-status ledger](docs/PROOF_STATUS.md).
 The [build instructions](docs/BUILD.md), [Mathlib reuse audit](docs/MATHLIB_REUSE.md),
 and [contract checks](docs/CONTRACT_CHECKS.md) describe the pinned environment and
-the incremental proof workflow. All 28 theorem holes are explicitly tracked.
+the incremental proof workflow. All 24 remaining theorem holes are explicitly tracked.
 
 ## References and agent handoff
 

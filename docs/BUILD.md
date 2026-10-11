@@ -21,7 +21,7 @@ From the checkout root:
 elan toolchain install "$(cat lean-toolchain)"
 lean --version
 lake --version
-lake exe cache get Mathlib.Computability.ContextFreeGrammar Mathlib.Computability.RegularExpressions Mathlib.Computability.DFA Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Defs Mathlib.Data.Nat.Log
+lake exe cache get Mathlib.Algebra.Group.Submonoid.Finsupp Mathlib.Computability.ContextFreeGrammar Mathlib.Computability.RegularExpressions Mathlib.Computability.DFA Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Defs Mathlib.Data.Nat.Log
 LEAN_NUM_THREADS=4 lake build
 python3 scripts/check-contracts.py
 lake env lean scripts/SkeletonExamples.lean

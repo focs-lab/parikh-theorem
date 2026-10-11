@@ -1,4 +1,4 @@
 {
-  "accepted_commit": null,
-  "note": "Pending owner review. The next authorized proof PR must record the full owner-accepted skeleton SHA; never regenerate it to conceal a contract change."
+  "accepted_commit": "6bff9679d7ea03e5401815b80c5a3dc1300f9d36",
+  "note": "Owner accepted the reviewed skeleton and authorized merge/proof work on 2026-10-11. This is the reviewed PR #2 head, preserved as the immutable contract baseline."
 }

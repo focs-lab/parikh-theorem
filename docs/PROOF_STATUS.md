@@ -7,7 +7,7 @@ rename. Its pointer and all previous contract fingerprints remain unchanged.
 The counting/witness milestone in [PR #3](https://github.com/focs-lab/parikh-theorem/pull/3)
 has merged, with CI passing.
 
-Current milestone: grammar/tree semantics, branch
+Current milestone: [grammar/tree semantics PR #4](https://github.com/focs-lab/parikh-theorem/pull/4), branch
 [`codex/grammar-tree-semantics`](https://github.com/focs-lab/parikh-theorem/tree/codex/grammar-tree-semantics),
 based on merged `main` (`c1e2d3010feae79e8a429334db639c8836ad2545`).
 There are **23 direct `sorry` obligations**, zero project axioms, and 23 declarations

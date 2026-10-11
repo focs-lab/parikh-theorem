@@ -12,7 +12,8 @@ abstract activation [PR #7](https://github.com/focs-lab/parikh-theorem/pull/7),
 and tree realization [PR #8](https://github.com/focs-lab/parikh-theorem/pull/8)
 have merged, with CI passing.
 
-Current milestone: the exact `one_linear` component equality, branch
+Current milestone: [PR #9](https://github.com/focs-lab/parikh-theorem/pull/9),
+the exact `one_linear` component equality, branch
 [`codex/one-linear`](https://github.com/focs-lab/parikh-theorem/tree/codex/one-linear),
 based on merged `main` (`ae109deebb2602a1511faf6e777afbf51b116108`).
 There are **17 direct `sorry` obligations**, zero project axioms, and 17 declarations

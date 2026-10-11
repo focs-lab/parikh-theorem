@@ -15,6 +15,7 @@ The audit searched the actual sources before choosing the interfaces.
 | `Computability/RegularExpressions.lean` | Reuse concrete `RegularExpression` constructors and `matches'`. The source explicitly reports no general equivalence with DFAs/NFAs. This project needs only regularity of the constructed finite unions of `u v₁* … vₖ*`; a full equivalence theorem is unnecessary. |
 | `Computability/DFA.lean`, `NFA.lean`, `EpsilonNFA.lean` | Reuse `Language.IsRegular`, `NFA.toDFA_correct` and `εNFA.toNFA_correct` where applicable. A specialized finite automaton for the witness expressions can avoid reproving determinization. The converse does not require a grammar. |
 | `Data/Nat/Log.lean` | Reuse `Nat.clog` for the document's fixed-width bit bound. |
+| `Data/Set/Finite/List.lean` | Reuse `List.finite_length_eq` over a finite subtype for production child lists, with finite images and unions for bounded-tree finiteness. No parallel list-enumeration or generic tree-finiteness theory. |
 | `Data/Tree/Basic.lean`, `Data/W/*` | Existing binary trees/W-types do not directly provide ordered variable-arity production nodes, nonterminal holes, local RHS-root matching or grammar semantics. A small raw syntax with a separate validity predicate keeps these meanings explicit. |
 
 The tree-semantics milestone also reuses core `List.filterMap_flatten`,
@@ -102,6 +103,17 @@ and `List.map_eq_nil_iff`; no generic maximum theory is reproved.
 height bound. These facts are available through the existing imports. The only
 new import is the project's `ParseTreePaths` module; no new Mathlib dependency,
 instance, or finite-nonterminal assumption is needed.
+
+Bounded-open-tree finiteness reuses `List.finite_length_eq`,
+`List.attachWith_map_subtype_val`, `Set.Finite.image`, `Set.Finite.union`,
+`Set.Finite.biUnion`, and `Set.Finite.subset`. Each production's RHS-root equality
+fixes the child-list length. `List.mem_flatMap` passes the active-hole restriction
+to children; `List.le_max_of_mem` and `List.foldl_max_eq_max` bound their heights.
+The two local proof adapters are kept inside the existing theorem. Direct
+`WellFounded.fix_eq` unfolding preserves all previously published generated
+height helpers. The sole new Mathlib import is `Data.Set.Finite.List`, included
+in the documented and CI cache selections; the dependency pins stay unchanged.
+No executable enumerator is claimed by this semantic finiteness proof.
 
 No trace-membership dependency, replacement semilinearity predicate, or generic
 automata-equivalence development is introduced. Re-audit Mathlib before adding

@@ -620,4 +620,43 @@ example : Valid noProductionsGrammar (.hole 99) ∧
   refine ⟨hv, hv.support_active, ?_⟩
   simp [ActiveOpen, ParseTree.holes, activeNonterminals, noProductionsGrammar]
 
+/-! Bounded finiteness: with infinitely many ambient nonterminals and no rules,
+the active height-zero family has precisely two terminals and the start hole.
+Dropping the active-hole restriction makes even the height-zero family infinite. -/
+
+example : {t : ParseTree Bool ℕ | ActiveOpen noProductionsGrammar t ∧ t.height ≤ 0} =
+    {ParseTree.terminal false, ParseTree.terminal true, ParseTree.hole 37} := by
+  classical
+  ext t
+  change ParseTree Bool noProductionsGrammar.NT at t
+  constructor
+  · rintro ⟨⟨hv, ha⟩, hh⟩
+    cases t with
+    | terminal a => cases a <;> simp
+    | hole A =>
+      have hA := ha A (by simp [ParseTree.holes])
+      have heq : A = 37 := by
+        simpa [activeNonterminals, noProductionsGrammar] using hA
+      subst A
+      simp
+    | node r cs =>
+      cases hv with
+      | node _ _ hr _ _ => simp [noProductionsGrammar] at hr
+  · intro ht
+    simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at ht
+    rcases ht with rfl | rfl | rfl
+    all_goals
+      refine ⟨⟨?_, ?_⟩, ?_⟩
+      · first | exact Valid.terminal _ | exact Valid.hole _
+      · simp [ParseTree.holes, activeNonterminals, noProductionsGrammar]
+      · simp [ParseTree.height]
+
+example : {t : ParseTree Bool ℕ | Valid noProductionsGrammar t ∧ t.height ≤ 0}.Infinite := by
+  have hinj : Function.Injective (ParseTree.hole (T := Bool) (N := ℕ)) := by
+    intro A B h
+    exact ParseTree.hole.inj h
+  apply (Set.infinite_range_of_injective hinj).mono
+  rintro t ⟨A, rfl⟩
+  exact ⟨Valid.hole (g := noProductionsGrammar) A, by simp [ParseTree.height]⟩
+
 end SkeletonExamples

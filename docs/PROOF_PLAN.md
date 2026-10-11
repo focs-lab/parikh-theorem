@@ -56,7 +56,7 @@ flowchart TD
 These are intended dependencies for the remaining proof. The four counting/witness
 contracts, grammar/tree equivalence, plugging/insertion, the two abstract activation laws,
 sequence/tree realization, `one_linear`, active support, and simple-tree height
-now have complete proofs. The remaining 15 theorem bodies
+now have complete proofs, as does `bounded_open_finite`. The remaining 14 theorem bodies
 are still `sorry`. No forward proof depends on the converse,
 trace theory, a grammar normal form, or Presburger elimination. The finite-witness
 bridge to Mathlib is separate from the derivation-tree proof.
@@ -80,7 +80,7 @@ and algorithm values are pending.
 | `lem:insertion-laws`, `eq:insert-wt`, `eq:insert-size`, `eq:insert-supp` | `insertion_accounting` | Complete insertion and exact root/weight/size/support equalities | Outer one-hole context and plugging twice; proved |
 | `cor:sequence` | `InsertionSequence.accounting` | Finite ordered sequence from a complete tree; exact root/weight/size/support and completeness | Induction using insertion accounting; proved |
 | `lem:simple-height`, `def:families`, `def:statistics` | `ParseTree.Simple`, `ParseTree.labelPath_subset_support`, `ParseTree.exists_labelPath_height`, `simple_height`, `IsBase`, `IsBoundedCycle` | Active nonterminals replace an unnecessarily finite ambient type; repeated siblings are allowed | Longest label path, path-label distinctness, active support, and Mathlib finite-set cardinality; height bound proved, family predicates concrete |
-| `lem:finite`, `def:statistics` | `activeNonterminals`, `Valid.support_active`, `complete_support_active`, `bounded_open_finite`, `BoundedEnumeration` | Finite terminals; holes restricted to active symbols for the general grammar | Active-support containment proved; bounded-family finiteness and enumerator pending |
+| `lem:finite`, `def:statistics` | `activeNonterminals`, `Valid.support_active`, `complete_support_active`, `bounded_open_finite`, `BoundedEnumeration` | Finite terminals; holes restricted to active symbols for the general grammar | Active-support containment and bounded-family finiteness proved; executable enumerator pending |
 | `lem:cut` | `bounded_cut` | Non-simple complete tree; strict decrease in production count | Minimal non-simple subtree, simple side branches, surgery; pending |
 | `thm:decomposition`, `eq:decomposition`, `cor:finite-generation` | `decomposition` | Exact tree reconstruction for every complete tree/root | Strong induction using bounded cut; pending |
 | `def:activation`, `eq:activation` | `ActivationOrder`, `Activatable`, `ContextsActivatable` | Operations retain their identities and require previously present labels | Concrete definitions; arbitrary support sets in the abstract interface |
@@ -167,6 +167,15 @@ a longest path. `simple_height` applies simplicity to that path, identifies its
 length with its finite-set cardinality, and bounds it by the active cardinality.
 The proof counts production nodes; holes and terminals contribute no labels,
 empty productions still contribute one, and repeated siblings remain allowed.
+
+`bounded_open_finite` inducts on the production-height bound. The leaves range
+over finite terminals and active holes. Each finite production fixes its child
+arity; Mathlib's `List.finite_length_eq` on the previous family's finite subtype
+gives finitely many child lists. Validity supplies matching length, child validity,
+and inherited active holes; a child's height is bounded by the list maximum.
+Finite images and unions cover the node cases. The proof establishes semantic
+finiteness without changing syntax or imposing a finite ambient nonterminal type.
+Executable enumeration remains a separate implementation obligation.
 
 ## After review
 

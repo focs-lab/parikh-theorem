@@ -1,7 +1,9 @@
 # Accepted proof plan
 
 The owner accepted the statement skeleton in PR #2 on 2026-10-11.
-The counting/witness, grammar/tree semantics, plugging/insertion, and abstract activation laws are proved; Parikh's theorem remains in progress. Read the complete reference, including appendices, alongside the
+The counting/witness, grammar/tree semantics, plugging/insertion, abstract activation laws,
+and activation's tree realization are proved; Parikh's theorem remains in progress.
+Read the complete reference, including appendices, alongside the
 statements; source labels below refer to `reference/parikh_theorem.tex`.
 
 ## Reading order and module purposes
@@ -13,8 +15,9 @@ statements; source labels below refer to `reference/parikh_theorem.tex`.
 3. `Parikh/GrammarTrees.lean`, `TreePlugging.lean`, `TreeReplacement.lean`, then `Decomposition.lean`: ordered production trees,
    explicit holes, Mathlib derivation semantics, occurrence replacement, and the
    bounded cut measured by production count.
-4. `Parikh/Activation.lean`: syntax-independent support transitions, first
-   occurrences, positive multiplicities, and the exact component formula.
+4. `Parikh/InsertionSequences.lean` and `Activation.lean`: sequence accounting,
+   syntax-independent support transitions, first occurrences, positive
+   multiplicities, their tree realization, and the pending exact component formula.
 5. `Parikh/RegularRealization.lean`: representative words and explicit finite
    regular expressions; the DFA-regularity obligation applies to these expressions.
 6. `Parikh/Construction.lean`: finite encoded input, algorithm interfaces, and all
@@ -31,8 +34,9 @@ flowchart TD
   Trees --> Bounded[Active alphabet and bounded families]
   Surgery --> Cut[Minimal subtree cut and decomposition]
   Bounded --> Cut
-  Surgery --> Linear[One linear component]
-  Activation[Abstract activation and multiplicities] --> Linear
+  Surgery --> Realize[Activation orders realized by tree sequences]
+  Activation[Abstract activation and multiplicities] --> Realize
+  Realize --> Linear[One linear component]
   Cut --> Main
   Linear --> Main
   Counting --> Converse[Representative words and regular realization]
@@ -45,7 +49,9 @@ flowchart TD
 ```
 
 These are intended dependencies for the remaining proof. The four counting/witness
-contracts, grammar/tree equivalence, plugging/insertion, and the two abstract activation laws now have complete proofs; the other 18 theorem bodies remain `sorry`. No forward proof depends on the converse,
+contracts, grammar/tree equivalence, plugging/insertion, the two abstract activation laws,
+and sequence/tree realization now have complete proofs. The remaining 18 theorem bodies
+are still `sorry`; this milestone adds previously deferred bridge lemmas. No forward proof depends on the converse,
 trace theory, a grammar normal form, or Presburger elimination. The finite-witness
 bridge to Mathlib is separate from the derivation-tree proof.
 
@@ -62,17 +68,17 @@ and algorithm values are pending.
 | `def:tree`, `def:statistics` | `ParseTree`, `Valid`, `Complete`, `ParseTree.frontier`, `yield`, `weight`, `productionSize`, `height`, `support` | Exact production membership and ordered child-root matching | Mathlib grammar rules and symbols; concrete |
 | `prop:tree-word`, `app:derivations` | `derives_iff_tree` | Every grammar, root and word; no finite `g.NT` hypothesis | Partial-tree expansion and existing rewrite context lemmas; proved |
 | `eq:word-context` | reused `ContextFreeRule.Rewrites.append_left`, `append_right` and grammar derivation adapters | Prefix/suffix closure | Reuse Mathlib one-step and multistep prefix/suffix closure directly; no parallel adapter needed |
-| `def:cycle`, `eq:cycle-root` | `OneHole`, `Cycle` | Exactly one matching hole, positive production count | Root-in-support consequence deferred; definitions concrete |
+| `def:cycle`, `eq:cycle-root` | `OneHole`, `Cycle`, `Cycle.root_mem_support` | Exactly one matching hole, positive production count; root lies in support | Definitions concrete; root-in-support consequence proved |
 | `lem:plug`, `eq:plug-wt`, `eq:plug-size`, `eq:plug-supp` | `plugging` | Valid one-hole context and matching complete tree | Structural induction with hole-count accounting; proved |
 | `def:insertion`, `lem:enabled` | `Inserts`, `insertion_enabled` | Position selects an internal matching subtree | Plugging and occurrence existence; proved |
 | `lem:insertion-laws`, `eq:insert-wt`, `eq:insert-size`, `eq:insert-supp` | `insertion_accounting` | Complete insertion and exact root/weight/size/support equalities | Outer one-hole context and plugging twice; proved |
-| `cor:sequence` | `InsertionSequence`; future accounting helper | Finite ordered sequence | Insertion accounting; helper deliberately deferred |
+| `cor:sequence` | `InsertionSequence.accounting` | Finite ordered sequence from a complete tree; exact root/weight/size/support and completeness | Induction using insertion accounting; proved |
 | `lem:simple-height`, `def:families` | `ParseTree.Simple`, `simple_height`, `IsBase`, `IsBoundedCycle` | Active nonterminals replace an unnecessarily finite ambient type | Path-label distinctness and active support; pending |
 | `lem:finite` | `activeNonterminals`, `complete_support_active`, `bounded_open_finite`, `BoundedEnumeration` | Finite terminals; holes restricted to active symbols for the general grammar | Finite productions and bounded child arities; pending proof and enumerator |
 | `lem:cut` | `bounded_cut` | Non-simple complete tree; strict decrease in production count | Minimal non-simple subtree, simple side branches, surgery; pending |
 | `thm:decomposition`, `eq:decomposition`, `cor:finite-generation` | `decomposition` | Exact tree reconstruction for every complete tree/root | Strong induction using bounded cut; pending |
 | `def:activation`, `eq:activation` | `ActivationOrder`, `Activatable`, `ContextsActivatable` | Operations retain their identities and require previously present labels | Concrete definitions; arbitrary support sets in the abstract interface |
-| `lem:activation-realize`, `eq:activated-wt`, `eq:activated-supp` | support order plus `insertion_enabled`; future lifting helper | Introduce each context once | Sequence accounting and enabledness; helper deferred |
+| `lem:activation-realize`, `eq:activated-wt`, `eq:activated-supp` | `activationOrder_iff_insertionSequence`, `ContextsActivatable.realize` | Matching cycle list; introduce each selected context once, with exact accounting and all selected contexts enabled afterwards | Insertion enabledness and sequence accounting; proved |
 | `lem:first-occurrence` | `first_occurrences` | Any enabled list of operations | Filter later repeats whose added support is already present; proved |
 | `lem:multiplicities` | `positive_multiplicities` | Required label belongs to added support; multiplicities positive on selected set | Initial activation pass, then finite replicas with exact counts; proved |
 | `prop:one-linear`, `eq:one-linear`, `eq:component-base`, `eq:component` | `contextComponent`, `one_linear` | Complete base and activatable set | First occurrences, multiplicities, tree lifting; pending |
@@ -130,7 +136,15 @@ filtering operations whose added support is already covered, enabling any list
 whose required labels are present, and appending operations covered by an earlier
 pass. First-occurrence reduction uses no self-support assumption; multiplicities
 use the accepted self-support hypothesis and Mathlib's existing list counting
-and sum lemmas. Tree realization and `one_linear` remain pending.
+and sum lemmas.
+
+`InsertionSequences.lean` proves cycle-root membership in support and sequence
+accounting, including completeness/root preservation and exact production count.
+The two tree-realization adapters in `Activation.lean` relate enabled cycle lists
+to insertion sequences in both directions, then specialize to a finite activatable
+set. `List.sum_toFinset` changes the distinct list sum to the source's finite-set
+sum. All selected cycles remain enabled afterwards. The `one_linear` equality
+remains pending; these are its previously deferred tree prerequisites.
 
 ## After review
 

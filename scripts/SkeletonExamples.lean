@@ -303,4 +303,120 @@ example : Inserts insertionGrammar repeatedTree silentCycle wrappedTree ∧
     simp [repeatedTree, emptyChild, silentCycle, ParseTree.support,
       ParseTree.productionLabels, forkRule, emptyRule, loopRule]
 
+/-! Tree realization of activation: an opening cycle introduces label 1.
+Both cycles have zero weight, but their different roots make order matter. -/
+
+def activationBaseRule : ContextFreeRule Bool ℕ := ⟨0, []⟩
+def openingRule : ContextFreeRule Bool ℕ := ⟨0, [.nonterminal 0, .nonterminal 1]⟩
+abbrev activationGrammar : ContextFreeGrammar Bool :=
+  ⟨ℕ, 0, {activationBaseRule, openingRule, emptyRule, loopRule}⟩
+def activationBase : ParseTree Bool ℕ := .node activationBaseRule []
+def openingCycle : ParseTree Bool ℕ := .node openingRule [.hole 0, emptyChild]
+def activationRoots (C : ParseTree Bool ℕ) : ℕ :=
+  match C.root with
+  | .nonterminal A => A
+  | .terminal _ => 0
+
+theorem activation_tree_data : Complete activationGrammar activationBase ∧
+    Cycle activationGrammar openingCycle 0 ∧ Cycle activationGrammar silentCycle 1 := by
+  have he : Valid activationGrammar emptyChild :=
+    Valid.node (g := activationGrammar) _ [] (by simp [activationGrammar])
+      (by simp) (by simp [emptyRule])
+  refine ⟨⟨Valid.node (g := activationGrammar) _ [] (by simp [activationGrammar])
+    (by simp) (by simp [activationBaseRule]), by simp [activationBase, ParseTree.holes]⟩,
+    ⟨⟨?_, ?_⟩, rfl, ?_⟩, ⟨⟨?_, ?_⟩, rfl, ?_⟩⟩
+  · refine Valid.node (g := activationGrammar) _ _ (by simp [activationGrammar]) ?_ ?_
+    · intro c hc
+      simp only [List.mem_cons, List.not_mem_nil, or_false] at hc
+      rcases hc with rfl | rfl
+      · exact Valid.hole (g := activationGrammar) (0 : ℕ)
+      · exact he
+    · simp [ParseTree.root, openingRule, emptyChild, emptyRule]
+  · simp [openingCycle, emptyChild, ParseTree.holes]
+  · simp [openingCycle, emptyChild, ParseTree.productionSize]
+  · refine Valid.node (g := activationGrammar) _ _ (by simp [activationGrammar]) ?_ ?_
+    · intro c hc
+      have heq : c = .hole 1 := by simpa using hc
+      subst c
+      exact Valid.hole (g := activationGrammar) (1 : ℕ)
+    · simp [ParseTree.root, loopRule]
+  · simp [silentCycle, ParseTree.holes]
+  · simp [silentCycle, ParseTree.productionSize]
+
+theorem activation_tree_cycles (cs : List (ParseTree Bool ℕ))
+    (hcs : ∀ C ∈ cs, C = openingCycle ∨ C = silentCycle) :
+    ∀ C ∈ cs, Cycle activationGrammar C (activationRoots C) := by
+  intro C hC
+  rcases hcs C hC with rfl | rfl
+  · simpa [activationRoots, openingCycle, ParseTree.root, openingRule]
+      using activation_tree_data.2.1
+  · simpa [activationRoots, silentCycle, ParseTree.root, loopRule]
+      using activation_tree_data.2.2
+
+example : ∃ t, InsertionSequence activationGrammar activationBase
+    [openingCycle, silentCycle, silentCycle] t ∧ Complete activationGrammar t ∧
+    t.root = .nonterminal 0 ∧ t.weight = 0 ∧ t.productionSize = 5 ∧ t.support = {0, 1} := by
+  have hcycles := activation_tree_cycles [openingCycle, silentCycle, silentCycle] (by simp)
+  have horder : ActivationOrder activationRoots ParseTree.support activationBase.support
+      [openingCycle, silentCycle, silentCycle] := by
+    simp [ActivationOrder, activationRoots, activationBase, openingCycle, silentCycle,
+      emptyChild, ParseTree.root, ParseTree.support, ParseTree.productionLabels,
+      activationBaseRule, openingRule, emptyRule, loopRule]
+  obtain ⟨t, hseq⟩ := (activationOrder_iff_insertionSequence (g := activationGrammar)
+    activationRoots activationBase
+    _ activation_tree_data.1 hcycles).mp horder
+  obtain ⟨ht, hr, hw, hn, hs⟩ := hseq.accounting activation_tree_data.1
+  refine ⟨t, hseq, ht, hr, ?_, ?_, ?_⟩
+  · rw [hw]
+    funext a
+    simp [activationBase, openingCycle, silentCycle, emptyChild, ParseTree.weight,
+      counts, ParseTree.yield]
+  · rw [hn]
+    simp [activationBase, openingCycle, silentCycle, emptyChild, ParseTree.productionSize]
+  · rw [hs]
+    ext A
+    simp [activationBase, openingCycle, silentCycle, emptyChild, ParseTree.support,
+      ParseTree.productionLabels, activationBaseRule, openingRule, emptyRule, loopRule]
+
+example : ¬ ∃ t, InsertionSequence activationGrammar activationBase
+    [silentCycle, openingCycle] t := by
+  have hcycles := activation_tree_cycles [silentCycle, openingCycle] (by simp [or_comm])
+  rw [← activationOrder_iff_insertionSequence (g := activationGrammar) activationRoots activationBase _
+    activation_tree_data.1 hcycles]
+  simp [ActivationOrder, activationRoots, activationBase, silentCycle, ParseTree.root,
+    ParseTree.support, ParseTree.productionLabels, activationBaseRule, loopRule]
+
+example : ∃ t, Complete activationGrammar t ∧ t.support = {0, 1} ∧
+    (∃ t', Inserts activationGrammar t openingCycle t') ∧
+    (∃ t', Inserts activationGrammar t silentCycle t') := by
+  classical
+  have hD : ContextsActivatable activationGrammar activationBase {openingCycle, silentCycle} := by
+    refine ⟨[openingCycle, silentCycle], ?_, by simp, activationRoots, ?_, ?_⟩
+    · simp [openingCycle, silentCycle, openingRule, loopRule]
+    · intro C hC
+      apply activation_tree_cycles [openingCycle, silentCycle] (by simp) C
+      simpa using hC
+    · simp [ActivationOrder, activationRoots, activationBase, openingCycle, silentCycle,
+        emptyChild, ParseTree.root, ParseTree.support, ParseTree.productionLabels,
+        activationBaseRule, openingRule, emptyRule, loopRule]
+  obtain ⟨order, t, _, _, _, ht, _, _, hs, he⟩ := hD.realize activation_tree_data.1
+  refine ⟨t, ht, ?_, he openingCycle (by simp), he silentCycle (by simp)⟩
+  rw [hs]
+  ext A
+  simp [activationBase, openingCycle, silentCycle, emptyChild, ParseTree.support,
+    ParseTree.productionLabels, activationBaseRule, openingRule, emptyRule, loopRule]
+
+-- An empty context set also preserves a complete terminal-rooted base.
+example : ∃ t : ParseTree Bool ℕ, Complete activationGrammar t ∧
+    t.root = .terminal true ∧ t.weight = counts [true] ∧ t.support = ∅ := by
+  classical
+  have hB : Complete activationGrammar (.terminal true) :=
+    ⟨.terminal true, by simp [ParseTree.holes]⟩
+  have hD : ContextsActivatable activationGrammar (.terminal true) ∅ :=
+    ⟨[], by simp, by simp, activationRoots, by simp, by simp [ActivationOrder]⟩
+  obtain ⟨_, t, _, _, _, ht, hr, hw, hs, _⟩ := hD.realize hB
+  refine ⟨t, ht, hr, ?_, ?_⟩
+  · simpa [ParseTree.weight, ParseTree.yield] using hw
+  · simpa [ParseTree.support, ParseTree.productionLabels] using hs
+
 end SkeletonExamples

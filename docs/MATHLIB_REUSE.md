@@ -59,6 +59,19 @@ These are all available through existing imports; no new dependency, finite-labe
 assumption, statistics, or instance is introduced. The support proofs remain
 independent of grammar syntax.
 
+Sequence accounting reuses `List.map_cons`, `List.sum_cons`, ordinary addition,
+and `Set.mem_iUnion` for the indexed union of cycle supports. For a distinct
+activation order, `List.sum_toFinset` changes the list's weight sum to a finite-set
+sum; `List.mem_toFinset` identifies that set with the selected contexts. No new
+sum, support-aggregation definition, or enumeration mechanism is needed.
+Mathlib has no equivalent to this project's cycle/insertion predicates. The
+four new proved adapters establish cycle-root support, exact sequence accounting,
+the equivalence between enabled lists and tree insertion sequences, and the
+finite activatable-set realization. They reuse the existing `insertion_enabled`
+and `insertion_accounting` contracts. The only new import is the project's
+`InsertionSequences` module; there is no additional Mathlib dependency or
+finite-nonterminal assumption.
+
 No trace-membership dependency, replacement semilinearity predicate, or generic
 automata-equivalence development is introduced. Re-audit Mathlib before adding
 helpers in each accepted proof milestone; these identified gaps are not permission

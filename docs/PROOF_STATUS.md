@@ -10,7 +10,7 @@ one-hole plugging [PR #5](https://github.com/focs-lab/parikh-theorem/pull/5),
 and insertion [PR #6](https://github.com/focs-lab/parikh-theorem/pull/6)
 have merged, with CI passing.
 
-Current milestone: abstract activation, branch
+Current milestone: [abstract activation PR #7](https://github.com/focs-lab/parikh-theorem/pull/7), branch
 [`codex/abstract-activation`](https://github.com/focs-lab/parikh-theorem/tree/codex/abstract-activation),
 based on merged `main` (`d30ffd717da0e202dca3e388880272379ba30c64`).
 There are **18 direct `sorry` obligations**, zero project axioms, and 18 declarations

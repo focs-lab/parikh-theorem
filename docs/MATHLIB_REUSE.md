@@ -44,6 +44,21 @@ contract then supplies all insertion statistics; ordinary addition and set
 union laws finish the proof. No new syntax, statistic, instance, or dependency
 is introduced.
 
+The abstract activation milestone searches the pinned list/set infrastructure
+and finds no equivalent to this project-specific support transition predicate.
+Three thin adapters prove filtering of already-covered operations, activation
+when all roots are present, and appending operations covered by an earlier pass.
+They use ordinary set-union membership and `Set.union_eq_left`. First-occurrence
+reduction reuses `List.Nodup.filter`, `List.mem_filter`, and `List.mem_toFinset`;
+no duplicate-removal datatype or algorithm is introduced. Ordinary `List.dedup`
+keeps last occurrences, so using it blindly can break prerequisite order.
+Multiplicity accounting reuses `List.flatMap`, `List.replicate`,
+`List.mem_flatMap`, `List.eq_of_mem_replicate`, `List.count_eq_one_of_mem`,
+`List.count_flatMap`, `List.count_replicate`, and `List.sum_map_eq_nsmul_single`.
+These are all available through existing imports; no new dependency, finite-label
+assumption, statistics, or instance is introduced. The support proofs remain
+independent of grammar syntax.
+
 No trace-membership dependency, replacement semilinearity predicate, or generic
 automata-equivalence development is introduced. Re-audit Mathlib before adding
 helpers in each accepted proof milestone; these identified gaps are not permission

@@ -16,6 +16,58 @@ example : ActivationOrder required added {0} [false, true] := by
 example : ¬ ActivationOrder required added {0} [true] := by
   simp [ActivationOrder, required]
 
+/-! Repeats must retain the earlier enabling operation. Keeping only the last
+occurrence would move the dependent operation before its prerequisite. -/
+example : ActivationOrder required added {0} [false, true, false] ∧
+    ¬ ActivationOrder required added {0} [true, false] := by
+  simp [ActivationOrder, required, added]
+
+example : Activatable required added {0} {false, true} := by
+  have h : ActivationOrder required added {0} [false, true, false] := by
+    simp [ActivationOrder, required, added]
+  have hset : [false, true, false].toFinset = ({false, true} : Finset Bool) := by decide
+  simpa only [hset] using first_occurrences required added {0} [false, true, false] h
+
+-- First-occurrence reduction needs no assumption that an operation adds its own root.
+def nonselfAdded : Bool → Set ℕ := fun operation => if operation then ∅ else {1}
+example : Activatable required nonselfAdded {0} {false, true} := by
+  have h : ActivationOrder required nonselfAdded {0} [false, true, false] := by
+    simp [ActivationOrder, required, nonselfAdded]
+  have hset : [false, true, false].toFinset = ({false, true} : Finset Bool) := by decide
+  simpa only [hset] using
+    first_occurrences required nonselfAdded {0} [false, true, false] h
+
+-- Both operations occur, with independently chosen positive multiplicities.
+example : ∃ cs : List Bool, ActivationOrder required added {0} cs ∧
+    cs.count false = 3 ∧ cs.count true = 2 := by
+  have h : Activatable required added {0} {false, true} := by
+    refine ⟨[false, true], by simp, by simp, ?_⟩
+    simp [ActivationOrder, required, added]
+  obtain ⟨cs, hcs, _, hcounts⟩ := positive_multiplicities required added {0} {false, true}
+    (by intro c hc; cases c <;> simp [required, added]) h
+    (fun c => if c then 2 else 3) (by intro c hc; cases c <;> simp)
+  exact ⟨cs, hcs, hcounts false (by simp), hcounts true (by simp)⟩
+
+-- Multiplicity one supplies the initial copy and requires no extra repetitions.
+example : ∃ cs : List Bool, ActivationOrder required added {0} cs ∧
+    cs.count false = 1 ∧ cs.count true = 1 := by
+  have h : Activatable required added {0} {false, true} := by
+    refine ⟨[false, true], by simp, by simp, ?_⟩
+    simp [ActivationOrder, required, added]
+  obtain ⟨cs, hcs, _, hcounts⟩ := positive_multiplicities required added {0} {false, true}
+    (by intro c hc; cases c <;> simp [required, added]) h (fun _ => 1) (by simp)
+  exact ⟨cs, hcs, hcounts false (by simp), hcounts true (by simp)⟩
+
+-- For an empty operation set, positivity is vacuous even for zero requested counts.
+example : ∃ cs : List Bool, ActivationOrder required added (∅ : Set ℕ) cs ∧ cs = [] := by
+  have h : Activatable required added ∅ ∅ :=
+    ⟨[], by simp, by simp, by simp [ActivationOrder]⟩
+  obtain ⟨cs, hcs, hmem, _⟩ := positive_multiplicities required added ∅ ∅
+    (by simp) h (fun _ => 0) (by simp)
+  refine ⟨cs, hcs, List.eq_nil_iff_forall_not_mem.mpr ?_⟩
+  intro c
+  simpa using hmem c
+
 def emptyProduction : ContextFreeRule (Fin 0) Unit := ⟨(), []⟩
 def emptyTree : ParseTree (Fin 0) Unit := .node emptyProduction []
 

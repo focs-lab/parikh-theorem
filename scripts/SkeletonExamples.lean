@@ -419,4 +419,132 @@ example : ∃ t : ParseTree Bool ℕ, Complete activationGrammar t ∧
   · simpa [ParseTree.weight, ParseTree.yield] using hw
   · simpa [ParseTree.support, ParseTree.productionLabels] using hs
 
+/-! One linear component: two distinct contexts have the same nonzero weight,
+but one must open the other's root. Both must be paid for before repetitions. -/
+
+def weightedOpeningRule : ContextFreeRule Bool ℕ :=
+  ⟨0, [.nonterminal 0, .nonterminal 1, .terminal false]⟩
+def weightedLoopRule : ContextFreeRule Bool ℕ :=
+  ⟨1, [.nonterminal 1, .terminal false]⟩
+abbrev weightedGrammar : ContextFreeGrammar Bool :=
+  ⟨ℕ, 0, {activationBaseRule, emptyRule, weightedOpeningRule, weightedLoopRule}⟩
+def weightedOpening : ParseTree Bool ℕ :=
+  .node weightedOpeningRule [.hole 0, emptyChild, .terminal false]
+def weightedLoop : ParseTree Bool ℕ :=
+  .node weightedLoopRule [.hole 1, .terminal false]
+noncomputable def weightedContexts : Finset (ParseTree Bool ℕ) := by
+  classical
+  exact {weightedOpening, weightedLoop}
+
+theorem weighted_data : Complete weightedGrammar activationBase ∧
+    ContextsActivatable weightedGrammar activationBase weightedContexts := by
+  classical
+  unfold weightedContexts
+  have he : Valid weightedGrammar emptyChild :=
+    Valid.node (g := weightedGrammar) _ [] (by simp [weightedGrammar])
+      (by simp) (by simp [emptyRule])
+  have ho : Cycle weightedGrammar weightedOpening 0 := by
+    refine ⟨⟨Valid.node (g := weightedGrammar) _ _ (by simp [weightedGrammar]) ?_ ?_, ?_⟩,
+      rfl, ?_⟩
+    · intro c hc
+      simp only [List.mem_cons, List.not_mem_nil, or_false] at hc
+      rcases hc with rfl | rfl | rfl
+      · exact Valid.hole (g := weightedGrammar) (0 : ℕ)
+      · exact he
+      · exact .terminal false
+    · simp [ParseTree.root, weightedOpeningRule, emptyChild, emptyRule]
+    · simp [weightedOpening, emptyChild, ParseTree.holes]
+    · simp [weightedOpening, emptyChild, ParseTree.productionSize]
+  have hl : Cycle weightedGrammar weightedLoop 1 := by
+    refine ⟨⟨Valid.node (g := weightedGrammar) _ _ (by simp [weightedGrammar]) ?_ ?_, ?_⟩,
+      rfl, ?_⟩
+    · intro c hc
+      simp only [List.mem_cons, List.not_mem_nil, or_false] at hc
+      rcases hc with rfl | rfl
+      · exact Valid.hole (g := weightedGrammar) (1 : ℕ)
+      · exact .terminal false
+    · simp [ParseTree.root, weightedLoopRule]
+    · simp [weightedLoop, ParseTree.holes]
+    · simp [weightedLoop, ParseTree.productionSize]
+  refine ⟨⟨Valid.node (g := weightedGrammar) _ [] (by simp [weightedGrammar])
+    (by simp) (by simp [activationBaseRule]), by simp [activationBase, ParseTree.holes]⟩,
+    [weightedOpening, weightedLoop], ?_, by simp, activationRoots, ?_, ?_⟩
+  · simp [weightedOpening, weightedLoop, weightedOpeningRule, weightedLoopRule]
+  · intro C hC
+    simp only [Finset.mem_insert, Finset.mem_singleton] at hC
+    rcases hC with rfl | rfl
+    · simpa [activationRoots, weightedOpening, ParseTree.root, weightedOpeningRule] using ho
+    · simpa [activationRoots, weightedLoop, ParseTree.root, weightedLoopRule] using hl
+  · simp [ActivationOrder, activationRoots, activationBase, weightedOpening, weightedLoop,
+      emptyChild, ParseTree.root, ParseTree.support, ParseTree.productionLabels,
+      activationBaseRule, weightedOpeningRule, weightedLoopRule, emptyRule]
+
+-- Exactly the words with at least two false terminals have the obtainable weights.
+-- The minimum is two despite both contexts having the same period vector.
+example (n : ℕ) : (∃ t Cs, InsertionSequence weightedGrammar activationBase Cs t ∧
+    (∀ C, C ∈ Cs ↔ C ∈ weightedContexts) ∧
+    t.weight = counts (List.replicate n false)) ↔ 2 ≤ n := by
+  classical
+  change counts (List.replicate n false) ∈ {v | ∃ t Cs,
+    InsertionSequence weightedGrammar activationBase Cs t ∧
+    (∀ C, C ∈ Cs ↔ C ∈ weightedContexts) ∧ t.weight = v} ↔ _
+  rw [one_linear weightedGrammar activationBase _ weighted_data.1 weighted_data.2,
+    contextComponent.mem_denotation_iff]
+  have hne : weightedOpening ≠ weightedLoop := by
+    simp [weightedOpening, weightedLoop, weightedOpeningRule, weightedLoopRule]
+  have hb : activationBase.weight = 0 := by
+    ext a
+    simp [activationBase, ParseTree.weight, ParseTree.yield, counts]
+  have ho : weightedOpening.weight = counts [false] := by
+    ext a
+    simp [weightedOpening, emptyChild, ParseTree.weight, ParseTree.yield, counts]
+  have hl : weightedLoop.weight = counts [false] := by
+    ext a
+    simp [weightedLoop, ParseTree.weight, ParseTree.yield, counts]
+  constructor
+  · rintro ⟨k, hv⟩
+    have hfalse := congrFun hv false
+    simp [weightedContexts, hb, ho, hl, hne, counts] at hfalse
+    omega
+  · intro hn
+    refine ⟨fun C => if C = weightedOpening then n - 2 else 0, ?_⟩
+    ext a
+    cases a <;> simp [weightedContexts, hb, ho, hl, hne, counts, List.count_replicate]
+    omega
+
+-- Zero-weight contexts remain required, while all obtainable weights are zero.
+example : {v | ∃ t Cs, InsertionSequence insertionGrammar repeatedTree Cs t ∧
+    (∀ C, C ∈ Cs ↔ C ∈ ({silentCycle} : Finset _)) ∧ t.weight = v} = {0} := by
+  classical
+  have hD : ContextsActivatable insertionGrammar repeatedTree {silentCycle} := by
+    refine ⟨[silentCycle], by simp, by simp, activationRoots, ?_, ?_⟩
+    · intro C hC
+      have heq : C = silentCycle := by simpa using hC
+      subst C
+      simpa [activationRoots, silentCycle, ParseTree.root, loopRule] using insertion_data.2
+    · simp [ActivationOrder, activationRoots, repeatedTree, silentCycle, emptyChild,
+        ParseTree.root, ParseTree.support, ParseTree.productionLabels,
+        forkRule, emptyRule, loopRule]
+  rw [one_linear insertionGrammar repeatedTree _ insertion_data.1 hD]
+  have hb : repeatedTree.weight = 0 := by
+    ext a
+    simp [repeatedTree, emptyChild, ParseTree.weight, ParseTree.yield, counts]
+  have hc : silentCycle.weight = 0 := by
+    ext a
+    simp [silentCycle, ParseTree.weight, ParseTree.yield, counts]
+  ext v
+  simp [contextComponent.mem_denotation_iff, hb, hc]
+
+-- Empty context sets preserve a terminal-rooted base with nonzero weight.
+example : {v | ∃ t Cs, InsertionSequence activationGrammar (.terminal true) Cs t ∧
+    (∀ C, C ∈ Cs ↔ C ∈ (∅ : Finset _)) ∧ t.weight = v} = {counts [true]} := by
+  classical
+  have hB : Complete activationGrammar (.terminal true) :=
+    ⟨.terminal true, by simp [ParseTree.holes]⟩
+  have hD : ContextsActivatable activationGrammar (.terminal true) ∅ :=
+    ⟨[], by simp, by simp, activationRoots, by simp, by simp [ActivationOrder]⟩
+  rw [one_linear activationGrammar (.terminal true) ∅ hB hD]
+  ext v
+  simp [contextComponent.mem_denotation_iff, ParseTree.weight, ParseTree.yield]
+
 end SkeletonExamples

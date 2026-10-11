@@ -4673,6 +4673,71 @@
       "unsafe": false,
       "value": "db0d1cb784c09c293f3e98542afd48a59ed6d39ede6abfc0c927a8c6e4bca868"
     },
+    "Parikh.contextComponent.eq_1": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "acb383aa0534d27511bfabca52fb8a706dd3b41d1ebe1db5fd27cde42ed4ac77",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.contextComponent.mem_denotation_iff": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "220e84cfa6b254b8df0091065b7bfa90eca1f07af11685e1631eb7353728ce1c",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.contextComponent.mem_denotation_iff._simp_1_2": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "1844ec9fb3ce843705f4691c28d54dd5468a3336a049c2c7d6b8371279f7bac1",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.contextComponent.mem_denotation_iff._simp_1_3": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "184346598f71ac88880fbad4a7561a9a827eec556a703e677b7608b477f2716c",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.contextComponent.mem_denotation_iff._simp_1_4": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "4ff339c14029dc167a2d1f2fcfc2041749ad6f4cd90815beb5e747afc3fd3023",
+      "unsafe": false,
+      "value": null
+    },
     "Parikh.contextFree_image": {
       "instance": false,
       "kind": "theorem",
@@ -5040,6 +5105,30 @@
       "partial": false,
       "reducibility": "opaque",
       "type": "9e8522801fac2cc93cd01e13a73b53e35806f8fe645b85d87323e495456e0181",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.one_linear._proof_1_2": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "31ca81ed491c4af648adc52d403e273e2f4f0c171cfb6e53c72efa812ce06bcc",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.one_linear._simp_1_1": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "2f2d8528014799a83a39d1a536ea0f59a0fc005b944c4776d9f8c7c5f3bc5c99",
       "unsafe": false,
       "value": null
     },

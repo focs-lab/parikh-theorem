@@ -225,6 +225,36 @@ noncomputable def contextComponent {T : Type*} [DecidableEq T]
   classical
   exact ⟨B.weight + ∑ C ∈ D, C.weight, D.toList.map ParseTree.weight⟩
 
+/-- Reindex the period list by its context identities (`eq:component`).
+Equal or zero weights retain independent natural coefficients. -/
+theorem contextComponent.mem_denotation_iff {T N : Type*} [DecidableEq T]
+    (B : ParseTree T N) (D : Finset (ParseTree T N)) (v : Vector T) :
+    v ∈ (contextComponent B D).denotation ↔
+      ∃ k : ParseTree T N → ℕ,
+        v = (B.weight + ∑ C ∈ D, C.weight) + ∑ C ∈ D, k C • C.weight := by
+  classical
+  have hrange : Set.range (contextComponent B D).periods.get =
+      Set.range (fun C : D => C.val.weight) := by
+    ext w
+    simp [contextComponent]
+  rw [Component.denotation_eq_vadd_closure, hrange]
+  simp only [Set.mem_vadd_set, SetLike.mem_coe, vadd_eq_add,
+    AddSubmonoid.mem_closure_range_iff_of_fintype]
+  constructor
+  · rintro ⟨w, ⟨k, rfl⟩, rfl⟩
+    let coeff : ParseTree T N → ℕ := fun C => if hC : C ∈ D then k ⟨C, hC⟩ else 0
+    refine ⟨coeff, ?_⟩
+    change (B.weight + ∑ C ∈ D, C.weight) + (∑ C : D, k C • C.val.weight) = _
+    congr 1
+    rw [← Finset.sum_coe_sort D]
+    apply Finset.sum_congr rfl
+    intro C _
+    simp [coeff, C.property]
+  · rintro ⟨k, rfl⟩
+    refine ⟨∑ C : D, k C.val • C.val.weight, ⟨fun C => k C.val, rfl⟩, ?_⟩
+    change (B.weight + ∑ C ∈ D, C.weight) + (∑ C : D, k C.val • C.val.weight) = _
+    rw [Finset.sum_coe_sort D (fun C => k C • C.weight)]
+
 /-- The explicit finite-union formula, retaining context identities (`eq:main`). -/
 def treeRepresentation {T : Type*} [DecidableEq T] (g : ContextFreeGrammar T) :
     Set (Vector T) :=
@@ -238,6 +268,47 @@ theorem one_linear {T : Type*} [DecidableEq T] (g : ContextFreeGrammar T)
     {v | ∃ t Cs, InsertionSequence g B Cs t ∧
       (∀ C, C ∈ Cs ↔ C ∈ D) ∧ t.weight = v} =
       (contextComponent B D).denotation := by
-  sorry
+  classical
+  have sum_counts : ∀ (Cs : List (ParseTree T g.NT))
+      (hmem : ∀ C, C ∈ Cs ↔ C ∈ D),
+      (Cs.map ParseTree.weight).sum = ∑ C ∈ D, Cs.count C • C.weight := by
+    intro Cs hmem
+    have hset : Cs.toFinset = D := by
+      ext C
+      simpa only [List.mem_toFinset] using hmem C
+    rw [Finset.sum_list_map_count, hset]
+  ext v
+  rw [contextComponent.mem_denotation_iff]
+  constructor
+  · rintro ⟨t, Cs, hseq, hmem, rfl⟩
+    refine ⟨fun C => Cs.count C - 1, ?_⟩
+    rw [(hseq.accounting hB).2.2.1, sum_counts Cs hmem]
+    have hsplit : ∑ C ∈ D, Cs.count C • C.weight =
+        (∑ C ∈ D, C.weight) + ∑ C ∈ D, (Cs.count C - 1) • C.weight := by
+      rw [← Finset.sum_add_distrib]
+      apply Finset.sum_congr rfl
+      intro C hC
+      have hpositive : 0 < Cs.count C := List.count_pos_iff.mpr ((hmem C).mpr hC)
+      have hcount : Cs.count C = 1 + (Cs.count C - 1) := by omega
+      conv_lhs => rw [hcount]
+      rw [add_nsmul, one_nsmul]
+    rw [hsplit, add_assoc]
+  · rintro ⟨k, rfl⟩
+    obtain ⟨order, hnd, hmem, roots, hcycles, horder⟩ := hD
+    have hact : Activatable roots ParseTree.support B.support D := ⟨order, hnd, hmem, horder⟩
+    obtain ⟨Cs, hCs, hCs_mem, hcount⟩ := positive_multiplicities roots ParseTree.support
+      B.support D (fun C hC => (hcycles C hC).root_mem_support) hact
+      (fun C => k C + 1) (by simp)
+    obtain ⟨t, hseq⟩ := (activationOrder_iff_insertionSequence roots B Cs hB
+      (fun C hC => hcycles C ((hCs_mem C).mp hC))).mp hCs
+    refine ⟨t, Cs, hseq, hCs_mem, ?_⟩
+    rw [(hseq.accounting hB).2.2.1, sum_counts Cs hCs_mem]
+    have hsplit : ∑ C ∈ D, Cs.count C • C.weight =
+        (∑ C ∈ D, C.weight) + ∑ C ∈ D, k C • C.weight := by
+      rw [← Finset.sum_add_distrib]
+      apply Finset.sum_congr rfl
+      intro C hC
+      rw [hcount C hC, add_nsmul, one_nsmul, add_comm]
+    rw [hsplit, add_assoc]
 
 end Parikh

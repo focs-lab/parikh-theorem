@@ -164,6 +164,7 @@ the sole new import is the project's `FiniteRepresentation` module. No new
 data definitions, instances, cache targets, dependency pins, or nonterminal
 assumptions are needed. Classical finite-set selection and filtering establish
 semantic existence, with executable construction still a separate obligation.
+
 The expression-image milestone reuses `List.count_flatten`,
 `List.count_replicate`, `List.sum_map_eq_nsmul_single`, and
 `List.count_eq_one_of_mem` for representative words. `Set.image2_singleton`

@@ -230,6 +230,7 @@ this union semilinear. The exact equality yields `grammar_image`;
 `exists_witness` yields `grammar_witness`; unpacking Mathlib's context-free
 grammar witness yields `contextFree_image`. No finite-nonterminal hypothesis,
 quantitative-bound obligation, or executable-enumeration claim is introduced.
+
 `RegularRealization.lean` proves representative counts and exact expression images.
 Literal words accept singletons; concatenation adds images; a starred word has
 exactly the natural multiples of its count vector. Inducting over periods uses

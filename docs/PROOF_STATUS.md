@@ -7,9 +7,11 @@ rename. Its pointer and all previous contract fingerprints remain unchanged.
 All proof increments through [PR #15](https://github.com/focs-lab/parikh-theorem/pull/15)
 have merged, with CI passing.
 
-Current milestone: representative counting and exact expression images,
+Current milestone: [PR #16](https://github.com/focs-lab/parikh-theorem/pull/16),
+representative counting and exact expression images,
 branch `codex/witness-expression-image`, based on merged `main`
 (`481c029f74539db64bbc1d7bcc3a9db3126d46a0`).
+CI evidence is recorded in the PR.
 There are **7 direct `sorry` obligations**, zero project axioms, and 7 declarations
 transitively dependent on `sorryAx`, down from 8. The forward theorem is proved.
 Expression-image correctness is now proved; DFA regularity, the converse,

@@ -15,6 +15,10 @@ The certified executable compiler was reviewed and merged in
 The [merged-main CI run](https://github.com/focs-lab/parikh-theorem/actions/runs/38183252711)
 passes at that exact commit. The closing audit reran the build, examples, final
 contract check and public axiom inspection directly on this merged `main`.
+The completion-ledger update is published as
+[PR #28](https://github.com/focs-lab/parikh-theorem/pull/28), with its
+[checks](https://github.com/focs-lab/parikh-theorem/pull/28/checks) recording CI
+for the closing documentation commit.
 
 There are **0 direct `sorry` obligations**, **0 project axioms**, and **0
 transitively unresolved declarations**. The public `compiler` now implements
@@ -163,7 +167,8 @@ push with a separate expected-tip lease for each branch. All commits remain in
 | `codex/witness-bit-bound` | #26 |
 | `codex/executable-compiler` | #27 |
 
-`main` and the active `codex/completion-audit` documentation branch are retained.
+At cleanup time, `main` was retained and no feature PR was open. The new
+`codex/completion-audit` documentation branch is retained while its PR is active.
 
 ## Validation on merged main
 

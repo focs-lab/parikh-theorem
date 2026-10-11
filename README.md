@@ -200,8 +200,9 @@ grammar-to-witness `compiler` is implemented with exact-denotation and size
 proofs. The formalization's mathematical and effective-construction obligations
 are complete and merged on `main`. The [proof-status ledger](docs/PROOF_STATUS.md)
 records the final audit, completed requirements and branch cleanup. The algorithm
-follows the deliberately coarse finite construction; its output need not be minimal and enumeration can
-be expensive. [Compiler usage](docs/COMPILER.md) gives a small executable example.
+follows the deliberately coarse finite construction; its output need not be
+minimal and enumeration can be expensive. [Compiler usage](docs/COMPILER.md)
+gives a small executable example.
 
 Contributors should use the [proof plan](docs/PROOF_PLAN.md) to locate a result
 and the [contract guide](docs/CONTRACT_CHECKS.md) to understand statement stability.

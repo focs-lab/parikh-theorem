@@ -16,6 +16,7 @@ The audit searched the actual sources before choosing the interfaces.
 | `Computability/DFA.lean`, `NFA.lean`, `EpsilonNFA.lean` | Reuse `Language.IsRegular`, `NFA.toDFA_correct` and `εNFA.toNFA_correct` where applicable. The proved finite continuation-language NFA for witness expressions reuses `NFA.toDFA_correct` directly. The converse does not require a grammar. |
 | `Data/Nat/Log.lean` | Reuse `Nat.clog` for the document's fixed-width bit bound. |
 | `Data/Set/Finite/List.lean` | Reuse `List.finite_length_eq` over a finite subtype for production child lists, with finite images and unions for bounded-tree finiteness. No parallel list-enumeration or generic tree-finiteness theory. |
+| `Data/List/Sections.lean` | Reuse executable ordered Cartesian products (`List.sections`) and their exact `Forall₂` membership law for bounded-tree enumeration. No custom product enumerator. |
 | `Data/Tree/Basic.lean`, `Data/W/*` | Existing binary trees/W-types do not directly provide ordered variable-arity production nodes, nonterminal holes, local RHS-root matching or grammar semantics. A small raw syntax with a separate validity predicate keeps these meanings explicit. |
 
 The tree-semantics milestone also reuses core `List.filterMap_flatten`,
@@ -235,6 +236,23 @@ adapt this project's frozen activation predicate. `Finset.induction_on`,
 `card_sdiff_of_subset` provide the set and progress proofs. The implementation
 uses ordinary structural natural-number recursion with no new data representation,
 partial helper, tactic, Mathlib import or cache target. All existing pins remain.
+
+The executable-enumeration milestone searches pinned context-free grammar,
+tree and list-product sources. Mathlib has no enumerator for this project's
+production-node/hole syntax; `List.sections` already supplies the needed ordered
+Cartesian products. `List.mem_sections`, `forall₂_map_right_iff`,
+`forall₂_and_left`, `forall₂_map_left_iff` and `forall₂_eq_eq_eq` turn product
+membership into child membership and exact ordered root matching.
+`List.finRange` and `mem_finRange` supply concrete declared leaf lists;
+`List.mem_map`, `mem_flatMap`, `mem_filter` and `mem_toFinset` connect generated
+nodes to decoded grammar rules, including duplicate productions.
+Core `List.foldl_max_eq_max`, `le_max_of_mem` and `max_le_iff` provide height
+accounting. The new height, root-product and validity lemmas specialize existing
+list laws to the frozen tree syntax. No new tree representation or instance is
+introduced. Both runtime definitions have no axiom dependencies and use explicit
+natural-number recursion without partial helpers. `Mathlib.Data.List.Sections`
+is the sole new import/cache target, added to CI and the build guide; all pins
+and proof allowlists remain unchanged.
 
 No trace-membership dependency, replacement semilinearity predicate, or generic
 automata-equivalence development is introduced. Re-audit Mathlib before adding

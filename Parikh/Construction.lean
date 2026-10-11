@@ -10,9 +10,10 @@ enumeration, compiler output, and quantitative guarantees such an algorithm
 must satisfy.
 
 `EncodedGrammar` supplies finite syntax. `BoundedEnumeration` and `Compiler`
-package proposed algorithms with their required correctness proofs; implementing
-values remain to be supplied. The size and bit bounds describe the intended
-output budget. Consult `docs/PROOF_STATUS.md` for outstanding proofs.
+package algorithms with their required correctness proofs. The former is
+implemented by `boundedEnumeration` in `Parikh/BoundedEnumeration.lean`; a
+compiler value remains to be supplied. The size and bit bounds describe the
+intended output budget. Consult `docs/PROOF_STATUS.md` for outstanding proofs.
 
 Source: `sec:effective`, `eq:bound-defs`, `thm:size-bound`, `eq:bit-bound`.
 -/
@@ -97,7 +98,7 @@ def EncodedGrammar.size (g : EncodedGrammar) : GrammarSize :=
     max 1 ((g.rules.map fun r => r.output.length).foldl max 0)⟩
 
 /-- Complete enumeration contract for finite encoded grammars (`lem:finite`).
-The future implementation must enumerate syntax, not use classical choice.
+Implemented by `boundedEnumeration`, which enumerates syntax by height.
 -/
 structure BoundedEnumeration where
   enumerate : (g : EncodedGrammar) → ℕ →

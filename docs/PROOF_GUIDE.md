@@ -253,5 +253,27 @@ removes operations, so the original number of selected operations gives enough
 rounds. The executable value `activationTest` packages this procedure with a
 proof that its Boolean result is `true` exactly when `Activatable` holds.
 Only the supplied input sets must be finite; labels and operation types may be
-infinite. Bounded-tree enumeration and the full grammar compiler are still
-separate implementation tasks.
+infinite. The full grammar compiler remains a separate implementation task.
+
+## 11. Computing the finite tree families
+
+The finiteness proof also has an executable counterpart. For a finite encoded
+grammar, height zero contains all terminal leaves and nonterminal holes. To
+construct the next family, choose a production and choose one smaller tree for
+each symbol of its right-hand side. Keep the choices in that same order, with
+each child's root matching the corresponding symbol.
+
+For the running production $S\to aASb$, this means choosing an `a`-rooted child,
+an $A$-rooted child, an $S$-rooted child and a `b`-rooted child. Filtering each
+child family by its required root before taking the Cartesian product gives
+exactly those combinations. An empty production has one possible child list,
+the empty list, so its node first appears at height one.
+
+[BoundedEnumeration.lean](../Parikh/BoundedEnumeration.lean) reuses Mathlib's
+`List.sections` for the ordered product. The executable `boundedEnumeration`
+value proves that a tree appears exactly when it is valid for the decoded
+grammar and its height is within the requested bound. This includes open trees
+and holes for unused declared symbols. Duplicate productions may repeat trees;
+the contract concerns membership, so it does not require a unique listing.
+Filtering these trees into bases and contexts, assembling the witness with the
+activation test, and proving its quantitative bounds remain compiler work.

@@ -162,6 +162,7 @@ flowchart TD
 | [WordBlockAutomata.lean](Parikh/WordBlockAutomata.lean) | Finite continuation-language NFAs and DFA regularity for fixed-word and starred-word prefixes, reusing Mathlib determinization. |
 | [RegularRealization.lean](Parikh/RegularRealization.lean) | Representative words, component/witness expressions, exact images, DFA regularity, the converse, and regular-language specialization. |
 | [Construction.lean](Parikh/Construction.lean) | Finite grammar encoding, enumeration/compiler specifications, and quantitative size/bit bounds. Algorithm implementations and bound proofs remain in progress. |
+| [BoundedEnumeration.lean](Parikh/BoundedEnumeration.lean) | Executable enumeration of valid open trees up to any height, with an exact membership proof. |
 
 The remaining folders support reading, building, and reviewing the proofs:
 
@@ -184,9 +185,9 @@ The forward theorem, exact finite semilinear witnesses, converse, equal-image
 regular realization, and regular-language specialization are proved. These results
 allow arbitrary ambient nonterminal types; witness and automaton existence use classical reasoning.
 
-Executable activation testing is implemented with a correctness proof.
-Bounded-tree enumeration and grammar-to-witness compilation remain, together
-with three theorem obligations concerning quantitative bounds.
+Executable activation testing and bounded-tree enumeration are implemented with
+correctness proofs. Grammar-to-witness compilation remains, together with three
+theorem obligations concerning quantitative bounds.
 The [proof-status ledger](docs/PROOF_STATUS.md) lists the exact
 obligations; a successful build can still contain these tracked `sorry`s.
 

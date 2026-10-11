@@ -972,4 +972,80 @@ example : (activationTest ℕ ℕ).run (fun _ => 0) (fun _ => ∅) {0} {2, 5, 8}
   (activationTest ℕ Bool).run required finiteAdded {0} {true},
   (activationTest ℕ ℕ).run id (fun c => {c + 1}) {0} (Finset.range 4)]
 
+/-! Executable bounded enumeration: ordered siblings, an empty production, a
+unit cycle, a duplicate rule and an unused declared nonterminal. -/
+def enumerationStartRule : ContextFreeRule (Fin 1) (Fin 3) :=
+  ⟨0, [.terminal 0, .nonterminal 1]⟩
+def enumerationEmptyRule : ContextFreeRule (Fin 1) (Fin 3) := ⟨1, []⟩
+def enumerationLoopRule : ContextFreeRule (Fin 1) (Fin 3) := ⟨1, [.nonterminal 1]⟩
+abbrev enumerationGrammar : EncodedGrammar :=
+  ⟨1, 2, 0, [enumerationStartRule, enumerationEmptyRule, enumerationLoopRule, enumerationEmptyRule]⟩
+
+-- Height zero includes every declared leaf, even the unused nonterminal 2.
+example : ((boundedEnumeration.enumerate enumerationGrammar 0).map ParseTree.root) =
+    [.terminal 0, .nonterminal 0, .nonterminal 1, .nonterminal 2] := by decide
+
+-- Empty and unit productions count as production nodes. Duplicate rules may
+-- repeat trees, while decoding the grammar collapses duplicate productions.
+example : (boundedEnumeration.enumerate enumerationGrammar 1).length = 8 ∧
+    (boundedEnumeration.enumerate enumerationGrammar 2).length = 14 ∧
+    enumerationGrammar.decode.rules.card = 3 := by decide
+
+def enumeratedCompleteTree : ParseTree (Fin 1) (Fin 3) :=
+  .node enumerationStartRule [.terminal 0, .node enumerationEmptyRule []]
+
+-- Apply the exact correctness field in both directions at the height boundary.
+example : enumeratedCompleteTree ∈ boundedEnumeration.enumerate enumerationGrammar 2 ∧
+    enumeratedCompleteTree ∉ boundedEnumeration.enumerate enumerationGrammar 1 := by
+  have hv : Valid enumerationGrammar.decode enumeratedCompleteTree := by
+    apply (Valid.node_iff enumerationGrammar.decode _ _).mpr
+    refine ⟨?_, ?_, rfl⟩
+    · change enumerationStartRule ∈ enumerationGrammar.rules.toFinset
+      simp [enumerationGrammar]
+    · intro c hc
+      change c ∈ [.terminal (0 : Fin 1), .node enumerationEmptyRule []] at hc
+      simp only [List.mem_cons, List.not_mem_nil, or_false] at hc
+      rcases hc with rfl | rfl
+      · exact Valid.terminal (g := enumerationGrammar.decode) 0
+      · apply (Valid.node_iff enumerationGrammar.decode _ _).mpr
+        refine ⟨?_, ?_, rfl⟩
+        · change enumerationEmptyRule ∈ enumerationGrammar.rules.toFinset
+          simp [enumerationGrammar]
+        · exact fun _ hc => (List.not_mem_nil hc).elim
+  have hh : enumeratedCompleteTree.height = 2 := by
+    change (ParseTree.node enumerationStartRule
+      [.terminal (0 : Fin 1), .node enumerationEmptyRule []]).height = 2
+    rw [ParseTree.height_node_eq]
+    simp [ParseTree.height]
+  refine ⟨(boundedEnumeration.correct enumerationGrammar 2 _).mpr ⟨hv, ?_⟩, ?_⟩
+  · change enumeratedCompleteTree.height ≤ 2
+    omega
+  · intro hmem
+    have hheight := ((boundedEnumeration.correct enumerationGrammar 1 _).mp hmem).2
+    change enumeratedCompleteTree.height ≤ 1 at hheight
+    omega
+
+-- Reversing the same children violates the production's ordered RHS.
+example : ParseTree.node enumerationStartRule [.hole 1, .terminal 0] ∉
+    boundedEnumeration.enumerate enumerationGrammar 2 := by
+  intro hmem
+  have hv := ((boundedEnumeration.correct enumerationGrammar 2 _).mp hmem).1
+  have hroots := ((Valid.node_iff enumerationGrammar.decode _ _).mp hv).2.2
+  change [Symbol.nonterminal (1 : Fin 3), Symbol.terminal (0 : Fin 1)] =
+    [.terminal 0, .nonterminal 1] at hroots
+  cases hroots
+
+-- With no terminals, epsilon is still a height-one production node, distinct
+-- from the height-zero hole. With no productions, only declared leaves remain.
+abbrev encodedEpsilonGrammar : EncodedGrammar := ⟨0, 0, 0, [⟨0, []⟩]⟩
+abbrev encodedNoRulesGrammar : EncodedGrammar := ⟨0, 0, 0, []⟩
+
+example : (boundedEnumeration.enumerate encodedEpsilonGrammar 0).length = 1 ∧
+    (boundedEnumeration.enumerate encodedEpsilonGrammar 3).length = 2 ∧
+    (boundedEnumeration.enumerate encodedNoRulesGrammar 3).length = 1 := by decide
+
+#eval (List.range 3).map (fun H => (boundedEnumeration.enumerate enumerationGrammar H).length)
+#eval (boundedEnumeration.enumerate encodedEpsilonGrammar 1).map
+  (fun t => (t.height, t.holes.length))
+
 end SkeletonExamples

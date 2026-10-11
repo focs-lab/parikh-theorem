@@ -11,8 +11,8 @@ Mathlib grammars and context-free languages. The derivation-tree proof includes
 grammar/tree semantics, insertion and activation, bounded-family finiteness,
 exact decomposition, and the exact component union. Converse and equal-image
 regular realization and regular-language specialization are also proved. Executable
-activation testing is implemented with exact correctness. Bounded enumeration,
-compilation and quantitative bounds remain in progress.
+activation testing and bounded-tree enumeration are implemented with exact
+correctness. Compilation and quantitative bounds remain in progress.
 Read the complete reference, including appendices, alongside the
 statements; source labels below refer to `reference/parikh_theorem.tex`.
 
@@ -42,6 +42,8 @@ statements; source labels below refer to `reference/parikh_theorem.tex`.
    gives the regular specialization.
 6. `Parikh/Construction.lean`: finite encoded input, algorithm interfaces, and all
    four size bounds plus the numerical bit budget.
+   `BoundedEnumeration.lean` implements the enumeration interface with an exact
+   membership proof, using Mathlib's ordered list Cartesian products.
 7. `PROOF_STATUS.md` and `CONTRACT_CHECKS.md`: what is incomplete and how review
    freezes the accepted contracts.
 
@@ -64,7 +66,9 @@ flowchart TD
   Linear --> Main
   Counting --> Converse[Representative words and regular realization]
   DFA[Mathlib NFA to DFA conversion] --> Converse
-  Bounded --> Compiler[Finite enumeration and activation algorithm]
+  Trees --> Enumeration[Executable bounded-tree enumeration]
+  Bounded --> Compiler[Finite witness compiler]
+  Enumeration --> Compiler
   Activation --> Compiler
   Main --> Compiler
   Compiler --> Bounds[Compiler bounds and bit budget]
@@ -88,8 +92,9 @@ bridge to Mathlib is separate from the derivation-tree proof.
 ## Source-to-contract map
 
 Names below are in namespace `Parikh`. “Pending” means a tracked theorem hole.
-Concrete definitions and interfaces are implemented; their correctness proofs
-and algorithm values are pending.
+Concrete definitions and interfaces are implemented. Activation testing and
+bounded-tree enumeration have executable values with complete correctness proofs;
+compiler construction and the three bounds proofs remain pending.
 
 | Source labels | Lean declaration(s) | Hypotheses / meaning | Intended prerequisites; status |
 | --- | --- | --- | --- |
@@ -104,7 +109,7 @@ and algorithm values are pending.
 | `lem:insertion-laws`, `eq:insert-wt`, `eq:insert-size`, `eq:insert-supp` | `insertion_accounting` | Complete insertion and exact root/weight/size/support equalities | Outer one-hole context and plugging twice; proved |
 | `cor:sequence` | `InsertionSequence.accounting` | Finite ordered sequence from a complete tree; exact root/weight/size/support and completeness | Induction using insertion accounting; proved |
 | `lem:simple-height`, `def:families`, `def:statistics` | `ParseTree.Simple`, `ParseTree.labelPath_subset_support`, `ParseTree.exists_labelPath_height`, `simple_height`, `IsBase`, `IsBoundedCycle` | Active nonterminals replace an unnecessarily finite ambient type; repeated siblings are allowed | Longest label path, path-label distinctness, active support, and Mathlib finite-set cardinality; height bound proved, family predicates concrete |
-| `lem:finite`, `def:statistics` | `activeNonterminals`, `Valid.support_active`, `complete_support_active`, `bounded_open_finite`, `bases_finite`, `bounded_cycles_finite`, `BoundedEnumeration` | Finite terminals; holes restricted to active symbols for the general grammar | Active-support containment and bounded-family finiteness proved; executable enumerator pending |
+| `lem:finite`, `def:statistics` | `activeNonterminals`, `Valid.support_active`, `complete_support_active`, `bounded_open_finite`, `bases_finite`, `bounded_cycles_finite`, `BoundedEnumeration`, `boundedEnumeration`, `EncodedGrammar.enumerateTrees_correct` | Finite terminals; active holes for general-grammar finiteness; all declared finite symbols for the encoded enumerator | Active-support containment and bounded-family finiteness proved; executable enumeration with exact membership implemented and proved |
 | `lem:cut` | `bounded_cut`, `Complete.exists_minimal_nonsimple_subtree`, `ParseTree.exists_root_mem_child_support`, `ParseTree.height_le_height_plug`, `ParseTree.productionSize_subtree_bound`, `ParseTree.subtree_replacement` | Non-simple complete tree; strict decrease in production count | Descent to simple children, repeated root, bounded context, indexed reversible surgery; proved |
 | `thm:decomposition`, `eq:decomposition`, `cor:finite-generation` | `decomposition`, `InsertionSequence.append` | Exact tree reconstruction for every complete tree/root | Mathlib natural strong induction using bounded cut, followed by sequence concatenation; proved |
 | `def:activation`, `eq:activation` | `ActivationOrder`, `Activatable`, `ContextsActivatable` | Operations retain their identities and require previously present labels | Concrete definitions; arbitrary support sets in the abstract interface |
@@ -121,7 +126,7 @@ and algorithm values are pending.
 | `lem:linear-regular`, `thm:converse`, `eq:regular-construction` | `componentExpression`, `witnessExpression`, `componentExpression_image`, `witnessExpression_image`, `witnessExpression_correct`, `converse` | Finite alphabet; exact image and Mathlib DFA regularity | Exact images, finite continuation NFA, Mathlib determinization, and finite regular union; all proved |
 | regular specialization of `thm:parikh-statement` | `regular_image` | Any Mathlib DFA-regular language | Exact DFA-to-Mathlib-grammar bridge and shared forward theorem; proved |
 | `lem:activation-test` | `ActivationTest`, `activationTest`, `activationRounds_correct`, `Activatable.erase_iff_of_enabled`, `Activatable.batch_iff_of_enabled` | Finite input supports and operations with decidable equality; ambient types may be infinite | Executable enabled-batch search, support monotonicity, exact removal equivalence and strict remaining-cardinality decrease; implemented and proved |
-| `sec:effective` | `EncodedGrammar.decode`, `BoundedEnumeration`, `Compiler` | Numeric finite syntax; no classical-choice compiler value | Enumeration, activation test, exact tree formula; implementation pending |
+| `sec:effective` | `EncodedGrammar.decode`, `BoundedEnumeration`, `boundedEnumeration`, `Compiler` | Numeric finite syntax; no classical-choice compiler value | Enumeration and activation implemented with proofs; exact tree formula proved; compiler value pending |
 | `eq:bound-defs`, `lem:count-trees` | `GrammarSize`, `grammarSize`, `bounded_family_bounds` | `n` is active cardinality, `b ≥ 1`, `M = ∑ᵢ₌₀ⁿ⁺¹ bⁱ`, `K = (1+d+n+p)^M` | Injection into bounded position records; pending |
 | `thm:size-bound` | `WithinBounds`, `bounded_witness`, `Compiler.bounded` | At most `K2^K` components, `K` periods, norms `M` / `(K+1)M` | Bounded syntax and exact construction; pending |
 | `eq:bit-bound` | `coordinateBits`, `vectorBits`, `entryBits`, `witness_bit_bound` | Fixed widths using Mathlib `Nat.clog`; excludes list-length metadata | Four size bounds and nonnegative coordinates; pending |
@@ -292,7 +297,20 @@ initial operation count sufficient. An empty remaining set accepts; a stalled
 nonempty set has no possible first operation and rejects. `activationTest.correct`
 proves exact equivalence with `Activatable`, including operations that do not add
 their own roots. No ordering, classical runtime selection or finite ambient-type
-assumption is needed. Bounded enumeration and the compiler remain separate work.
+assumption is needed. The compiler remains separate work.
+
+`BoundedEnumeration.lean` implements the accepted exact membership contract for
+finite encoded grammars. At height zero, `List.finRange` supplies every declared
+terminal and nonterminal leaf, including unused symbols. At the next height,
+each production's output symbols index root-filtered families from the previous
+bound. Mathlib's `List.sections` enumerates their ordered Cartesian product,
+and `List.map` creates production nodes. Empty outputs supply one empty child
+list, hence an empty-production node of height one. Height induction proves
+both soundness and completeness using child-height bounds and ordered root
+matching. Duplicate input productions may repeat trees, as the list-membership
+interface permits; the future compiler must account for duplicates in its
+cardinality bounds. The runtime is explicit `Nat.rec` with no classical selection.
+Quantitative family bounds and full witness compilation remain separate work.
 
 ## After review
 

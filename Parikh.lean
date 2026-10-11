@@ -1,2 +1,3 @@
 import Parikh.Statements
 import Parikh.ActivationAlgorithm
+import Parikh.BoundedEnumeration

@@ -19,7 +19,7 @@ jobs:
           "$HOME/.elan/bin/elan" toolchain install "$(cat lean-toolchain)"
       - name: Fetch pinned dependencies and selected Mathlib cache
         run: |
-          lake exe cache get Mathlib.Algebra.Group.Submonoid.Finsupp Mathlib.Computability.ContextFreeGrammar Mathlib.Computability.RegularExpressions Mathlib.Computability.DFA Mathlib.Computability.NFA Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Defs Mathlib.Data.Nat.Log Mathlib.Data.Set.Finite.List
+          lake exe cache get Mathlib.Algebra.Group.Submonoid.Finsupp Mathlib.Computability.ContextFreeGrammar Mathlib.Computability.RegularExpressions Mathlib.Computability.DFA Mathlib.Computability.NFA Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Defs Mathlib.Data.Nat.Log Mathlib.Data.Set.Finite.List Mathlib.Data.List.Sections
       - name: Build the skeleton
         env:
           LEAN_NUM_THREADS: 4

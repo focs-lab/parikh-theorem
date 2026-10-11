@@ -300,8 +300,8 @@ whose terminal yields satisfy the preceding height budget. Summing their
 lengths gives the next budget. Summing a tree's terminal counts equals its
 yield length, so the same bound applies to weight norm. The accepted
 `bounded_family_bounds` theorem in [Construction.lean](../Parikh/Construction.lean)
-now proves these claims. The following step bounds the resulting witness;
-the numerical bit budget and executable compilation remain.
+now proves these claims. The following steps bound the resulting witness and
+its numerical encoding; executable compilation remains.
 
 ## 13. Bounding the complete witness
 
@@ -323,3 +323,24 @@ theorem in [Construction.lean](../Parikh/Construction.lean) now combines that
 assembly with the family and norm budgets. This proves that an exact witness
 with all four size bounds exists. The assembly uses classical choices;
 computing the witness from encoded grammar input is still a separate task.
+
+## 14. Bounding the numerical encoding
+
+Every coordinate is at most its vector's norm, since the coordinates are natural
+numbers. The preceding bounds therefore put every base and period coordinate
+at most $(K+1)M$. Choose
+$L = \max(1, \lceil\log_2((K+1)M+1)\rceil)$.
+The ceiling-log inequality gives $(K+1)M < 2^L$, so each coordinate fits in
+$L$ bits, including when $(K+1)M+1$ is an exact power of two.
+
+There are at most $K2^K$ components, each with one base and at most $K$ indexed
+periods. Each vector has $d$ coordinates. Summing their fixed widths gives at
+most $K2^K(K+1)dL$ numerical entry bits. This excludes list-length metadata, as
+specified in the reference; an empty terminal alphabet contributes zero entry
+bits even when the witness contains components and zero periods.
+
+The accepted `witness_bit_bound` theorem in
+[Construction.lean](../Parikh/Construction.lean) proves both coordinate fit and
+the total budget using Mathlib's logarithm and bounded-sum results. All named
+theorem obligations are now proved. Producing the witness by an executable
+grammar compiler, with exact denotation and size proofs, remains the next task.

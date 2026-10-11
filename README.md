@@ -161,7 +161,7 @@ flowchart TD
 | [DFAGrammar.lean](Parikh/DFAGrammar.lean) | A finite DFA as a Mathlib right-linear grammar, with proved equality of their word languages. |
 | [WordBlockAutomata.lean](Parikh/WordBlockAutomata.lean) | Finite continuation-language NFAs and DFA regularity for fixed-word and starred-word prefixes, reusing Mathlib determinization. |
 | [RegularRealization.lean](Parikh/RegularRealization.lean) | Representative words, component/witness expressions, exact images, DFA regularity, the converse, and regular-language specialization. |
-| [Construction.lean](Parikh/Construction.lean) | Finite grammar encoding, algorithm contracts, proved bounded-family and witness size bounds, and the outstanding bit budget. |
+| [Construction.lean](Parikh/Construction.lean) | Finite grammar encoding, algorithm contracts, and proved bounded-family, witness-size and bit budgets. |
 | [FiniteWitness.lean](Parikh/FiniteWitness.lean) | Classical assembly from exact finite tree families, with proved denotation and component-count bounds. |
 | [BoundedFamilySupport.lean](Parikh/BoundedFamilySupport.lean) | Finite syntax covers and height induction for quantitative tree counts and terminal-yield length. |
 | [BoundedEnumeration.lean](Parikh/BoundedEnumeration.lean) | Executable enumeration of valid open trees up to any height, with an exact membership proof. |
@@ -189,10 +189,11 @@ allow arbitrary ambient nonterminal types; witness and automaton existence use c
 
 Executable activation testing and bounded-tree enumeration are implemented with
 correctness proofs. Base/cycle cardinalities, leaf-weight bounds and exact witness
-existence with all four size bounds are proved. Grammar-to-witness compilation
-and the final bit-budget theorem remain.
-The [proof-status ledger](docs/PROOF_STATUS.md) lists the exact
-obligations; a successful build can still contain these tracked `sorry`s.
+existence with all four size bounds, coordinate widths and numerical bit budgets
+are proved. No theorem holes or project axioms remain. The executable
+grammar-to-witness compiler still needs an implementing value with correctness
+and size proofs. The [proof-status ledger](docs/PROOF_STATUS.md) distinguishes
+this missing implementation from completed theorem proofs.
 
 Contributors should use the [proof plan](docs/PROOF_PLAN.md) to locate a result
 and the [contract guide](docs/CONTRACT_CHECKS.md) to understand statement stability.
@@ -208,16 +209,17 @@ Then run from the repository root:
 
 ```sh
 lake build
-python3 scripts/check-contracts.py
+python3 scripts/check-contracts.py --final
 lake env lean scripts/SkeletonExamples.lean
 ```
 
 The accepted statements and supporting definition meanings are frozen; proofs
-are completed in separate, reviewable PRs. Intermediate holes are listed
-explicitly, including declarations that depend on them indirectly. The stricter
-`python3 scripts/check-contracts.py --final` rejects all remaining project holes
-and project-added axioms; it is expected to fail while the ledger lists unfinished
-obligations. Standard Lean foundational axioms are reported separately.
+are completed in separate, reviewable PRs. CI uses
+`python3 scripts/check-contracts.py --final` to reject every project hole,
+project-added axiom and transitive unresolved dependency. This check now passes;
+it audits declarations, so it does not establish that the `Compiler` interface
+has an executable implementing value. Standard Lean foundational axioms are
+reported separately.
 See [contract checks](docs/CONTRACT_CHECKS.md) for the full policy.
 
 ## References

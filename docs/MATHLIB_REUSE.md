@@ -286,6 +286,15 @@ predicates. No new Mathlib import/cache target, datatype, instance or partial
 runtime helper is added. Classical finite-set listing/filtering is explicitly
 separate from the future executable compiler; the pins remain unchanged.
 
+The bit-budget milestone reuses the already imported `Mathlib.Data.Nat.Log`.
+`Nat.le_pow_clog` supplies the ceiling-log power bound, and
+`Nat.pow_le_pow_right` enlarges the exponent to the accepted minimum width.
+`Finset.single_le_sum` bounds a coordinate by its vector norm.
+`List.sum_le_length_nsmul`, `Nat.nsmul_eq_mul` and natural-product monotonicity
+bound all listed entry widths. Local proof facts specialize these laws to
+`WithinBounds`; no named helper, new import/cache target, instance or runtime
+definition is introduced. The fixed-width definitions and pins are unchanged.
+
 No trace-membership dependency, replacement semilinearity predicate, or generic
 automata-equivalence development is introduced. Re-audit Mathlib before adding
 helpers in each accepted proof milestone; these identified gaps are not permission

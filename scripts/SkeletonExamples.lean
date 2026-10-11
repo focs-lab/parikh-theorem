@@ -1095,4 +1095,27 @@ example : ∃ D : Finset (ParseTree Bool ℕ), D.card = 2 ∧
   exact ⟨{openingCycle, silentCycle}, hcard, by simpa [hcard] using hlen, by simpa using hbase,
     fun p hp => Nat.eq_zero_of_le_zero (hperiod p hp)⟩
 
+/-! Fixed-width encoding: a base at the top of the two-bit range and duplicate
+periods retain separate entries. An empty alphabet contributes no entry bits. -/
+abbrev bitBudget : GrammarSize := ⟨0, 1, 0, 0⟩
+abbrev bitWitness : Witness Unit := [⟨fun _ => 3, [fun _ => 1, fun _ => 1]⟩]
+
+example : bitBudget.coordinateBits = 2 ∧ entryBits bitBudget bitWitness = 6 ∧
+    bitBudget.vectorBits = 48 := by decide
+
+example : entryBits bitBudget bitWitness ≤ 48 ∧
+    (∀ c ∈ bitWitness, ∀ a, c.base a < 4) ∧
+    (∀ c ∈ bitWitness, ∀ p ∈ c.periods, ∀ a, p a < 4) := by
+  apply witness_bit_bound bitBudget (by decide) bitWitness
+  simp [WithinBounds, bitWitness, norm, GrammarSize.trees,
+    GrammarSize.positions, GrammarSize.records, Finset.sum_range_succ]
+
+example : ∃ W : Witness (Fin 0), W.length = 1 ∧
+    entryBits ⟨0, 0, 0, 0⟩ W = 0 ∧ WithinBounds ⟨0, 0, 0, 0⟩ W := by
+  let W : Witness (Fin 0) := [⟨fun _ => 0, [fun _ => 0]⟩]
+  refine ⟨W, rfl, ?_, ?_⟩
+  · decide
+  · simp [W, WithinBounds, norm, GrammarSize.trees, GrammarSize.positions,
+      GrammarSize.records]
+
 end SkeletonExamples

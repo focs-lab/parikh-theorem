@@ -1,6 +1,6 @@
 # Contract and proof audits
 
-Run `python3 scripts/check-contracts.py` after `lake build`. Lean imports the
+Run `python3 scripts/check-contracts.py --final` after `lake build`. Lean imports the
 compiled library and exports each project declaration's kernel expression type,
 universe parameters, kind, definition value, reducibility and instance status.
 This includes implicit binders, section variables, generated constructors and
@@ -27,7 +27,7 @@ proof dependencies are audited separately. All remaining direct holes, project
 axioms (even unused ones), and declarations transitively depending on unresolved
 assumptions must match their named allowlists in `obligations.json`. Removing a
 local hole does not mark a declaration complete while it still uses `sorryAx`.
-No temporary project axioms exist in this skeleton. If one is introduced in an
+No project holes or temporary project axioms remain. If one is introduced in an
 authorized increment, its precise signature and dependent obligations require
 visible ledger entries; replacing a hole by an axiom is not progress.
 
@@ -47,7 +47,8 @@ for reviewing a proposed mathematical contract. Audit-script and allowlist chang
 themselves must be reviewed, and source comments must continue to describe the
 accepted meanings accurately.
 
-`python3 scripts/check-contracts.py --final` additionally rejects every direct
-hole, project axiom and transitive unresolved dependency. It intentionally fails
-on this intermediate skeleton. Final completion requires that check, not merely
-a successful `lake build`.
+`python3 scripts/check-contracts.py --final` rejects every direct hole, project
+axiom and transitive unresolved dependency. It now passes and is required by CI.
+The audit checks declarations and their assumptions; it cannot detect a missing
+implementing value of an interface. Whole-project completion additionally
+requires an executable `Compiler` with exact denotation and size proofs.

@@ -381,10 +381,15 @@ specializes the proved encoding bound. Runtime examples cover empty/epsilon
 languages, distinct silent contexts, repeated productions, unreachable cycles
 and unary recursion. No named proof or implementation obligation remains.
 
-## After review
+## Maintaining the completed library
 
 The accepted baseline is `6bff9679d7ea03e5401815b80c5a3dc1300f9d36`.
-Complete one coherent milestone per PR: counting/witness bridges; tree semantics; surgery; abstract activation;
-bounded syntax/cut; decomposition; main equality; regular realization; executable
-construction; bounds. Add only helpers needed by the current milestone. Public
-statements and supporting meanings remain frozen after acceptance.
+All planned proof and executable-construction milestones are complete and merged
+through PR #27. The final audit and completion checklist are recorded in
+[PROOF_STATUS.md](PROOF_STATUS.md). No remaining milestone is required to satisfy
+the handoff.
+
+Future fixes or optional usability/performance work must preserve every accepted
+statement and supporting definition meaning, retain final-mode CI, and arrive
+as a coherent reviewed PR. Release publication and license selection remain
+owner decisions.

@@ -1,58 +1,67 @@
-# Proof status: exact tree-representation equality
+# Proof status: forward Parikh theorem and exact finite witness
 
 The owner accepted the reviewed skeleton in [PR #2](https://github.com/focs-lab/parikh-theorem/pull/2)
 on 2026-10-11. The immutable baseline remains the reviewed head
 `6bff9679d7ea03e5401815b80c5a3dc1300f9d36`, including the requested `ParseTree`
 rename. Its pointer and all previous contract fingerprints remain unchanged.
-All proof increments through [PR #13](https://github.com/focs-lab/parikh-theorem/pull/13)
+All proof increments through [PR #14](https://github.com/focs-lab/parikh-theorem/pull/14)
 have merged, with CI passing.
 
-Current milestone: [PR #14](https://github.com/focs-lab/parikh-theorem/pull/14),
-exact tree-representation equality, branch `codex/tree-representation-equality`,
-based on merged `main` (`cdf98728a37fac9910a8fd9f3babe22e3df8e74c`).
-CI evidence is recorded in the PR.
-There are **11 direct `sorry` obligations**, zero project axioms, and 11 declarations
-transitively dependent on `sorryAx`, down from 12. The forward semilinearity and
-finite-witness contracts remain unproved.
+Current milestone: forward Parikh theorem and exact finite witness, branch
+`codex/forward-parikh`, based on merged `main`
+(`eb4699fcc65fabe3050ca9a2a50554c1c374494a`). Publication and CI evidence will
+be recorded in the PR.
+There are **8 direct `sorry` obligations**, zero project axioms, and 8 declarations
+transitively dependent on `sorryAx`, down from 11. The forward theorem is proved;
+converse/regular realization, executable construction, and quantitative bounds remain.
 
 ## Completed in this milestone
 
-`Parikh.treeRepresentation_eq` (`thm:main`, `eq:main`) now identifies the exact
-union of activatable tree/context components with the Mathlib grammar's Parikh
-image. Both inclusions are proved. Its existing statement is unchanged and
-removed from both unresolved allowlists. No finite or decidable-equality
-hypothesis is added for the grammar's ambient nonterminal type.
+Three accepted public contracts now have checked proofs:
 
-For a represented vector, `one_linear` realizes it with an insertion sequence
-from the selected simple complete start tree. Sequence accounting preserves
-completeness and the start root. `derives_iff_tree` and Mathlib's
-`ContextFreeGrammar.mem_language_iff` place the resulting yield in the grammar
-language, with exactly the represented counts.
+| Declaration (namespace `Parikh`) | Result |
+| --- | --- |
+| `grammar_image` | A Mathlib grammar's Parikh image is semilinear (`thm:parikh-statement`). |
+| `grammar_witness` | An exact finite indexed witness exists for that image (`thm:main`). |
+| `contextFree_image` | Every Mathlib context-free language has a semilinear Parikh image. |
 
-Conversely, a generated word gives a complete start tree by the same semantics
-bridge. `decomposition` supplies a simple base and a bounded-context sequence.
-The new `InsertionSequence.contextsActivatable` adapter certifies that the set
-of distinct contexts in this sequence is activatable. It extracts matching
-cycles from the insertion steps, selects their roots locally by classical
-choice, reuses `activationOrder_iff_insertionSequence`, and applies
-`first_occurrences`. `List.mem_toFinset` retains precisely the contexts used,
-including distinct contexts with equal or zero weights. `one_linear` then places
-the original tree's exact weight in the corresponding component.
+Their statements are unchanged and removed from both unresolved allowlists.
+They require a finite terminal alphabet but impose no finite or decidable-equality
+hypothesis on the grammar's ambient nonterminal type.
 
-Both audited declarations depend only on standard Lean foundations:
-`propext`, `Classical.choice`, and `Quot.sound`. Neither depends on `sorryAx`
+Three new, immediately proved adapters in `FiniteRepresentation.lean` complete
+the finite-union argument:
+
+| Declaration (namespace `Parikh`) | Role |
+| --- | --- |
+| `bases_finite` | Simple complete start trees are a subset of the bounded active-open family, using `simple_height`. |
+| `bounded_cycles_finite` | A cycle's sole hole is active because its matching root belongs to production support; the bounded active-open family covers all bounded cycles. |
+| `treeRepresentation_isSemilinearSet` | The finite base family and the finite powerset of cycles, filtered by activation, give the exact component union; Mathlib finite-union closure proves semilinearity. |
+
+The finite-union proof converts the two finite sets to finsets, retaining actual
+context syntax as indices. The union is exactly `treeRepresentation`, including
+empty context sets, zero periods, and distinct contexts with equal weights.
+`component_isLinearSet` and Mathlib's `IsSemilinearSet.biUnion_finset` supply
+linearity and finite-union closure. `treeRepresentation_eq` gives the public
+forward theorem. The already proved `exists_witness` bridge gives the exact
+finite witness, and unpacking Mathlib's context-free grammar witness gives the
+language-level specialization. No quantitative-bound obligation is used.
+
+All six audited declarations depend only on standard Lean foundations:
+`propext`, `Classical.choice`, and `Quot.sound`. None depends on `sorryAx`
 or a project axiom. All existing definitions, instances, syntax, statistics,
 and previously completed proofs are retained.
 
-All **521 prior contract entries** are preserved exactly. The single proved
-activation adapter extends the manifest to **522 entries**. No previous declaration
-is deleted or moved. The checker, immutable baseline, existing signatures and
-definition meanings, instances, and Lean/Mathlib pins are unchanged. No additional
-Mathlib import or cache dependency is required.
+All **522 prior contract entries** are preserved exactly. The three proved
+adapters and five generated equation/simplification declarations extend the
+manifest to **530 entries**, including the generated equation for the existing
+`treeRepresentation` definition. No previous declaration is deleted or moved.
+The checker, immutable baseline, existing signatures and definition meanings,
+instances, and Lean/Mathlib pins are unchanged. The only new import is the
+project's `FiniteRepresentation` module; no Mathlib import or cache target changes.
 
-This proves exact equality. Semilinearity and finite witness construction still
-require the bounded-family finiteness argument. Classical existence proofs do
-not provide executable enumeration, activation testing, or compilation.
+The exact witness is established by classical existence. It is not an executable
+compiler, nor does this milestone prove the stated quantitative bounds.
 
 ## Previously completed
 
@@ -70,6 +79,8 @@ not provide executable enumeration, activation testing, or compilation.
 
 - [PR #13](https://github.com/focs-lab/parikh-theorem/pull/13): `decomposition` and `InsertionSequence.append`, by strong induction on production count and exact bounded-context reinsertion (`thm:decomposition`, `eq:decomposition`).
 
+- [PR #14](https://github.com/focs-lab/parikh-theorem/pull/14): `treeRepresentation_eq` and `InsertionSequence.contextsActivatable`, proving exact equality with the grammar Parikh image while retaining actual context identities (`thm:main`, `eq:main`).
+
 Their statements and proofs are unchanged here. The grammar/tree bridge supports
 arbitrary derivation order and nonterminal types. Witness existence and tree
 semantics are semantic proofs, not executable compiler implementations.
@@ -83,7 +94,7 @@ allowlists in `contracts/obligations.json` are authoritative for CI.
 | --- | --- |
 | RegularRealization | `representative_counts`, `witnessExpression_correct`, `converse`, `regular_image` |
 | Construction | `bounded_family_bounds`, `bounded_witness`, `witness_bit_bound` |
-| Statements | `grammar_image`, `grammar_witness`, `contextFree_image`, `regular_realization` |
+| Statements | `regular_realization` |
 
 `ActivationTest`, `BoundedEnumeration`, and `Compiler` remain concrete structures
 specifying future finite algorithms, with no implementing values yet. Their
@@ -91,15 +102,16 @@ correctness fields are requirements, not assumed theorems.
 
 ## Validation
 
-- Affected modules and full `lake build` pass, with only expected theorem-hole warnings in the 11 remaining obligations.
-- `lake env lean scripts/SkeletonExamples.lean` passes. New equality examples distinguish a grammar with no productions (empty representation) from an empty-alphabet grammar deriving the empty word (exactly the zero vector), both over infinite ambient nonterminals. Existing zero-weight cycles, equal-weight distinct contexts, positional insertion, activation order, finiteness, and decomposition examples still pass.
-- `python3 scripts/check-contracts.py` checks 522 declarations against the accepted skeleton and merged `main`, preserving all 521 earlier contracts. The checker and baseline pointer are unchanged.
-- `#print axioms` for `treeRepresentation_eq` and `InsertionSequence.contextsActivatable` reports only standard foundations, with no unresolved dependencies.
+- Affected modules and full `lake build` pass, with only expected theorem-hole warnings in the 8 remaining obligations.
+- `lake env lean scripts/SkeletonExamples.lean` passes. New witness examples distinguish an unproductive grammar's empty denotation from a grammar deriving the empty word over an empty terminal alphabet, whose exact witness contains the zero vector. Both have infinite ambient nonterminals; the empty-language example also exercises `contextFree_image`. Existing grammar/tree, silent cycles, distinct equal-weight contexts, activation, finiteness, decomposition, and exact equality examples still pass.
+- `python3 scripts/check-contracts.py` checks 530 declarations against the accepted skeleton and merged `main`, preserving all 522 earlier contracts. The checker and baseline pointer are unchanged.
+- `#print axioms` for the three public theorems and three finiteness/union adapters reports only standard foundations, with no unresolved dependencies.
 - `git diff --check` passes.
-- `python3 scripts/check-contracts.py --final` correctly rejects the 11 outstanding holes. This milestone does not complete Parikh's theorem.
-- Cloud Lean 4.34.1 / Lake 5.0.0, the pinned dependencies and selected Mathlib cache, and GitHub read/push access were verified. CI results are reported in the PR separately from local validation.
+- `python3 scripts/check-contracts.py --final` correctly rejects the 8 outstanding holes. Full project completion still requires converse/regular realization, algorithms, and bounds.
+- Cloud Lean 4.34.1 / Lake 5.0.0, the pinned dependencies and selected Mathlib cache, and GitHub authentication/read/push access were verified. CI results are reported in the PR separately from local validation.
 
-Next eligible milestone: `grammar_image`, `grammar_witness`, and
-`contextFree_image`, deriving the forward semilinearity and exact finite witness
-from `treeRepresentation_eq`, bounded-family finiteness, and the proved
-counting/witness bridges. Keep accepted contracts unchanged and publish a new PR.
+Next eligible work: representative-word counting (`representative_counts`), then
+correctness and DFA-regularity of the witness expression (`witnessExpression_correct`),
+feeding `converse` and `regular_realization`. Executable algorithms with checked
+correctness and the quantitative bounds remain separately tracked. Keep accepted
+contracts unchanged and publish each coherent increment as a new PR.

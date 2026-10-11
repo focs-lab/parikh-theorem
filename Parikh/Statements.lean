@@ -1,4 +1,5 @@
 import Parikh.Construction
+import Parikh.FiniteRepresentation
 import Parikh.RegularRealization
 
 /-! Accepted public contracts, proved incrementally as recorded in the proof ledger.
@@ -37,17 +38,19 @@ No finiteness or decidable-equality assumption is imposed on `g.NT`.
 -/
 theorem grammar_image [Finite T] [DecidableEq T] (g : ContextFreeGrammar T) :
     IsSemilinearSet (image g.language) := by
-  sorry
+  rw [← treeRepresentation_eq g]
+  exact treeRepresentation_isSemilinearSet g
 
 /-- A finite indexed witness with exact denotation, not merely containment (`thm:main`). -/
 theorem grammar_witness [Finite T] [DecidableEq T] (g : ContextFreeGrammar T) :
     ∃ W : Witness T, W.denotation = image g.language := by
-  sorry
+  exact exists_witness (image g.language) (grammar_image g)
 
 /-- Language-level specialization using Mathlib's context-free predicate. -/
 theorem contextFree_image [Finite T] [DecidableEq T] (L : Language T) (hL : L.IsContextFree) :
     IsSemilinearSet (image L) := by
-  sorry
+  obtain ⟨g, rfl⟩ := hL
+  exact grammar_image g
 
 /-- Every CFL has a DFA-regular language with the same image (`thm:parikh-statement`). -/
 theorem regular_realization [Finite T] [DecidableEq T] (g : ContextFreeGrammar T) :

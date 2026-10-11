@@ -2,10 +2,7 @@
   "sorry": [
     "Parikh.bounded_family_bounds",
     "Parikh.bounded_witness",
-    "Parikh.contextFree_image",
     "Parikh.converse",
-    "Parikh.grammar_image",
-    "Parikh.grammar_witness",
     "Parikh.regular_image",
     "Parikh.regular_realization",
     "Parikh.representative_counts",
@@ -16,10 +13,7 @@
   "dependent_on_unresolved": [
     "Parikh.bounded_family_bounds",
     "Parikh.bounded_witness",
-    "Parikh.contextFree_image",
     "Parikh.converse",
-    "Parikh.grammar_image",
-    "Parikh.grammar_witness",
     "Parikh.regular_image",
     "Parikh.regular_realization",
     "Parikh.representative_counts",

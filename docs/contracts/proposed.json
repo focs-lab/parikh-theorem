@@ -5022,6 +5022,18 @@
       "unsafe": false,
       "value": "6131332e4dc527f0809ee0ec3899b1199fa4091c8d1daaa851612e27d686e47b"
     },
+    "Parikh.bases_finite": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "d9ce9fa559474e211bf4a8438e035c2cdaf819388acbc28863c90d64988ee6ad",
+      "unsafe": false,
+      "value": null
+    },
     "Parikh.bounded_cut": {
       "instance": false,
       "kind": "theorem",
@@ -5084,6 +5096,30 @@
       "value": null
     },
     "Parikh.bounded_cut._simp_1_4": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "f1197cbc62adbf978015bb0fb43984afddc325f6347e7af1b891465bad429dbb",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.bounded_cycles_finite": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "b820301c97e72b1d8bad7b1d29f39822477a49f679ae2a79554814521fe6fa0e",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.bounded_cycles_finite._simp_1_1": {
       "instance": false,
       "kind": "theorem",
       "levels": [
@@ -5823,6 +5859,18 @@
       "unsafe": false,
       "value": "bf9225ac5df95a0f62a7817fbbcb83866800d3119c5c34a44eaefa0e24e751b1"
     },
+    "Parikh.treeRepresentation.eq_1": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "956191cae6a542d1b144e2557dff617c4da0d244a631c7bc71b7818bec7dbdf3",
+      "unsafe": false,
+      "value": null
+    },
     "Parikh.treeRepresentation_eq": {
       "instance": false,
       "kind": "theorem",
@@ -5832,6 +5880,55 @@
       "partial": false,
       "reducibility": "opaque",
       "type": "21934fb91cd86587d4a5283b4cc86678501a8478bf3d224cbcacd8cbf87ac780",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.treeRepresentation_isSemilinearSet": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "3364cd0e2b15b254a87fce3aa9feede876f95a15abadb503261c8f5e863390ee",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.treeRepresentation_isSemilinearSet._simp_1_2": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u",
+        "v"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "99a49dbfd543a3a53afc2cda1d0ad5c41975e81cc19e66f9a2230fc208839c16",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.treeRepresentation_isSemilinearSet._simp_1_3": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "55add566a059b41e8232c05650618396e86b372c2a44a27ad74fcddd9d22ad29",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.treeRepresentation_isSemilinearSet._simp_1_4": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "d506a49c93e8066caa9a3012e7bd0368a6bd79d109a0a81d14f5e3e48740d0e8",
       "unsafe": false,
       "value": null
     },

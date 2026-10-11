@@ -7,10 +7,10 @@ rename. Its pointer and all previous contract fingerprints remain unchanged.
 All proof increments through [PR #10](https://github.com/focs-lab/parikh-theorem/pull/10)
 have merged, with CI passing.
 
-Current milestone: bounded active-open-tree finiteness, branch
-`codex/bounded-open-finiteness`, based on merged `main`
-(`98ef9a17e4c68ef98027ae1bfc12c25e483b197a`). Publication and CI evidence
-are recorded in the milestone PR.
+Current milestone: [PR #11](https://github.com/focs-lab/parikh-theorem/pull/11),
+bounded active-open-tree finiteness, branch `codex/bounded-open-finiteness`,
+based on merged `main` (`98ef9a17e4c68ef98027ae1bfc12c25e483b197a`).
+CI evidence is recorded in the milestone PR.
 There are **14 direct `sorry` obligations**, zero project axioms, and 14 declarations
 transitively dependent on `sorryAx`, down from 15. Parikh's theorem is not yet proved.
 

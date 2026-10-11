@@ -7,10 +7,10 @@ rename. Its pointer and all previous contract fingerprints remain unchanged.
 All proof increments through [PR #14](https://github.com/focs-lab/parikh-theorem/pull/14)
 have merged, with CI passing.
 
-Current milestone: forward Parikh theorem and exact finite witness, branch
-`codex/forward-parikh`, based on merged `main`
-(`eb4699fcc65fabe3050ca9a2a50554c1c374494a`). Publication and CI evidence will
-be recorded in the PR.
+Current milestone: [PR #15](https://github.com/focs-lab/parikh-theorem/pull/15),
+forward Parikh theorem and exact finite witness, branch `codex/forward-parikh`,
+based on merged `main` (`eb4699fcc65fabe3050ca9a2a50554c1c374494a`).
+CI evidence is recorded in the PR.
 There are **8 direct `sorry` obligations**, zero project axioms, and 8 declarations
 transitively dependent on `sorryAx`, down from 11. The forward theorem is proved;
 converse/regular realization, executable construction, and quantitative bounds remain.

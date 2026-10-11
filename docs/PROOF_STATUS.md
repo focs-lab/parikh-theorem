@@ -13,7 +13,8 @@ tree realization [PR #8](https://github.com/focs-lab/parikh-theorem/pull/8),
 and exact linear component [PR #9](https://github.com/focs-lab/parikh-theorem/pull/9)
 have merged, with CI passing.
 
-Current milestone: active support and the simple-tree height bound, branch
+Current milestone: [PR #10](https://github.com/focs-lab/parikh-theorem/pull/10),
+active support and the simple-tree height bound, branch
 [`codex/active-support-height`](https://github.com/focs-lab/parikh-theorem/tree/codex/active-support-height),
 based on merged `main` (`37dfb799e8ef23ba6e0782bab77fcf0af4946f19`).
 There are **15 direct `sorry` obligations**, zero project axioms, and 15 declarations

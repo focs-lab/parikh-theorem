@@ -161,7 +161,8 @@ flowchart TD
 | [DFAGrammar.lean](Parikh/DFAGrammar.lean) | A finite DFA as a Mathlib right-linear grammar, with proved equality of their word languages. |
 | [WordBlockAutomata.lean](Parikh/WordBlockAutomata.lean) | Finite continuation-language NFAs and DFA regularity for fixed-word and starred-word prefixes, reusing Mathlib determinization. |
 | [RegularRealization.lean](Parikh/RegularRealization.lean) | Representative words, component/witness expressions, exact images, DFA regularity, the converse, and regular-language specialization. |
-| [Construction.lean](Parikh/Construction.lean) | Finite grammar encoding, algorithm contracts, proved bounded-family cardinality/weight bounds, and outstanding witness size/bit bounds. |
+| [Construction.lean](Parikh/Construction.lean) | Finite grammar encoding, algorithm contracts, proved bounded-family and witness size bounds, and the outstanding bit budget. |
+| [FiniteWitness.lean](Parikh/FiniteWitness.lean) | Classical assembly from exact finite tree families, with proved denotation and component-count bounds. |
 | [BoundedFamilySupport.lean](Parikh/BoundedFamilySupport.lean) | Finite syntax covers and height induction for quantitative tree counts and terminal-yield length. |
 | [BoundedEnumeration.lean](Parikh/BoundedEnumeration.lean) | Executable enumeration of valid open trees up to any height, with an exact membership proof. |
 
@@ -187,9 +188,9 @@ regular realization, and regular-language specialization are proved. These resul
 allow arbitrary ambient nonterminal types; witness and automaton existence use classical reasoning.
 
 Executable activation testing and bounded-tree enumeration are implemented with
-correctness proofs. Base/cycle cardinalities and leaf-weight bounds are proved.
-Grammar-to-witness compilation remains, together with two theorem obligations
-concerning witness size and bit bounds.
+correctness proofs. Base/cycle cardinalities, leaf-weight bounds and exact witness
+existence with all four size bounds are proved. Grammar-to-witness compilation
+and the final bit-budget theorem remain.
 The [proof-status ledger](docs/PROOF_STATUS.md) lists the exact
 obligations; a successful build can still contain these tracked `sorry`s.
 

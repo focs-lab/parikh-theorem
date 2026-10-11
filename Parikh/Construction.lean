@@ -1,6 +1,7 @@
 import Parikh.Activation
 import Mathlib.Data.Nat.Log
 import Parikh.BoundedFamilySupport
+import Parikh.FiniteWitness
 
 /-!
 # What an effective construction must provide
@@ -119,10 +120,45 @@ theorem bounded_family_bounds {T : Type*} [Fintype T] [DecidableEq T]
     rw [ParseTree.norm_weight_eq_length]
     exact yield_length_le_heightPositions g s.branching hb _ t ho.1 hh
 
+/-- A component has one period per context and pays all first copies in its base. -/
+theorem contextComponent_size_bounds {T N : Type*} [Fintype T] [DecidableEq T]
+    (B : ParseTree T N) (D : Finset (ParseTree T N)) (M : ℕ)
+    (hB : norm B.weight ≤ M) (hD : ∀ C ∈ D, norm C.weight ≤ M) :
+    (contextComponent B D).periods.length = D.card ∧
+      norm (contextComponent B D).base ≤ (D.card + 1) * M ∧
+      ∀ p ∈ (contextComponent B D).periods, norm p ≤ M := by
+  classical
+  refine ⟨by simp [contextComponent], ?_, ?_⟩
+  · have hsum : norm (contextComponent B D).base =
+        norm B.weight + ∑ C ∈ D, norm C.weight := by
+      change (∑ a, (B.weight + ∑ C ∈ D, C.weight) a) = _
+      simp only [Pi.add_apply, Finset.sum_apply, Finset.sum_add_distrib, norm]
+      rw [Finset.sum_comm]
+    rw [hsum]
+    calc
+      norm B.weight + ∑ C ∈ D, norm C.weight ≤ M + D.card * M :=
+        Nat.add_le_add hB (by simpa using Finset.sum_le_sum hD)
+      _ = (D.card + 1) * M := by rw [Nat.add_mul, Nat.one_mul, Nat.add_comm]
+  · intro p hp
+    obtain ⟨C, hC, rfl⟩ := List.mem_map.mp hp
+    exact hD C (Finset.mem_toList.mp hC)
+
 /-- The guaranteed exact witness also satisfies all four bounds (`thm:size-bound`). -/
 theorem bounded_witness {T : Type*} [Fintype T] [DecidableEq T] (g : ContextFreeGrammar T) :
     ∃ W : Witness T, W.denotation = image g.language ∧ WithinBounds (grammarSize g) W := by
-  sorry
+  classical
+  obtain ⟨⟨bases, hb, hbcard⟩, ⟨cycles, hc, hccard⟩, hnorm⟩ := bounded_family_bounds g
+  refine ⟨familyWitness g bases cycles, familyWitness_denotation g bases cycles hb hc, ?_⟩
+  refine ⟨(familyWitness_length_le g bases cycles).trans ?_, ?_⟩
+  · exact Nat.mul_le_mul hbcard (Nat.pow_le_pow_right (by omega) hccard)
+  · intro c hmem
+    obtain ⟨B, hB, D, hD, _, rfl⟩ := (mem_familyWitness g bases cycles c).mp hmem
+    have hDcard : D.card ≤ (grammarSize g).trees := (Finset.card_le_card hD).trans hccard
+    obtain ⟨hlen, hbase, hperiod⟩ := contextComponent_size_bounds B D (grammarSize g).positions
+      (hnorm B (Or.inl ((hb B).mp hB)))
+      (fun C hC => hnorm C (Or.inr ((hc C).mp (hD hC))))
+    exact ⟨hlen.le.trans hDcard,
+      hbase.trans (Nat.mul_le_mul_right _ (Nat.add_le_add_right hDcard 1)), hperiod⟩
 
 /-- Numerical entries fit the stated fixed-width bit budget (`eq:bit-bound`). -/
 theorem witness_bit_bound {T : Type*} [Fintype T] (s : GrammarSize)

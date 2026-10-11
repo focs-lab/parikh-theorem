@@ -1,11 +1,9 @@
 {
   "sorry": [
-    "Parikh.bounded_witness",
     "Parikh.witness_bit_bound"
   ],
   "temporary_axioms": [],
   "dependent_on_unresolved": [
-    "Parikh.bounded_witness",
     "Parikh.witness_bit_bound"
   ],
   "compiler_generated_partial": [

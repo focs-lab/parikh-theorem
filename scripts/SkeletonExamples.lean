@@ -889,4 +889,41 @@ example : ∃ R : Language Bool, R.IsRegular ∧ R = 0 := by
   · intro hw
     exact (Language.notMem_zero _ hw).elim
 
+/-! A concrete DFA for `(false true)*`: the grammar adapter preserves word
+order, while the specialization proves semilinearity of its Parikh image. -/
+def alternatingDFA : DFA Bool (Fin 3) where
+  step q a := if q = 0 ∧ a = false then 1 else if q = 1 ∧ a = true then 0 else 2
+  start := 0
+  accept := {0}
+
+example : [] ∈ (dfaGrammar alternatingDFA).language ∧
+    [false, true, false, true] ∈ (dfaGrammar alternatingDFA).language ∧
+    [true, true, false, false] ∉ (dfaGrammar alternatingDFA).language ∧
+    IsSemilinearSet (image alternatingDFA.accepts) := by
+  rw [dfaGrammar_language]
+  exact ⟨by simp [DFA.mem_accepts, DFA.eval, DFA.evalFrom, alternatingDFA],
+    by simp [DFA.mem_accepts, DFA.eval, DFA.evalFrom, alternatingDFA],
+    by simp [DFA.mem_accepts, DFA.eval, DFA.evalFrom, alternatingDFA],
+    regular_image _ ⟨Fin 3, inferInstance, alternatingDFA, rfl⟩⟩
+
+-- Correctness is for every starting state, including a noninitial state.
+example : (dfaGrammar alternatingDFA).Derives [.nonterminal (1 : Fin 3)] [.terminal true] := by
+  exact (dfaGrammar_derives_iff alternatingDFA 1 [true]).mpr
+    (by simp [DFA.evalFrom, alternatingDFA])
+
+def emptyAlphabetDFA (acceptEmpty : Bool) : DFA (Fin 0) Unit where
+  step _ a := Fin.elim0 a
+  start := ()
+  accept := {_q | acceptEmpty = true}
+
+example : [] ∈ (dfaGrammar (emptyAlphabetDFA true)).language ∧
+    [] ∉ (dfaGrammar (emptyAlphabetDFA false)).language ∧
+    IsSemilinearSet (image (emptyAlphabetDFA true).accepts) ∧
+    IsSemilinearSet (image (emptyAlphabetDFA false).accepts) := by
+  rw [dfaGrammar_language, dfaGrammar_language]
+  exact ⟨by simp [DFA.mem_accepts, DFA.eval, DFA.evalFrom, emptyAlphabetDFA],
+    by simp [DFA.mem_accepts, DFA.eval, DFA.evalFrom, emptyAlphabetDFA],
+    regular_image _ ⟨Unit, inferInstance, emptyAlphabetDFA true, rfl⟩,
+    regular_image _ ⟨Unit, inferInstance, emptyAlphabetDFA false, rfl⟩⟩
+
 end SkeletonExamples

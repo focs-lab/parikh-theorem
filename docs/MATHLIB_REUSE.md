@@ -204,6 +204,24 @@ NFA adds one cached module to the existing selection, with all dependency pins
 unchanged. Classical finite language equality and inclusion establish existence,
 not an executable automaton or grammar compiler.
 
+The regular-specialization milestone searches the pinned `Computability` sources
+for regular-language/context-free-language inclusion and DFA-to-grammar adapters.
+None is present. `DFAGrammar.lean` adds one finite right-linear grammar using
+Mathlib's existing `ContextFreeGrammar`, `ContextFreeRule`, `Symbol` and `DFA`.
+Finite images and filtering enumerate its transition and accepting-state rules.
+The exact bridge reuses `ContextFreeRule.Rewrites.nonterminal_input_mem`,
+`Rewrites.input_output`, `ContextFreeGrammar.Produces.single`, `trans_derives`,
+`Derives.append_left`, and induction on the existing `Relation.ReflTransGen`.
+`DFA.evalFrom_of_append`, input-word evaluation, and `List.map_inj_right` provide
+run accounting and terminal-word equality. Specialized shape and invariant
+lemmas remain local to `dfaGrammar_derives_iff`; no new rewriting relation,
+normalization assumption or generic language inclusion infrastructure is added.
+`GrammarImage.lean` shares the already proved exact tree union and semilinearity,
+so the frozen public proofs remain at their existing locations without an import
+cycle. Six old generated simplifier equalities are retained explicitly because
+additional imports change automatic auxiliary-lemma naming. The existing cache
+already includes ContextFreeGrammar and DFA; no cache or pin changes are needed.
+
 No trace-membership dependency, replacement semilinearity predicate, or generic
 automata-equivalence development is introduced. Re-audit Mathlib before adding
 helpers in each accepted proof milestone; these identified gaps are not permission

@@ -5512,6 +5512,104 @@
       "unsafe": false,
       "value": null
     },
+    "Parikh.dfaGrammar": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "regular:13",
+      "type": "72da10051f2665a347fba85532787b8022e3a0d7141943d7e47e95e187601ee3",
+      "unsafe": false,
+      "value": "10a7a621323f29f7edeaeb155d8e6e0b883f5602ab715cc7491a8e3ae5177ff5"
+    },
+    "Parikh.dfaGrammar.match_1": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "045bf820caee6b3b3cebeb54637dcc7fb1343d6b270814c4569ab4808aa8e0c4",
+      "unsafe": false,
+      "value": "0a33db132d42a490225397830437006b0cac43a7c911af67a9e322682518ead0"
+    },
+    "Parikh.dfaGrammar_derives_iff": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "cc240d25df41f5d8b17763e4d252b3857aba8640c6aee7ecd13af4b3a50e373c",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.dfaGrammar_derives_iff._simp_1_1": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "f05ad90cb9007e5f9fd0b15bb75324e0878f337f6bc8ae8cbe193bf7414b32db",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.dfaGrammar_derives_iff._simp_1_2": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1",
+        "u_2"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "3ed7a8e1e6e79dfb97f648dae890df26e3ae96f4db993b58e510393a116c6250",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.dfaGrammar_derives_iff._simp_1_3": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "f9f69b1b783b33ca59bea34219a2891ac5a488fca65453f84e4d4ff43b217520",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.dfaGrammar_derives_iff._simp_1_4": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "55add566a059b41e8232c05650618396e86b372c2a44a27ad74fcddd9d22ad29",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.dfaGrammar_language": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "62a997a4690081bff0fbe3f9ec456985b2fb49e57473fdbd1fc28635c3bea474",
+      "unsafe": false,
+      "value": null
+    },
     "Parikh.entryBits": {
       "instance": false,
       "kind": "definition",
@@ -6208,6 +6306,18 @@
       "partial": false,
       "reducibility": "opaque",
       "type": "956191cae6a542d1b144e2557dff617c4da0d244a631c7bc71b7818bec7dbdf3",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.treeRepresentation_correct": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "73459462da6cb20d934d4bf97398bbf9b61e84a7ed93c39e43975a207c5be119",
       "unsafe": false,
       "value": null
     },

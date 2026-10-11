@@ -2,14 +2,12 @@
   "sorry": [
     "Parikh.bounded_family_bounds",
     "Parikh.bounded_witness",
-    "Parikh.regular_image",
     "Parikh.witness_bit_bound"
   ],
   "temporary_axioms": [],
   "dependent_on_unresolved": [
     "Parikh.bounded_family_bounds",
     "Parikh.bounded_witness",
-    "Parikh.regular_image",
     "Parikh.witness_bit_bound"
   ],
   "compiler_generated_partial": [

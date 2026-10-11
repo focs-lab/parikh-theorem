@@ -284,7 +284,7 @@ natural-power/product monotonicity enlarges the family budgets. The five named
 adapters specialize these existing laws to the frozen witness and activation
 predicates. No new Mathlib import/cache target, datatype, instance or partial
 runtime helper is added. Classical finite-set listing/filtering is explicitly
-separate from the future executable compiler; the pins remain unchanged.
+separate from the executable compiler described below; the pins remain unchanged.
 
 The bit-budget milestone reuses the already imported `Mathlib.Data.Nat.Log`.
 `Nat.le_pow_clog` supplies the ceiling-log power bound, and
@@ -294,6 +294,30 @@ The bit-budget milestone reuses the already imported `Mathlib.Data.Nat.Log`.
 bound all listed entry widths. Local proof facts specialize these laws to
 `WithinBounds`; no named helper, new import/cache target, instance or runtime
 definition is introduced. The fixed-width definitions and pins are unchanged.
+
+The executable-compiler milestone searches the pinned list equality, sublists,
+deduplication, finite-cardinality and additive-closure sources. Core
+`List.isEqv` supplies ordered child comparison; explicit `Nat.rec` avoids new
+nested-recursion runtime helpers. A direct tree recursor is unavailable to the
+code generator, so a certified height-budget comparison supplies equality for
+the existing datatype. No second syntax datatype or global equality instance is
+introduced. `List.dedup`, `mem_dedup`, `nodup_dedup`, `mem_sublists`,
+`length_sublists`, `Sublist.nodup`, `Sublist.length_le`, `List.mem_filter` and
+`length_filter_le` provide unique syntax families and exhaustive subsets.
+`List.toFinset_card_of_nodup`, `Finset.card_le_univ`, `List.le_max_of_mem` and
+`List.foldl_max_eq_max` connect declared syntax to the existing counting cover.
+`List.sum_toFinset` and `Component.denotation_eq_vadd_closure` transfer component
+denotation across arbitrary duplicate-free context listing without comparing
+weights. `Subsingleton.elim` reconciles equality decisions in proofs; runtime
+uses the explicit computable finite/syntax decisions. The compiler reuses
+`boundedEnumeration`, `activationTest`, `treeRepresentation_correct`,
+`card_treeFamily_le`, `yield_length_le_heightPositions`,
+`contextComponent_size_bounds` and `witness_bit_bound` rather than repeating
+those mathematical developments. All 31 named additions are executable adapters
+or their necessary certification/budget results. No new Mathlib import/cache
+target, datatype, global instance, project axiom, partial helper or pin change is
+needed. Classical finite-set listing remains confined to the existence proof;
+the implementing `compiler` executes list assembly.
 
 No trace-membership dependency, replacement semilinearity predicate, or generic
 automata-equivalence development is introduced. Re-audit Mathlib before adding

@@ -49,6 +49,9 @@ accepted meanings accurately.
 
 `python3 scripts/check-contracts.py --final` rejects every direct hole, project
 axiom and transitive unresolved dependency. It now passes and is required by CI.
-The audit checks declarations and their assumptions; it cannot detect a missing
-implementing value of an interface. Whole-project completion additionally
-requires an executable `Compiler` with exact denotation and size proofs.
+The audit checks declarations and their assumptions; interface declarations
+alone do not establish effectivity. The public `compiler` now implements
+`Compiler` with exact denotation and size proofs, and CI also checks concrete
+execution in `SkeletonExamples.lean`. Its axiom report includes standard
+foundations inherited from proof fields and certified equality; its runtime
+definitions compile without classical finite-set listing or selection.

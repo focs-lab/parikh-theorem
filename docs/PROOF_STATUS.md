@@ -1,62 +1,79 @@
-# Proof status: all theorem obligations proved; executable compiler pending
+# Proof status: certified executable compiler complete
 
 The owner accepted the reviewed skeleton in [PR #2](https://github.com/focs-lab/parikh-theorem/pull/2)
 on 2026-10-11. The immutable baseline remains the reviewed head
 `6bff9679d7ea03e5401815b80c5a3dc1300f9d36`, including the requested `ParseTree`
-rename. Its pointer and all previous contract fingerprints remain unchanged.
-All proof increments through [PR #25](https://github.com/focs-lab/parikh-theorem/pull/25)
+rename. Its pointer and all previously published declaration fingerprints are
+unchanged. All proof increments through [PR #26](https://github.com/focs-lab/parikh-theorem/pull/26)
 have merged, with CI passing. Documentation PRs #18/#19 and the math-rendering
 fix in PR #21 have also merged.
 
-Current milestone: fixed coordinate widths and the numerical entry-bit budget
-(`eq:bit-bound`), branch `codex/witness-bit-bound`, based on merged `main`
-(`afd1f37e93a0dec0db2562b45408e31660bdc9b7`).
-Published as [PR #26](https://github.com/focs-lab/parikh-theorem/pull/26);
-the PR's [checks](https://github.com/focs-lab/parikh-theorem/pull/26/checks)
-record CI evidence for the submitted head.
+Current milestone: the certified executable grammar-to-witness compiler
+(`sec:effective`, `eq:main`, `thm:size-bound`, `eq:bit-bound`), branch
+`codex/executable-compiler`, based on merged `main`
+(`d89ece29dadbdc519f34e8c85f09f459ab4e5201`).
+Publication and final-head CI evidence will be recorded when the PR is opened.
 There are **0 direct `sorry` obligations**, **0 project axioms**, and **0
-transitively unresolved declarations**. The completed `witness_bit_bound` removes
-the last entry from both proof-hole allowlists. All qualitative Parikh results,
-bounded-family counts/weights, witness size bounds and numerical bit bounds are
-proved. Activation testing and tree enumeration have executable implementations
-with complete correctness proofs. The executable grammar-to-witness compiler
-still needs an implementing value; zero theorem holes do not finish effectivity.
+transitively unresolved declarations**. The public `compiler` now implements
+the accepted interface with exact-denotation and all four size proofs. The
+forward theorem, exact finite witnesses, converse, regular specialization,
+executable construction and all specified quantitative bounds are complete on
+this branch, subject to the owner's PR review.
 
 ## Completed in this milestone
 
-The accepted `witness_bit_bound` theorem now proves:
+`ExecutableCompiler.lean` supplies `EncodedGrammar.compile` and the public
+`compiler : Compiler`. The computed witness satisfies:
 
-| Quantity | Proved bound |
+| Guarantee | Checked declaration |
 | --- | --- |
-| Each base coordinate | Strictly below `2^L` |
-| Each period coordinate | Strictly below `2^L` |
-| All numerical vector entries | At most `K * 2^K * (K+1) * d * L` bits |
+| Exact grammar Parikh image | `EncodedGrammar.compile_correct`, `compiler.correct` |
+| All four declared-size bounds | `EncodedGrammar.compile_bounded`, `compiler.bounded` |
+| Fixed-width coordinates and numerical entry-bit budget | `EncodedGrammar.compile_bit_bound` |
 
-Here `M`, `K` and `d` are the accepted position, tree and terminal budgets, and
-`L = max 1 (Nat.clog 2 ((K+1)*M+1))`. The budget excludes list-length metadata,
-as required by the reference and the frozen definition of `entryBits`.
+`CompilerSupport.lean` compares existing tree syntax through an explicit height
+budget using `Nat.rec` and `List.isEqv`. The correctness lemma yields computable
+structural equality for deduplication, without a global instance or new partial
+helper. `listComponent_denotation` proves that list-order assembly has exactly
+the mathematical component's denotation. `contextActivation_correct` connects
+the existing activation test on finite production-label supports to the frozen
+grammar activation predicate, using actual tree identities.
 
-Mathlib's `Nat.le_pow_clog` and power monotonicity make the fixed width large
-enough. `Finset.single_le_sum` bounds any coordinate by its vector norm; the
-accepted norm bounds then give coordinate fit. `List.sum_le_length_nsmul`
-bounds the sum of component entry widths using the existing component and
-period-count budgets. No grammar positivity assumptions or terminal equality
-instance are added to the theorem. Duplicate and zero indexed periods continue
-to count as separate entries.
+`CompilerTrees.lean` computes the active alphabet, proves agreement with
+`activeNonterminals`, and filters the certified enumeration into exact base
+and cycle lists. Cycle height uses the active count; enumeration uses the larger
+declared finite height. Only repeated syntax is removed. Distinct contexts
+with equal or zero weights remain different list positions.
 
-All **658 earlier contract entries** are preserved. The manifest appends
-**3 generated entries** (the `vectorBits` equation and two proof helpers), for
-**661 declarations** in total. No named helper is added and every previously
-published theorem remains in its original module. The accepted baseline,
-checker, definition meanings and Lean/Mathlib pins remain unchanged. Only the
-completed theorem's direct/transitive obligation entries are removed. There is
-no new import/cache target, datatype, instance, partial runtime helper, unsafe
-declaration or project axiom.
+`CompilerBounds.lean` applies the existing counting cover at the declared height.
+The active alphabet is at most the declared nonterminal count, and production
+arity is at most the existing encoded branching budget. Thus the exact lists
+have at most `K` trees and each weight has norm at most `M`, even when input
+productions repeat or some declared symbols are unused.
 
-CI now invokes the existing checker with `--final`, rejecting every project
-hole, axiom and transitive unresolved dependency. The eleven previously
-allowlisted compiler-generated recursion helpers remain separately audited;
-standard Lean foundations remain disclosed and permitted.
+For each base, the compiler lists every cycle sublist, filters using the proved
+activation test, and assembles its list component. Exact membership and component
+bridges let `compile_correct` reuse `treeRepresentation_correct` for both
+inclusions. Mathlib's sublist/filter/length laws bound output cardinality;
+`contextComponent_size_bounds` bounds output norms, and `witness_bit_bound`
+provides the bit corollary. The result may include overlapping components, as
+the accepted contract allows; it is exact without claiming a minimal witness.
+
+All **661 earlier contract entries** are preserved. The manifest appends
+**76 entries** (31 named declarations and 45 generated proof/equation/matcher
+helpers), for **737 declarations** in total. Every previously published theorem
+remains in its original module. The baseline, checker, obligation allowlists,
+definition meanings and Lean/Mathlib pins are unchanged. Existing construction
+comments are updated to identify the implementing value; no definition or
+statement changes. There is no new Mathlib import/cache target, datatype,
+global instance, partial runtime helper, unsafe declaration or project axiom.
+
+The runtime definitions are computable and execute without classical finite-set
+listing or selection. Their axiom reports disclose standard foundations inherited
+through certified equality and proof fields; they are not axiom-free kernel
+expressions. The eleven previously allowlisted compiler-generated recursion
+helpers remain separately audited. All logical proofs are kernel checked;
+no `native_decide` or runtime proof override is introduced.
 
 ## Previously completed
 
@@ -93,30 +110,31 @@ standard Lean foundations remain disclosed and permitted.
 
 - [PR #25](https://github.com/focs-lab/parikh-theorem/pull/25): `bounded_witness`, classical `familyWitness` assembly with exact denotation and component-count bounds, and `contextComponent_size_bounds`, proving all four witness size bounds while preserving actual context identities (`thm:size-bound`).
 
-## Remaining implementation
+- [PR #26](https://github.com/focs-lab/parikh-theorem/pull/26): `witness_bit_bound`, proving fixed-width coordinate fit and total numerical entry-bit bounds; CI now requires final-mode checking (`eq:bit-bound`).
 
-No named theorem obligation remains. The machine-readable proof-hole and
-project-axiom allowlists in `docs/contracts/obligations.json` are empty.
-`ActivationTest` and `BoundedEnumeration` have executable implementing values
-with proved correctness fields. `Compiler` still has no implementing value;
-its `correct` and `bounded` fields remain requirements. This missing value is
-not represented by a `sorry`, so declaration auditing alone cannot certify
-whole-project completion. Classical `familyWitness` and `bounded_witness`
-prove bounded existence without an executable encoded-input compiler.
+## Remaining work
+
+No named mathematical proof or executable-construction obligation remains.
+`ActivationTest`, `BoundedEnumeration` and `Compiler` all have computable
+implementing values with complete correctness fields. The theorem-hole and
+project-axiom allowlists are empty. This increment awaits owner review and merge.
+
+The construction is deliberately coarse: tree enumeration and the context
+powerset can be very large. Optimization, additional convenience interfaces
+and release packaging are optional follow-up work, not missing formalization
+contracts. The repository has no selected license metadata; release publication
+and license choice remain owner decisions.
 
 ## Validation
 
-- Affected `Parikh.Construction` and full `lake build` pass without proof-hole warnings.
-- `lake env lean scripts/SkeletonExamples.lean` passes, including the exact-power ceiling-log boundary, duplicate indexed periods and zero entry bits for a nonempty witness over an empty alphabet. All earlier examples pass.
-- Final contract checking audits 661 declarations, preserves all 658 earlier fingerprints and reports direct holes / transitive holes / project axioms as **0 / 0 / 0**.
-- `#print axioms` for `witness_bit_bound` and `bounded_witness` reports only standard Lean foundations (`propext`, `Classical.choice`, `Quot.sound`), with no `sorryAx` or project axioms.
-- `git diff --check` passes.
-- `python3 scripts/check-contracts.py --final` passes; CI now requires this mode. Whole-project completion also requires exact executable witness compilation.
-- Cloud Lean 4.34.1 / Lake 5.0.0 and pinned Mathlib/GitHub access are verified. Final-head CI evidence is reported in the PR.
+- Affected compiler modules and full `lake build` pass without proof-hole warnings.
+- `lake env lean scripts/SkeletonExamples.lean` passes. It checks the public compiler fields and asserts computed outputs for empty rules, epsilon/empty alphabets, distinct silent contexts, duplicate productions, unreachable cycles and unary recursion. All earlier examples pass.
+- The unary example executes to `[([0], []), ([1], [[1]]), ([2], [[2]]), ([3], [[1], [2]])]`; empty rules give no component, epsilon gives one zero component, and separate silent contexts retain two independent zero-period positions.
+- `python3 scripts/check-contracts.py --final` audits 737 declarations, preserves all 661 prior fingerprints and reports direct holes / transitive holes / project axioms as **0 / 0 / 0**.
+- `#print axioms` for `EncodedGrammar.compile`, `compile_correct`, `compile_bounded` and `compiler` reports only standard Lean foundations (`propext`, `Classical.choice`, `Quot.sound`), with no `sorryAx` or project axioms. The same audit checks all new helper declarations.
+- The previously audited partial-helper set is unchanged at eleven entries. No unsafe declaration or unlisted runtime helper is added.
+- `git diff --check` passes; Lean 4.34.1 / Lake 5.0.0 and pinned Mathlib/GitHub access are verified in Codex Cloud. Final-head CI evidence is reported in the PR.
 
-Next eligible milestone: implement the executable grammar-to-witness compiler
-with exact denotation and all four size proofs. Reuse the proved enumeration
-and activation test, preserve context identities and account for duplicate
-input productions in cardinality bounds. The bit theorem then supplies the
-numerical encoding guarantee for its bounded output. Keep accepted contracts
-unchanged and publish each coherent increment as a new PR, stopping for review.
+Read [COMPILER.md](COMPILER.md) for the public executable API, a complete small
+execution, the correctness/budget fields and the implementation's practical
+limits. Preserve all accepted contracts and stop for the owner's review.

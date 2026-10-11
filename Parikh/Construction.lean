@@ -13,9 +13,9 @@ must satisfy.
 
 `EncodedGrammar` supplies finite syntax. `BoundedEnumeration` and `Compiler`
 package algorithms with their required correctness proofs. The former is
-implemented by `boundedEnumeration` in `Parikh/BoundedEnumeration.lean`; a
-compiler value remains to be supplied. The size and bit bounds describe the
-intended output budget. Consult `docs/PROOF_STATUS.md` for outstanding proofs.
+implemented by `boundedEnumeration` in `Parikh/BoundedEnumeration.lean`; the
+latter by `compiler` in `Parikh/ExecutableCompiler.lean`. The size and bit
+bounds are proved. Consult `docs/PROOF_STATUS.md` for validation and review status.
 
 Source: `sec:effective`, `eq:bound-defs`, `thm:size-bound`, `eq:bit-bound`.
 -/
@@ -197,7 +197,7 @@ theorem witness_bit_bound {T : Type*} [Fintype T] (s : GrammarSize)
     exact lt_of_le_of_lt
       ((hcoordinate p a).trans (((h.2 c hc).2.2 p hp).trans hpositions)) hwidth
 
-/-- Finite numeric syntax for the future executable compiler; unused symbols are allowed. -/
+/-- Finite numeric syntax for the executable compiler; unused symbols are allowed. -/
 structure EncodedGrammar where
   terminalCount : ℕ
   extraNonterminalCount : ℕ
@@ -221,8 +221,8 @@ structure BoundedEnumeration where
   correct : ∀ g H t, t ∈ enumerate g H ↔ Valid g.decode t ∧ t.height ≤ H
 
 /-- Algorithm output contract: exact image, explicit finite data, and the four bounds.
-A future executable value must use bounded enumeration and the activation test;
-this structure by itself does not certify effectivity.
+Implemented by `compiler` using bounded enumeration and the activation test.
+The implementing value supplies effectivity as well as both required proofs.
 -/
 structure Compiler where
   compile : (g : EncodedGrammar) → Witness (Fin g.terminalCount)

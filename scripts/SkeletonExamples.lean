@@ -1,7 +1,7 @@
 import Parikh
 
-/-! Small kernel-checked evaluations, not proofs of the outstanding contracts.
-The activation example from `sec:example` must pay for operation C before E.
+/-! Small semantic proofs and executable evaluations. General correctness is
+proved in the library; the activation example must pay for C before E.
 -/
 open Parikh
 
@@ -1117,5 +1117,45 @@ example : ∃ W : Witness (Fin 0), W.length = 1 ∧
   · decide
   · simp [W, WithinBounds, norm, GrammarSize.trees, GrammarSize.positions,
       GrammarSize.records]
+
+/-! Certified compiler execution. The runtime retains context identity through
+activation, removes duplicate syntax, and represents the empty word explicitly. -/
+abbrev encodedSilentGrammar : EncodedGrammar :=
+  ⟨0, 0, 0, [⟨0, []⟩, ⟨0, [.nonterminal 0]⟩]⟩
+abbrev encodedRepeatedSilentGrammar : EncodedGrammar :=
+  ⟨0, 0, 0, [⟨0, []⟩, ⟨0, [.nonterminal 0]⟩, ⟨0, [.nonterminal 0]⟩]⟩
+abbrev encodedUnaryGrammar : EncodedGrammar :=
+  ⟨1, 0, 0, [⟨0, []⟩, ⟨0, [.terminal 0, .nonterminal 0]⟩]⟩
+abbrev encodedUnreachableGrammar : EncodedGrammar :=
+  ⟨0, 1, 0, [⟨0, []⟩, ⟨1, [.nonterminal 1]⟩]⟩
+
+-- Read the finite vector functions as coordinate lists for execution/display.
+def numericalEntries {d : ℕ} (W : Witness (Fin d)) :
+    List (List ℕ × List (List ℕ)) :=
+  W.map fun c => (List.ofFn c.base, c.periods.map (fun p => List.ofFn p))
+
+example : (compiler.compile encodedUnaryGrammar).denotation =
+    image encodedUnaryGrammar.decode.language ∧
+    WithinBounds encodedUnaryGrammar.size (compiler.compile encodedUnaryGrammar) :=
+  ⟨compiler.correct encodedUnaryGrammar, compiler.bounded encodedUnaryGrammar⟩
+
+-- Runtime assertions exercise the compiled tree-statistic functions. Their
+-- semantic guarantees come from the kernel-checked compiler fields above.
+#eval show IO Unit from do
+  unless (compiler.compile encodedNoRulesGrammar).length == 0 do
+    throw (IO.userError "empty grammar produced a component")
+  unless numericalEntries (compiler.compile encodedEpsilonGrammar) == [([], [])] do
+    throw (IO.userError "epsilon grammar lost the zero component")
+  unless ((compiler.compile encodedSilentGrammar).map fun c => c.periods.length) == [0, 1, 1, 2] do
+    throw (IO.userError "distinct silent contexts lost their period positions")
+  unless numericalEntries (compiler.compile encodedSilentGrammar) ==
+      numericalEntries (compiler.compile encodedRepeatedSilentGrammar) do
+    throw (IO.userError "repeated productions changed the compiled example")
+  unless numericalEntries (compiler.compile encodedUnreachableGrammar) == [([], [])] do
+    throw (IO.userError "unreachable contexts passed activation")
+  let unary := numericalEntries (compiler.compile encodedUnaryGrammar)
+  unless unary == [([0], []), ([1], [[1]]), ([2], [[2]]), ([3], [[1], [2]])] do
+    throw (IO.userError "unary grammar compilation produced unexpected entries")
+  IO.println (repr unary)
 
 end SkeletonExamples

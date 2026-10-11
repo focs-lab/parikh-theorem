@@ -32,8 +32,9 @@ Four threads were appropriate for the onboarding cloud instance's four-CPU quota
 Use the cache rather than rebuilding all of Mathlib. The current library builds
 without `sorry` warnings. CI uses final-mode checking to reject all project holes,
 axioms and transitive unresolved dependencies; its proof allowlists are empty.
-The executable `Compiler` still lacks an implementing value, which the
-declaration audit cannot detect. See the proof-status ledger for remaining work.
+The public `compiler` value implements `Compiler` with exact-denotation and size
+proofs. The example script includes runtime assertions on its computed outputs.
+See [compiler usage](COMPILER.md) and the proof-status ledger for review status.
 
 ## This Codex Cloud instance
 

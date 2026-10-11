@@ -14,7 +14,8 @@ regular realization and regular-language specialization are also proved. Executa
 activation testing and bounded-tree enumeration are implemented with exact
 correctness. Quantitative bounded-family and leaf-weight bounds are proved.
 Exact witnesses satisfying all four size bounds, coordinate widths and numerical
-bit budgets are proved. Executable witness compilation remains in progress.
+bit budgets are proved. Executable witness compilation is implemented with exact
+denotation, declared-size and bit-budget proofs.
 Read the complete reference, including appendices, alongside the
 statements; source labels below refer to `reference/parikh_theorem.tex`.
 
@@ -50,6 +51,10 @@ statements; source labels below refer to `reference/parikh_theorem.tex`.
    reusing the existing generated tree equations.
    `FiniteWitness.lean` assembles exact components from finite tree families
    and bounds their number using product/powerset cardinalities.
+   `CompilerSupport.lean` supplies computable equality and semantic adapters;
+   `CompilerTrees.lean` computes exact duplicate-free families;
+   `CompilerBounds.lean` specializes counting to declared finite syntax;
+   `ExecutableCompiler.lean` implements and certifies `compiler`.
 7. `PROOF_STATUS.md` and `CONTRACT_CHECKS.md`: what is incomplete and how review
    freezes the accepted contracts.
 
@@ -86,7 +91,7 @@ flowchart TD
   DFAGrammar[Exact finite DFA to Mathlib grammar bridge] --> Regular
 ```
 
-These are intended dependencies for the remaining proof. The four counting/witness
+These are the dependencies of the completed development. The four counting/witness
 contracts, grammar/tree equivalence, plugging/insertion, the two abstract activation laws,
 sequence/tree realization, `one_linear`, active support, and simple-tree height
 now have complete proofs, as do `bounded_open_finite`, `bounded_cut`, `decomposition`,
@@ -105,7 +110,8 @@ Names below are in namespace `Parikh`. No tracked theorem hole remains.
 Concrete definitions and interfaces are implemented. Activation testing and
 bounded-tree enumeration have executable values with complete correctness proofs;
 `bounded_family_bounds`, `bounded_witness` and `witness_bit_bound` are proved;
-the `Compiler` interface still requires an executable implementing value.
+`compiler` implements the `Compiler` interface with complete correctness and
+size proofs, and `compile_bit_bound` supplies the encoding guarantee.
 
 | Source labels | Lean declaration(s) | Hypotheses / meaning | Intended prerequisites; status |
 | --- | --- | --- | --- |
@@ -137,10 +143,10 @@ the `Compiler` interface still requires an executable implementing value.
 | `lem:linear-regular`, `thm:converse`, `eq:regular-construction` | `componentExpression`, `witnessExpression`, `componentExpression_image`, `witnessExpression_image`, `witnessExpression_correct`, `converse` | Finite alphabet; exact image and Mathlib DFA regularity | Exact images, finite continuation NFA, Mathlib determinization, and finite regular union; all proved |
 | regular specialization of `thm:parikh-statement` | `regular_image` | Any Mathlib DFA-regular language | Exact DFA-to-Mathlib-grammar bridge and shared forward theorem; proved |
 | `lem:activation-test` | `ActivationTest`, `activationTest`, `activationRounds_correct`, `Activatable.erase_iff_of_enabled`, `Activatable.batch_iff_of_enabled` | Finite input supports and operations with decidable equality; ambient types may be infinite | Executable enabled-batch search, support monotonicity, exact removal equivalence and strict remaining-cardinality decrease; implemented and proved |
-| `sec:effective` | `EncodedGrammar.decode`, `BoundedEnumeration`, `boundedEnumeration`, `Compiler` | Numeric finite syntax; no classical-choice compiler value | Enumeration and activation implemented with proofs; exact tree formula proved; compiler value pending |
+| `sec:effective` | `EncodedGrammar.decode`, `BoundedEnumeration`, `boundedEnumeration`, `compiler`, `EncodedGrammar.compile_correct` | Numeric finite syntax; computable runtime with exact output | Exact tree filtering, activation and list-component bridges; implemented and proved |
 | `eq:bound-defs`, `lem:count-trees` | `GrammarSize`, `grammarSize`, `bounded_family_bounds` | `n` is active cardinality, `b ≥ 1`, `M = ∑ᵢ₌₀ⁿ⁺¹ bⁱ`, `K = (1+d+n+p)^M` | Finite child-function spaces, union/cardinality bounds and yield-length induction; proved |
-| `thm:size-bound` | `WithinBounds`, `bounded_witness`, `Compiler.bounded` | At most `K2^K` components, `K` periods, norms `M` / `(K+1)M` | Exact finite witness assembly, product/powerset cardinalities and norm accounting; `bounded_witness` proved, executable compiler pending |
-| `eq:bit-bound` | `coordinateBits`, `vectorBits`, `entryBits`, `witness_bit_bound` | Fixed widths using Mathlib `Nat.clog`; excludes list-length metadata | Four size bounds, ceiling-log power bound and bounded sums; proved |
+| `thm:size-bound` | `WithinBounds`, `bounded_witness`, `Compiler.bounded`, `EncodedGrammar.compile_bounded` | At most `K2^K` components, `K` periods, norms `M` / `(K+1)M` | Exact finite witness assembly, product/powerset cardinalities and norm accounting; classical bounded existence and computed-output bounds proved |
+| `eq:bit-bound` | `coordinateBits`, `vectorBits`, `entryBits`, `witness_bit_bound`, `EncodedGrammar.compile_bit_bound` | Fixed widths using Mathlib `Nat.clog`; excludes list-length metadata | Four size bounds, ceiling-log power bound and bounded sums; proved |
 | `app:presburger` | consequence of `Witness.denotation`; formula adapter deferred | Explicit existential coefficients | Downstream arithmetic consequence, not a proof prerequisite |
 | `sec:formalization`, `app:notation` | this plan and concrete witness/tree/activation definitions | Proposed review contract | Documentation |
 
@@ -217,7 +223,7 @@ gives finitely many child lists. Validity supplies matching length, child validi
 and inherited active holes; a child's height is bounded by the list maximum.
 Finite images and unions cover the node cases. The proof establishes semantic
 finiteness without changing syntax or imposing a finite ambient nonterminal type.
-Executable enumeration remains a separate implementation obligation.
+The executable enumerator supplies the corresponding computation separately.
 
 `BoundedCutSupport.lean` supplies five structural adapters for `bounded_cut`.
 Descent through non-simple children finds an occurrence whose children are simple;
@@ -295,7 +301,7 @@ forward proof in `GrammarImage.lean`. No earlier theorem moves: the existing
 `treeRepresentation_eq` and `grammar_image` are projections in `Statements.lean`.
 The shared support module imports `FiniteRepresentation`, not `Statements` or
 `RegularRealization`, keeping dependencies acyclic. This is semantic existence;
-executable construction is still required separately.
+the certified `compiler` provides finite-input construction separately.
 
 `ActivationAlgorithm.lean` implements the accepted finite-search interface.
 An enabled operation can go first because adding support never disables an order;
@@ -308,7 +314,7 @@ initial operation count sufficient. An empty remaining set accepts; a stalled
 nonempty set has no possible first operation and rejects. `activationTest.correct`
 proves exact equivalence with `Activatable`, including operations that do not add
 their own roots. No ordering, classical runtime selection or finite ambient-type
-assumption is needed. The compiler remains separate work.
+assumption is needed. The compiler uses this exact Boolean interface.
 
 `BoundedEnumeration.lean` implements the accepted exact membership contract for
 finite encoded grammars. At height zero, `List.finRange` supplies every declared
@@ -319,9 +325,9 @@ and `List.map` creates production nodes. Empty outputs supply one empty child
 list, hence an empty-production node of height one. Height induction proves
 both soundness and completeness using child-height bounds and ordered root
 matching. Duplicate input productions may repeat trees, as the list-membership
-interface permits; the future compiler must account for duplicates in its
-cardinality bounds. The runtime is explicit `Nat.rec` with no classical selection.
-Quantitative family bounds are now proved; full witness compilation remains.
+interface permits; `baseTrees` and `cycleTrees` remove these syntax duplicates
+before compiler cardinality bounds are applied. The runtime is explicit `Nat.rec` with no classical selection.
+Quantitative family bounds and full witness compilation are now proved.
 
 `BoundedFamilySupport.lean` counts a finite cover of active open trees. Child
 function spaces provide ordered tuples at each production's arity; finite union
@@ -344,7 +350,36 @@ unchanged. `witness_bit_bound` then bounds each coordinate by its vector norm,
 uses Mathlib's ceiling-log power bound to prove the fixed width sufficient, and
 bounds the sum of listed entry widths by the component/period budgets. No named
 helper or new import is needed. All existing theorem proofs are complete;
-executable compilation remains separate.
+the executable `compiler` supplies finite-input computation separately.
+
+
+## Executable compiler integration
+
+`CompilerSupport.lean` compares trees using `List.isEqv` and explicit `Nat.rec`
+on a production-height budget. `equalAt_correct` proves sufficient-budget
+comparison exact; `decEq` uses the two input heights to supply a computable
+syntax equality decision without a global instance or new partial helper.
+`listComponent_denotation` reuses the additive-closure bridge and
+`List.sum_toFinset` to make period order semantically irrelevant while retaining
+independent positions. `contextActivation_correct` uses the existing activation
+contract, finite production-label supports and the unique certified cycle root.
+
+`CompilerTrees.lean` computes the active alphabet and proves it equal to the
+frozen definition. The exact base/cycle filters reuse enumeration soundness and
+completeness; only duplicate trees are removed. `CompilerBounds.lean` reuses
+`card_treeFamily_le` and `yield_length_le_heightPositions` at the declared height,
+with active alphabet cardinality bounded by the declared finite nonterminal
+count. Thus unused symbols and repeated rules satisfy the accepted size budget.
+
+`ExecutableCompiler.lean` lists each base with every cycle sublist, filters by
+activation, and maps successful pairs to list components. Its exact denotation
+proof reuses `treeRepresentation_correct`; sublisting a certified cycle list
+recovers every mathematical context subset. Length/filter/sublists laws bound
+component count, and the existing component norm theorem bounds each output.
+The public `compiler` implements the frozen interface, and `compile_bit_bound`
+specializes the proved encoding bound. Runtime examples cover empty/epsilon
+languages, distinct silent contexts, repeated productions, unreachable cycles
+and unary recursion. No named proof or implementation obligation remains.
 
 ## After review
 

@@ -56,7 +56,6 @@ the full mathematical exposition.
 To extend the library, start with the [contributor guide](maintenance/README.md).
 It contains the source map, Mathlib reuse notes, and commands for checking
 declaration stability and proof dependencies.
-Contributions that bring these results into Mathlib or CSlib are welcome.
 
 ## References
 
@@ -68,3 +67,8 @@ Contributions that bring these results into Mathlib or CSlib are welcome.
   [arXiv](https://arxiv.org/abs/2301.00047).
 
 The formalization follows the derivation-tree approach of the latter two papers.
+
+## License
+
+Licensed under [Apache 2.0](LICENSE). Contributions that bring these results into
+Mathlib or CSlib are welcome.

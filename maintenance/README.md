@@ -7,7 +7,8 @@ tree and activation lemmas live in their respective modules.
 Reuse Mathlib definitions and results wherever possible. Keep new helpers close
 to the result that needs them, and submit changes as a reviewed PR.
 
-Contributions to Mathlib or CSlib are welcome. An upstream version can follow
+Contributions to Mathlib or CSlib are welcome. The library uses
+[Apache 2.0](../LICENSE), matching both projects. An upstream version can follow
 the target library's naming and module conventions; the compatibility audit
 below applies to this repository.
 

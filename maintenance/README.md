@@ -51,8 +51,8 @@ stacked PR. The baseline pointer and earlier fingerprints stay fixed.
 `scripts/ContractAudit.lean` exports full kernel expressions and axiom reports
 to `.lake/contract-audit.json`. Standard Lean foundations are allowed:
 `propext`, `Classical.choice`, and `Quot.sound`. The audit rejects project axioms,
-proof holes, unsafe proofs, and runtime overrides. Eleven previously recorded
-compiler-generated recursion helpers remain in the runtime allowlist.
+proof holes, unsafe proofs, and runtime overrides. The runtime allowlist records
+Lean's compiler-generated recursion helpers.
 New notation, attributes, instances, or audit changes need explicit review.
 
 ## Mathlib reuse
@@ -72,10 +72,3 @@ replacement, and activation accounting for the decomposition proof. The pinned
 Mathlib grammar interface does not supply these structures. Regular realization
 uses specialized word-block automata and Mathlib determinization.
 
-## Proof status
-
-The forward theorem, exact finite representations, regular realization,
-executable compiler, and size and bit bounds are complete. There are **0 direct
-proof holes**, **0 transitively unresolved declarations**, and **0 project axioms**.
-The final audit covers **814 declarations**. The public naming layer adds
-**21 aliases** and preserves all **793** previously published contracts.

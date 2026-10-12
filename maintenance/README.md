@@ -19,6 +19,7 @@ After [installing the dependencies](../docs/BUILD.md), run:
 ```sh
 lake build
 python3 scripts/check-contracts.py --final
+python3 tests/contracts.py
 lake env lean tests/ProofExamples.lean
 python3 tests/cli.py
 ```
@@ -33,15 +34,34 @@ The public names in `Parikh/Api.lean` reuse the existing definitions and proofs.
 Prefer them in examples and documentation; existing names remain available for
 compatibility.
 
-The contract check compares definitions and theorem types against recorded
-versions to catch accidental interface changes. It also checks proof dependencies
-and rejects placeholders or project-specific axioms. The audit data lives in
+The contract check preserves theorem signatures, definition bodies and instance
+registrations. Lean's internal theorem helpers (names with an underscore-prefixed
+component) may regenerate when proofs change; they are omitted from the
+compatibility manifest unless registered as instances. Every declaration,
+including these helpers, is still checked for unresolved proofs, unexpected
+axioms and unsafe code. The audit data lives in
 [contracts/](contracts/), and full reports are written to `.lake/contract-audit.json`.
 
-When adding declarations, append their fingerprints to `proposed.json` while
-preserving existing entries and the baseline pointer. The checker compares
+When adding protected declarations, append their fingerprints to `proposed.json`
+while preserving existing entries and the baseline pointer. The checker compares
 against both the baseline and the PR's base. Set `CONTRACT_BASE_REF` to the
 parent branch for a stacked PR.
+
+## Independent review
+
+The formalization was developed with Codex, with human review of the statement
+skeleton and incremental PRs. For a focused independent review:
+
+- Check the definitions in [Counting](../Parikh/Counting.lean) and the statements
+  in [Api](../Parikh/Api.lean) against the intended theorem.
+- Check the derivation/tree bridge in [GrammarTrees](../Parikh/GrammarTrees.lean),
+  bounded cuts in [Decomposition](../Parikh/Decomposition.lean), and first-use
+  accounting in [Activation](../Parikh/Activation.lean).
+- Check the executable adapters and `compile_correct` in
+  [ExecutableCompiler](../Parikh/ExecutableCompiler.lean).
+
+The [proof guide](../docs/PROOF_GUIDE.md) explains the construction. Run the checks
+above and assess the interfaces and readability alongside the mathematical claims.
 
 ## Mathlib reuse
 

@@ -12,6 +12,13 @@ ROOT = Path(__file__).resolve().parent.parent
 STANDARD = {"propext", "Classical.choice", "Quot.sound"}
 
 
+def compatibility_declarations(declarations):
+    """Keep definitions and theorem APIs; internal proof helpers may regenerate."""
+    return {name: contract for name, contract in declarations.items()
+            if not (contract["kind"] == "theorem" and not contract["instance"]
+                    and any(part.startswith("_") for part in name.split(".")))}
+
+
 def fail(message):
     raise SystemExit(message)
 
@@ -38,7 +45,7 @@ def main():
         current[row["name"]] = contract
     pins = {p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest()
             for p in ("lean-toolchain", "lakefile.toml", "lake-manifest.json")}
-    snapshot = {"pins": pins, "declarations": current}
+    snapshot = {"pins": pins, "declarations": compatibility_declarations(current)}
     proposed = ROOT / "maintenance/contracts/proposed.json"
     if args.propose:
         if proposed.exists():
@@ -53,7 +60,7 @@ def main():
     else:
         baseline = json.loads(proposed.read_text())
         print("Owner-accepted baseline pending; checking the submitted proposal")
-    # Preserve helper contracts introduced by earlier published increments, too.
+    # Preserve mathematical declarations introduced by earlier published increments, too.
     base_ref = os.environ.get("CONTRACT_BASE_REF") or "origin/main"
     prior = subprocess.run(["git", "show", f"{base_ref}:maintenance/contracts/proposed.json"],
                            cwd=ROOT, capture_output=True, text=True)
@@ -67,12 +74,12 @@ def main():
     if pins != baseline["pins"]:
         fail("Lean/Lake/dependency pins differ from the contract baseline")
     for frozen in baselines:
-        for name, old in frozen["declarations"].items():
+        for name, old in compatibility_declarations(frozen["declarations"]).items():
             if current.get(name) != old:
                 fail(f"Frozen signature, definition meaning, instance, or declaration changed: {name}")
-    # Once accepted, extensions must preserve all old entries and explicitly list additions.
+    # Once accepted, extensions preserve protected entries and explicitly list additions.
     if snapshot != json.loads(proposed.read_text()):
-        fail("New declarations need an explicit append-only proposal-manifest extension")
+        fail("Protected declarations differ from the compatibility manifest")
     obligations = json.loads((ROOT / "maintenance/contracts/obligations.json").read_text())
     direct = {r["name"] for r in rows if r["directSorry"]}
     axioms = {r["name"] for r in rows if r["contract"]["kind"] == "axiom"}

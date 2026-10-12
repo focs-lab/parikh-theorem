@@ -129,30 +129,6 @@ theorem wordExpression_star_image [DecidableEq T] (w : List T) :
 
 end
 
-/- Retain the six previously published simplifier-generated equality lemmas.
-Their exact kernel types (including hygienic binder names and resolved instances)
-come from the same pinned Mathlib proofs. Additional imports change automatic
-auxiliary-lemma numbering, so we give those same checked proofs their old names.
-`addDecl` kernel-checks each ordinary theorem; this introduces no axiom or tactic.
--/
-open Lean Meta in
-run_cmd Lean.Elab.Command.liftTermElabM do
-  for (name, source) in [
-      (`Parikh.periodExpressions_image._simp_1_4, ``Set.mem_union),
-      (`Parikh.periodExpressions_image._simp_1_5, ``Set.mem_singleton_iff),
-      (`Parikh.periodExpressions_image._simp_1_6, ``List.mem_cons),
-      (`Parikh.periodExpressions_image._simp_1_7, ``Set.mem_add),
-      (`Parikh.periodExpressions_image._simp_1_8, ``SetLike.mem_coe),
-      (`Parikh.periodExpressions_image._simp_1_9, ``AddSubmonoid.mem_sup)] do
-    let info ← getConstInfo source
-    let proof := mkConst source (info.levelParams.map Level.param)
-    let (type, value) ← forallTelescopeReducing info.type fun xs result => do
-      let some (lhs, rhs) := result.iff? | throwError "Expected equivalence: {source}"
-      let type ← mkForallFVars xs (← mkEq lhs rhs)
-      let value ← mkLambdaFVars xs (← mkPropExt (mkAppN proof xs))
-      pure (type, value)
-    addDecl (.thmDecl { name, levelParams := info.levelParams, type, value })
-
 section
 variable {T : Type*}
 
@@ -173,16 +149,14 @@ theorem periodExpressions_image [DecidableEq T] (alphabet : AlphabetOrder T)
     have hrange : Set.range (p :: ps).get = {p} ∪ Set.range ps.get := by
       rw [Set.range_list_get, Set.range_list_get]
       ext q
-      simp only [Set.mem_ofPred_eq, periodExpressions_image._simp_1_4,
-        periodExpressions_image._simp_1_5, periodExpressions_image._simp_1_6]
+      simp only [Set.mem_ofPred_eq, Set.mem_union, Set.mem_singleton_iff, List.mem_cons]
     rw [hrange, AddSubmonoid.closure_union]
     change image ((wordExpression (representative alphabet p)).star.matches' *
       (ps.foldr (fun q (rest : RegularExpression T) =>
         .comp (.star (wordExpression (representative alphabet q))) rest) .epsilon).matches') = _
     rw [image_mul, wordExpression_star_image, representative_counts, ih]
     ext v
-    simp only [periodExpressions_image._simp_1_7, periodExpressions_image._simp_1_8,
-      periodExpressions_image._simp_1_9]
+    simp only [Set.mem_add, SetLike.mem_coe, AddSubmonoid.mem_sup]
 
 /-- The component expression has exactly the frozen indexed linear denotation
 (`lem:linear-regular`); DFA regularity is proved separately. -/

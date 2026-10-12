@@ -2,8 +2,9 @@ import Parikh
 import Lean
 
 /-! Export kernel expressions rather than matching theorem lines. Types include
-universes, every implicit argument and section variable. Proof bodies may change;
-all non-proof definition bodies and instance registrations are recorded.
+universes, every implicit argument and section variable. Every declaration is
+exported for the proof-dependency audit. The compatibility checker separately
+excludes internal proof helpers; definition bodies and instances remain recorded.
 -/
 open Lean Elab Command
 

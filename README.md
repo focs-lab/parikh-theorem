@@ -56,6 +56,7 @@ the full mathematical exposition.
 To extend the library, start with the [contributor guide](maintenance/README.md).
 It contains the source map, Mathlib reuse notes, and commands for checking
 declaration stability and proof dependencies.
+Contributions that bring these results into Mathlib or CSlib are welcome.
 
 ## References
 

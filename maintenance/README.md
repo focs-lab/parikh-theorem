@@ -27,33 +27,21 @@ CI runs the same checks. `tests/ProofExamples.lean` exercises the mathematical
 interfaces and concrete compiler outputs. `tests/cli.py` checks JSON input,
 diagnostics, and the supplied grammars, including their images in `[0, 12]^2`.
 
-## Public API and declaration stability
+## Compatibility
 
-The names in `Parikh/Api.lean` are thin aliases for the existing definitions
-and proofs. Prefer these descriptive names in examples and documentation.
-Existing names remain available for compatibility.
+The public names in `Parikh/Api.lean` reuse the existing definitions and proofs.
+Prefer them in examples and documentation; existing names remain available for
+compatibility.
 
-The audit preserves declaration names, elaborated types, universe parameters,
-definition bodies, reducibility, and instance registrations. Proof bodies may
-change. It also checks dependency pins and direct and transitive proof holes.
-
-The files in [contracts/](contracts/) contain the accepted baseline pointer,
-declaration fingerprints, and obligation lists. The baseline is the reviewed
-PR #2 commit `6bff9679d7ea03e5401815b80c5a3dc1300f9d36`. The checker reads its
-original manifest directly from that commit. Earlier base commits use the old
-`docs/contracts/` path; current snapshots use `maintenance/contracts/`.
+The contract check compares definitions and theorem types against recorded
+versions to catch accidental interface changes. It also checks proof dependencies
+and rejects placeholders or project-specific axioms. The audit data lives in
+[contracts/](contracts/), and full reports are written to `.lake/contract-audit.json`.
 
 When adding declarations, append their fingerprints to `proposed.json` while
-preserving every existing entry. The checker compares against both the accepted
-baseline and the PR's base. Set `CONTRACT_BASE_REF` to a parent branch for a
-stacked PR. The baseline pointer and earlier fingerprints stay fixed.
-
-`scripts/ContractAudit.lean` exports full kernel expressions and axiom reports
-to `.lake/contract-audit.json`. Standard Lean foundations are allowed:
-`propext`, `Classical.choice`, and `Quot.sound`. The audit rejects project axioms,
-proof holes, unsafe proofs, and runtime overrides. The runtime allowlist records
-Lean's compiler-generated recursion helpers.
-New notation, attributes, instances, or audit changes need explicit review.
+preserving existing entries and the baseline pointer. The checker compares
+against both the baseline and the PR's base. Set `CONTRACT_BASE_REF` to the
+parent branch for a stacked PR.
 
 ## Mathlib reuse
 
@@ -71,4 +59,3 @@ The project adds production-labelled trees with explicit holes, occurrence-based
 replacement, and activation accounting for the decomposition proof. The pinned
 Mathlib grammar interface does not supply these structures. Regular realization
 uses specialized word-block automata and Mathlib determinization.
-

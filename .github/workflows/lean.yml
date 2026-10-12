@@ -29,6 +29,6 @@ jobs:
           CONTRACT_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: python3 scripts/check-contracts.py --final
       - name: Check small semantic examples
-        run: lake env lean scripts/SkeletonExamples.lean
+        run: lake env lean tests/ProofExamples.lean
       - name: Check command-line input and output
-        run: python3 scripts/test-cli.py
+        run: python3 tests/cli.py

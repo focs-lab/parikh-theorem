@@ -1,21 +1,14 @@
 # A guided proof of Parikh's theorem
 
-Parikh's theorem says that the letter counts of a context-free language form a
-finite union of linear sets. The key question is: **where do the bases and periods
-come from?** In this proof, bases come from small derivation trees, and periods
-come from pieces of trees that can be inserted repeatedly.
+The proof constructs the bases and periods of a semilinear set from derivation
+trees: small complete trees provide bases, and repeatable contexts provide
+periods. We will follow this construction through a grammar where inserting one
+context enables another.
 
-This guide explains the argument before the Lean details. It follows the
-repository's [mathematical exposition](../reference/parikh_theorem.pdf) and the
-derivation-tree approach discussed by [Sin'ya (2019)](https://arxiv.org/abs/1909.09393)
-and [Rubtsov (2022)](https://arxiv.org/abs/2301.00047). The
-[README references](../README.md#references) distinguish these presentations from
-Parikh's original paper. The [proof plan](PROOF_PLAN.md) provides the detailed
-source-to-declaration map; the [status ledger](PROOF_STATUS.md) records unfinished
-work. The example below is a mathematical illustration, not an additional
-machine-checked example in the library.
+The guide follows the [mathematical reference](../reference/parikh_theorem.pdf).
+The [proof map](../maintenance/proof-map.md) connects its steps to Lean declarations.
 
-## 1. Counting turns concatenation into addition
+## Counting turns concatenation into addition
 
 For a word $w$, write $\Psi(w)$ for its vector of letter counts. For example,
 with coordinates ordered as $(a,b,c)$, both `acb` and `abc` have vector $(1,1,1)$.
@@ -29,13 +22,13 @@ Consequently, inserting a fixed piece of a derivation adds a fixed vector,
 regardless of where its terminal letters appear in the word. Repeated insertions
 are the source of natural-number multiples of period vectors.
 
-In Lean, [Counting.lean](../Parikh/Counting.lean) defines `counts` and proves
-`counts_append`. A `Component` consists of a base vector and a list of periods.
+In Lean, `parikhVector` counts letters and `parikhVector_append` gives this
+identity. A `LinearComponent` consists of a base vector and a list of periods.
 Its `denotation` assigns an independent natural coefficient to each list entry.
-Every Lean list is finite, so the datatype already supplies the required
-finiteness. A `Witness` is a finite list of components, interpreted as their union.
+A `SemilinearRepresentation` is a finite list of components, interpreted as
+their union. See the [API](API.md) for these definitions.
 
-## 2. A running grammar
+## A running grammar
 
 Consider the grammar with start symbol $S$ and productions
 
@@ -57,7 +50,7 @@ We will recover this description by manipulating trees. The example also
 explains why a list of available period vectors alone is not enough: a context
 that adds `c` needs an occurrence of $A$ before it can be inserted.
 
-## 3. Trees can describe unfinished derivations
+## Trees can describe unfinished derivations
 
 A `ParseTree` has three kinds of node: a terminal leaf, a nonterminal hole, or a
 production node with an ordered list of children. A hole records a place where
@@ -78,7 +71,7 @@ $S\to\varepsilon$ thus has support $\lbrace S\rbrace$, despite producing no lett
 contribute no support. These conventions are defined in
 [GrammarTrees.lean](../Parikh/GrammarTrees.lean).
 
-## 4. Cycles are repeatable contexts
+## Cycles are repeatable contexts
 
 A cycle context has one hole, with the same nonterminal as its root, and at least
 one production node. Filling that hole with a matching subtree produces a larger
@@ -106,7 +99,7 @@ A context may have zero weight. For instance, in a grammar with $A\to A$, that
 production above a hole is a cycle which adds a production but no letters. This
 is why terminal word length cannot measure progress when we remove cycles.
 
-## 5. Why activation comes before independent repetition
+## Why activation comes before independent repetition
 
 In the base $B$, only $S$ is present. Context $C$ is enabled immediately, but
 $E$ is not. After inserting $C$, an $A$ production node exists, so $E$ becomes
@@ -143,11 +136,10 @@ For our chosen base and contexts, the three possible families give:
 | $\lbrace C,E\rbrace$ | $(1,1,1)+n(1,1,0)+k(0,0,1)$ |
 
 The family $\lbrace E\rbrace$ is unavailable from this base. The last two rows together
-are the nonempty-word component in Section 2. This small example admits a
-simplified witness; the general tree construction can produce additional,
-overlapping components and does not promise a minimal representation.
+give the nonempty-word component of the running grammar. Other bounded contexts
+can give overlapping components.
 
-## 6. Why finitely many bases and cycles suffice
+## Why finitely many bases and cycles suffice
 
 The argument so far describes what a chosen family can produce. We must also
 show that every complete tree can be reconstructed from bounded pieces.
@@ -175,7 +167,7 @@ finitely many bases and bounded cycles, and finitely many context subsets.
 [FiniteRepresentation.lean](../Parikh/FiniteRepresentation.lean) combines these
 facts with `one_linear` to establish semilinearity.
 
-## 7. The equality has two directions
+## The equality has two directions
 
 `treeRepresentation_correct` in [GrammarImage.lean](../Parikh/GrammarImage.lean)
 joins the argument together. Its equality is exposed as `treeRepresentation_eq`
@@ -188,11 +180,12 @@ in [Statements.lean](../Parikh/Statements.lean):
   and retain the distinct contexts used. Their first occurrences give an
   activation order, so the word's vector belongs to the corresponding component.
 
-This proves an exact description of the image. Applying the finite-union result
-gives `grammar_image`; the Mathlib language interface gives `contextFree_image`.
-`grammar_witness` then expresses semilinearity as a finite list of components.
+Applying the finite-union result proves that the image is semilinear.
+The public theorem is `parikhImage_isSemilinear_of_grammar`; its language-level
+form is `parikhImage_isSemilinear_of_isContextFree`.
+`exists_semilinearRepresentation_of_grammar` gives the finite representation.
 
-## 8. Returning from vectors to words
+## Returning from vectors to words
 
 The converse is simpler mathematically. Fix an order of the terminal alphabet
 and represent a vector by blocks of letters in that order. For a base $b$ and
@@ -208,18 +201,18 @@ coefficient of one period. A finite union realizes a semilinear witness.
 identities. [WordBlockAutomata.lean](../Parikh/WordBlockAutomata.lean) supplies
 finite automata for the required word-prefix operations, reusing Mathlib's NFA
 determinization. This connects the expressions to Mathlib's DFA regularity
-predicate and proves `converse`.
+predicate. The result is `exists_regularLanguage_with_parikhImage`.
 
-Combining the converse with the forward theorem gives `regular_realization`:
-every grammar has a regular language with the same letter counts. The words
-need not occur in the same order in those two languages.
+Combining this with the forward theorem gives
+`exists_regularLanguage_with_grammar_parikhImage`: every grammar has a regular
+language with the same letter counts, although the order of letters may differ.
 
-## 9. Why regular languages also have semilinear images
+## Why regular languages also have semilinear images
 
 The converse starts from a semilinear set and produces a regular language.
-The separate theorem `regular_image` starts with any DFA-regular language and
-proves that its image is semilinear. To reuse the forward theorem, interpret
-the DFA as a right-linear grammar.
+The theorem `parikhImage_isSemilinear_of_isRegular` starts with any DFA-regular
+language and proves that its image is semilinear. To reuse the forward theorem,
+interpret the DFA as a right-linear grammar.
 
 Each state becomes a nonterminal. A transition $q \xrightarrow{a} q'$ becomes
 $q\to a q'$, and an accepting state has an empty production $q\to\varepsilon$.
@@ -227,147 +220,39 @@ A partial derivation records the letters already read, followed by the current
 state. It can finish precisely when that state is accepting.
 [DFAGrammar.lean](../Parikh/DFAGrammar.lean) proves that the grammar and DFA accept
 exactly the same words. The shared forward result in `GrammarImage.lean` then
-gives semilinearity, and `RegularRealization.lean` exposes `regular_image`.
+gives semilinearity.
 
-The existence proofs use classical reasoning. The public `compiler` also
-computes a witness from finite grammar input, with proved resource bounds.
-[Construction.lean](../Parikh/Construction.lean) specifies those requirements;
-[ExecutableCompiler.lean](../Parikh/ExecutableCompiler.lean) implements them.
+## Computing the representation
 
-## 10. Computing whether a context family can activate
+For finite encoded input, `compileGrammar` carries out the tree construction.
+It enumerates valid trees through a height bound, filters the base and cycle
+families, and tests activation for each candidate context subset.
 
-The compatibility condition also has an executable test. Starting from the
-base's available labels, find all selected operations whose required labels are
-already present. Add their supports and remove them from the remaining work.
-Repeat until no work remains, or until work remains with no enabled operation.
+The activation test repeatedly processes all enabled contexts, adds their
+supports, and removes them from the remaining work. It succeeds when none
+remain, and fails if it stalls. Processing any enabled context first preserves
+whether an activation order exists, which justifies the test. For each accepted
+base and subset, the compiler pays for one copy of each context in the base and
+retains its weight as a period.
 
-For the example above, the family $\lbrace C,E\rbrace$ first enables $C$, then $E$, and
-succeeds. The family $\lbrace E\rbrace$ immediately stalls. A mutually dependent cycle
-with no initially available root also stalls; it cannot supply its own first step.
+For quantitative bounds, let $n$ count nonterminals, $d$ terminals, $p$
+productions, and $b$ the maximum right-hand-side length, with a minimum of one.
+At height $n+1$, put
 
-[ActivationAlgorithm.lean](../Parikh/ActivationAlgorithm.lean) proves that any
-enabled operation may go first without changing whether an activation order
-exists. This justifies processing a whole enabled batch. Each nonempty batch
-removes operations, so the original number of selected operations gives enough
-rounds. The executable value `activationTest` packages this procedure with a
-proof that its Boolean result is `true` exactly when `Activatable` holds.
-Only the supplied input sets must be finite; labels and operation types may be
-infinite. The full grammar compiler specializes this test to actual cycle trees.
+```math
+M=\sum_{i=0}^{n+1}b^i,\qquad K=(1+d+n+p)^M.
+```
 
-## 11. Computing the finite tree families
+There are at most $K$ bases and $K$ contexts, each with terminal-weight norm at
+most $M$. Thus the representation has at most $K2^K$ components, each with at
+most $K$ periods. A component's base has norm at most $(K+1)M$, and every period
+has norm at most $M$.
 
-The finiteness proof also has an executable counterpart. For a finite encoded
-grammar, height zero contains all terminal leaves and nonterminal holes. To
-construct the next family, choose a production and choose one smaller tree for
-each symbol of its right-hand side. Keep the choices in that same order, with
-each child's root matching the corresponding symbol.
+Every coordinate is at most its vector's norm. A width of
+$L=\max(1,\lceil\log_2((K+1)M+1)\rceil)$ bits therefore fits every coordinate.
+The total numerical entry budget is $K2^K(K+1)dL$ bits.
 
-For the running production $S\to aASb$, this means choosing an `a`-rooted child,
-an $A$-rooted child, an $S$-rooted child and a `b`-rooted child. Filtering each
-child family by its required root before taking the Cartesian product gives
-exactly those combinations. An empty production has one possible child list,
-the empty list, so its node first appears at height one.
-
-[BoundedEnumeration.lean](../Parikh/BoundedEnumeration.lean) reuses Mathlib's
-`List.sections` for the ordered product. The executable `boundedEnumeration`
-value proves that a tree appears exactly when it is valid for the decoded
-grammar and its height is within the requested bound. This includes open trees
-and holes for unused declared symbols. Duplicate productions may repeat trees;
-the contract concerns membership, so it does not require a unique listing.
-`CompilerTrees.lean` filters these trees into exact base and context lists and
-removes duplicate syntax. The compiler then assembles their activatable subsets.
-
-## 12. Bounding how many trees and terminals occur
-
-The families are finite, and their sizes now have proved numerical bounds.
-Let $n$ be the number of active nonterminals, $d$ the number of terminals, $p$
-the number of productions and $b$ the largest production arity, with a minimum
-of one. A full branching tree through depth $n+1$ has
-$M = \sum_{i=0}^{n+1} b^i$ positions. Each base or bounded cycle has at most
-$M$ terminal leaves, and there are at most $K = (1+d+n+p)^M$ of either kind.
-
-[BoundedFamilySupport.lean](../Parikh/BoundedFamilySupport.lean) proves the count
-by covering each height layer with terminal leaves, active holes and production
-nodes. A production of arity $m$ has at most $A^m$ ordered child tuples when
-the previous family has size $A$. Ignoring root compatibility enlarges this
-cover, which is enough for an upper bound. Finite union bounds and the geometric
-sum recurrence give $K$ at depth $n+1$. Filtering the cover yields the exact
-base and cycle families.
-
-The terminal bound follows separately: each node has at most $b$ children,
-whose terminal yields satisfy the preceding height budget. Summing their
-lengths gives the next budget. Summing a tree's terminal counts equals its
-yield length, so the same bound applies to weight norm. The accepted
-`bounded_family_bounds` theorem in [Construction.lean](../Parikh/Construction.lean)
-now proves these claims. The following steps bound the resulting witness and
-its numerical encoding and prove the executable compiler's guarantees.
-
-## 13. Bounding the complete witness
-
-There is one candidate component for each base $B$ and subset $D$ of bounded
-contexts. Activation filtering keeps only compatible pairs. With at most $K$
-bases and $K$ contexts, this gives at most $K2^K$ components. Each component
-lists one period for each selected context, so it has at most $K$ periods,
-each with norm at most $M$.
-
-The component's base pays for the base tree and one copy of every selected
-context. Norms add because all coordinates are natural numbers. Thus its
-norm is at most $M + |D|M \leq (K+1)M$. Two contexts with equal weights still
-occupy two list positions, and zero weights remain valid periods.
-
-[FiniteWitness.lean](../Parikh/FiniteWitness.lean) constructs the finite list
-using Mathlib's product, powerset and filtering operations, and proves its
-exact denotation using the existing tree formula. The accepted `bounded_witness`
-theorem in [Construction.lean](../Parikh/Construction.lean) now combines that
-assembly with the family and norm budgets. This proves that an exact witness
-with all four size bounds exists. The assembly uses classical choices;
-the executable compiler supplies the encoded-input computation separately.
-
-## 14. Bounding the numerical encoding
-
-Every coordinate is at most its vector's norm, since the coordinates are natural
-numbers. The preceding bounds therefore put every base and period coordinate
-at most $(K+1)M$. Choose
-$L = \max(1, \lceil\log_2((K+1)M+1)\rceil)$.
-The ceiling-log inequality gives $(K+1)M < 2^L$, so each coordinate fits in
-$L$ bits, including when $(K+1)M+1$ is an exact power of two.
-
-There are at most $K2^K$ components, each with one base and at most $K$ indexed
-periods. Each vector has $d$ coordinates. Summing their fixed widths gives at
-most $K2^K(K+1)dL$ numerical entry bits. This excludes list-length metadata, as
-specified in the reference; an empty terminal alphabet contributes zero entry
-bits even when the witness contains components and zero periods.
-
-The accepted `witness_bit_bound` theorem in
-[Construction.lean](../Parikh/Construction.lean) proves both coordinate fit and
-the total budget using Mathlib's logarithm and bounded-sum results. All named
-theorem obligations are proved. The executable compiler uses this theorem for
-its computed output, as the following final step explains.
-
-## 15. The certified executable compiler
-
-For an `EncodedGrammar`, enumerate syntax through the declared nonterminal
-count plus one. Filter complete simple start trees into bases, and nontrivial
-same-root/hole contexts into cycles. The cycle filter uses the computed active
-alphabet so it matches the exact family in the general grammar theorem, even
-when some declared symbols are unused. Remove repeated trees caused by duplicate
-productions, retaining different contexts that happen to have equal weights.
-
-For each base, list every sublist of the duplicate-free cycle family. These
-sublists represent all context subsets exactly once. Test activation using the
-contexts' root labels and finite production-label supports. For every successful
-pair, sum the original base weight and the first copy of each selected context;
-list their weights as independently indexed periods.
-
-`listComponent_denotation` proves that this list order has the same denotation
-as the mathematical `contextComponent`. `contextActivation_correct` identifies
-the Boolean test with `ContextsActivatable`. Exact base/cycle membership then
-lets `compile_correct` reuse the proved tree representation to obtain equality
-with the grammar's Parikh image. The same counting cover at the declared height
-bounds family lengths and weights; `compile_bounded` transfers these bounds to
-the actual output list, and `compile_bit_bound` supplies coordinate widths.
-
-The public `compiler` value packages the executable function with both proofs
-required by `Compiler`. [Compiler usage](COMPILER.md) shows a small execution.
-The construction is finite and certified, but deliberately coarse: overlapping
-components and expensive enumeration are allowed by the contract.
+`compileGrammar_correct`, `compileGrammar_size_bounds`, and
+`compileGrammar_bit_bound` prove these guarantees for the computed output.
+The [compiler guide](COMPILER.md) shows how to execute it; the
+[proof map](../maintenance/proof-map.md) locates the enumeration and bound proofs.

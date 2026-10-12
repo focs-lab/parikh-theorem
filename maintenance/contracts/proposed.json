@@ -2232,6 +2232,18 @@
       "unsafe": false,
       "value": null
     },
+    "Parikh.CountVector": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "5ba5cedd28bcb26683a6d2324e8be99c6c803d55ce34f25344d99416123872d5",
+      "unsafe": false,
+      "value": "5675a3eb06fd7151953dd1b8dcb68e66199837609d7a9cda0f6c0725ec1e3c2e"
+    },
     "Parikh.Cycle": {
       "instance": false,
       "kind": "definition",
@@ -3497,6 +3509,42 @@
       "type": "3205a063c2394f465e25bc981d368278c053c71094b46310305fcb1ab651d9fe",
       "unsafe": false,
       "value": "274953c0fc245e18d76ecb51f4496ea2a45f9238c91afefa4afcbfa3e5f81807"
+    },
+    "Parikh.LinearComponent": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "5ba5cedd28bcb26683a6d2324e8be99c6c803d55ce34f25344d99416123872d5",
+      "unsafe": false,
+      "value": "af8bc91318d54d7b3850474d8d05a9c07fcd70145c8f7e37fa73723945b02c46"
+    },
+    "Parikh.LinearComponent.denotation": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "cd1f5e9f2ce54b4006698927aa0e5261a8f29e9467b721f7660f61745da95858",
+      "unsafe": false,
+      "value": "8bfa4442d5a08ec5ab135a0ab21ac12b1d1c3eb75670a1e7819e4d13c89dc8ce"
+    },
+    "Parikh.LinearComponent.isLinearSet": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "ad7904ea0026e789ac602fc93b65995a0b4a1deadd5e14a743092a5054d17828",
+      "unsafe": false,
+      "value": null
     },
     "Parikh.OneHole": {
       "instance": false,
@@ -6311,6 +6359,42 @@
       "unsafe": false,
       "value": null
     },
+    "Parikh.SemilinearRepresentation": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "5ba5cedd28bcb26683a6d2324e8be99c6c803d55ce34f25344d99416123872d5",
+      "unsafe": false,
+      "value": "da1e770453a191e73e56beb75411fe79f965be392814d844ef5f76244598cf50"
+    },
+    "Parikh.SemilinearRepresentation.denotation": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "b209ef88c352e83f26b8009ad436d44f36f86825888b11907d3c711a8b802fcf",
+      "unsafe": false,
+      "value": "02293f633801571321b2215cf60104733a974ccc8942e6eb02e93635335ce9be"
+    },
+    "Parikh.SemilinearRepresentation.isSemilinearSet": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "2ecf72f3a445372a932adfc86797b9aebeae99b9c455027c285b6c24d702b977",
+      "unsafe": false,
+      "value": null
+    },
     "Parikh.Valid": {
       "instance": false,
       "kind": "inductive",
@@ -7079,6 +7163,46 @@
       "unsafe": false,
       "value": null
     },
+    "Parikh.compileGrammar": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "209375841d8b4373ded1cee3bcb3395b97ae5c25db570b8daf715bbbd2e0e235",
+      "unsafe": false,
+      "value": "04fda185aa1654336fef4a90d10285c44140d8d3a51379e30472b968890c3571"
+    },
+    "Parikh.compileGrammar_bit_bound": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "61c4b511cd2e39fa117f6494cb9327c537499bf2ee75e5b3cce37a95c3fb0297",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.compileGrammar_correct": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "ff631f0e80abd2ed65bd3e92ee2b4854a36553a71c1d41b179a32dd2d4a058c4",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.compileGrammar_size_bounds": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "66696bebd55a48ccb9bdc48a40865423aa8c72501ca87321a9b46e8efb50f3ab",
+      "unsafe": false,
+      "value": null
+    },
     "Parikh.compiler": {
       "instance": false,
       "kind": "definition",
@@ -7542,6 +7666,54 @@
       "type": "fc665ba73afb2119d3b6ac4797219c1ae8ea06d4cb93685ebb9c1d6b57883d9b",
       "unsafe": false,
       "value": "c16b31516a1325d34cf94d476c2c13fb388ec69059bd47a69614471f6f18fc5e"
+    },
+    "Parikh.exists_boundedSemilinearRepresentation_of_grammar": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "474625cc8435c8ff42d9447294dfcce8e5680165aa4492d242f8e5fd5a41295a",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.exists_regularLanguage_with_grammar_parikhImage": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "b204d91cb6db1814e23766108d490e14956efd289a8fdca4f2753f0f1bb41d2d",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.exists_regularLanguage_with_parikhImage": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "b116660e711fde820823671ee34794c406fcd921560f7058bd11d7b1647f9cde",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.exists_semilinearRepresentation_of_grammar": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "77d48dbdff5b6cddd165d427a60fe4c1bafc5357bb759529dafcf0d4e7a53ae5",
+      "unsafe": false,
+      "value": null
     },
     "Parikh.exists_witness": {
       "instance": false,
@@ -8314,6 +8486,78 @@
       "partial": false,
       "reducibility": "opaque",
       "type": "2f2d8528014799a83a39d1a536ea0f59a0fc005b944c4776d9f8c7c5f3bc5c99",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.parikhImage": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "d02d1a6ebe055dba6ee2904b588bfdc240a240bf530142d7f762ef1ef9bbdf81",
+      "unsafe": false,
+      "value": "2d3e44684b24f0a2f706d56b1e8feea6915e2e5b2c04ada180518c146608f639"
+    },
+    "Parikh.parikhImage_isSemilinear_of_grammar": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "8e352710e289584104a49cbdd6ec32dbb80564e4373b325c047cb68b071bf183",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.parikhImage_isSemilinear_of_isContextFree": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "e68865036ab9a614072af2c924efff08ee82f6782b26e9c8ba9294ff43b4c201",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.parikhImage_isSemilinear_of_isRegular": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "d792cd8c1ebcf0d86483ad8c84282104dc64e2ba0ec523c423728dee6c931ba3",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.parikhVector": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "b6a60e182389f619840b9d3908759ed165cce9322a1b628728e61148f57d0825",
+      "unsafe": false,
+      "value": "e89e5f843d4420443da0a700831368fe4a151ae4fc952567a549ca2fa382cd30"
+    },
+    "Parikh.parikhVector_append": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "c3141c3a10edd2be47d4d1e489277149ce8e58025ef3d34d72144ab8b94f262d",
       "unsafe": false,
       "value": null
     },

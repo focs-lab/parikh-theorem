@@ -4,18 +4,15 @@ import Parikh.BoundedFamilySupport
 import Parikh.FiniteWitness
 
 /-!
-# What an effective construction must provide
+# Finite grammar encoding and size bounds
 
-Knowing that a finite witness exists does not yet give an algorithm for
-computing it. This file specifies the finite input encoding, bounded tree
-enumeration, compiler output, and quantitative guarantees such an algorithm
-must satisfy.
+This file defines the finite input encoding, bounded-tree enumeration and
+compiler interfaces, and proves the representation's size and bit bounds.
 
 `EncodedGrammar` supplies finite syntax. `BoundedEnumeration` and `Compiler`
 package algorithms with their required correctness proofs. The former is
 implemented by `boundedEnumeration` in `Parikh/BoundedEnumeration.lean`; the
-latter by `compiler` in `Parikh/ExecutableCompiler.lean`. The size and bit
-bounds are proved. Consult `docs/PROOF_STATUS.md` for validation and review status.
+latter by `compiler` in `Parikh/ExecutableCompiler.lean`.
 
 Source: `sec:effective`, `eq:bound-defs`, `thm:size-bound`, `eq:bit-bound`.
 -/

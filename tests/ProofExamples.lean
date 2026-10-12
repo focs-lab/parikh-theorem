@@ -5,7 +5,7 @@ proved in the library; the activation example must pay for C before E.
 -/
 open Parikh
 
-namespace SkeletonExamples
+namespace ProofExamples
 
 def required : Bool → ℕ := fun operation => if operation then 1 else 0
 def added : Bool → Set ℕ := fun operation => if operation then {1} else {0, 1}
@@ -1158,4 +1158,4 @@ example : (compiler.compile encodedUnaryGrammar).denotation =
     throw (IO.userError "unary grammar compilation produced unexpected entries")
   IO.println (repr unary)
 
-end SkeletonExamples
+end ProofExamples

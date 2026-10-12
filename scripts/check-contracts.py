@@ -39,12 +39,12 @@ def main():
     pins = {p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest()
             for p in ("lean-toolchain", "lakefile.toml", "lake-manifest.json")}
     snapshot = {"pins": pins, "declarations": current}
-    proposed = ROOT / "docs/contracts/proposed.json"
+    proposed = ROOT / "maintenance/contracts/proposed.json"
     if args.propose:
         if proposed.exists():
             fail("Proposal already exists; baseline regeneration is forbidden")
         proposed.write_text(json.dumps(snapshot, indent=2, sort_keys=True) + "\n")
-    config = json.loads((ROOT / "docs/contracts/baseline.json").read_text())
+    config = json.loads((ROOT / "maintenance/contracts/baseline.json").read_text())
     accepted = config["accepted_commit"]
     if accepted:
         # Load the immutable proposal FROM the owner-accepted commit, not a mutable local file.
@@ -55,8 +55,12 @@ def main():
         print("Owner-accepted baseline pending; checking the submitted proposal")
     # Preserve helper contracts introduced by earlier published increments, too.
     base_ref = os.environ.get("CONTRACT_BASE_REF") or "origin/main"
-    prior = subprocess.run(["git", "show", f"{base_ref}:docs/contracts/proposed.json"],
+    prior = subprocess.run(["git", "show", f"{base_ref}:maintenance/contracts/proposed.json"],
                            cwd=ROOT, capture_output=True, text=True)
+    if prior.returncode != 0:
+        # Earlier reviewed commits predate the maintenance-directory move.
+        prior = subprocess.run(["git", "show", f"{base_ref}:docs/contracts/proposed.json"],
+                               cwd=ROOT, capture_output=True, text=True)
     baselines = [baseline]
     if prior.returncode == 0:
         baselines.append(json.loads(prior.stdout))
@@ -69,7 +73,7 @@ def main():
     # Once accepted, extensions must preserve all old entries and explicitly list additions.
     if snapshot != json.loads(proposed.read_text()):
         fail("New declarations need an explicit append-only proposal-manifest extension")
-    obligations = json.loads((ROOT / "docs/contracts/obligations.json").read_text())
+    obligations = json.loads((ROOT / "maintenance/contracts/obligations.json").read_text())
     direct = {r["name"] for r in rows if r["directSorry"]}
     axioms = {r["name"] for r in rows if r["contract"]["kind"] == "axiom"}
     if direct != set(obligations["sorry"]):

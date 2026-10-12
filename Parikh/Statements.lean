@@ -6,10 +6,9 @@ import Parikh.RegularRealization
 /-!
 # Using Parikh's theorem
 
-Start with `contextFree_image` for a language known to be context-free, or
-`grammar_image` for a concrete Mathlib grammar. Both conclude semilinearity.
-`grammar_witness` supplies a finite list of linear components with exactly the
-same image, and `regular_realization` supplies a DFA-regular language with it.
+This module proves semilinearity, exact finite representation, and the existence
+of a regular language with the same Parikh image. `Parikh/Api.lean` exposes
+descriptive public names for these results.
 
 The proof assembles earlier modules through `treeRepresentation_eq`: the union
 of activatable tree components is exactly the grammar image. Its proof and
@@ -17,8 +16,7 @@ semilinearity are shared in `GrammarImage.lean`, so regular-language specializat
 can reuse them without an import cycle.
 The public results do not require a finite ambient nonterminal type.
 
-Witness and automaton existence are classical. Executable construction and the
-remaining library obligations are described in `docs/PROOF_STATUS.md`.
+`Parikh/ExecutableCompiler.lean` computes a representation for finite encoded input.
 
 Source: `thm:main`, `thm:parikh-statement`.
 -/

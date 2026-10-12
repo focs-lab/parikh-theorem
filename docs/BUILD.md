@@ -1,13 +1,10 @@
-# Build and audit
+# Installation
 
-The pins are Lean `leanprover/lean4:v4.34.1` and Mathlib
-`d13f23b723b8a846827a245b89c10fc7d3f11612`. Use the committed manifest;
-do not run `lake update` just to build or opportunistically upgrade dependencies.
-No external service, trace-membership checkout or project secret is needed.
+The library uses Lean **4.34.1** and the Mathlib revision in `lake-manifest.json`.
 
-## Standard elan environment
+## Build a checkout
 
-Install elan from the official Lean repository if it is absent:
+Install [elan](https://github.com/leanprover/elan) if you do not already have it:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/leanprover/elan/v4.2.4/elan-init.sh -o /tmp/elan-init.sh
@@ -15,65 +12,44 @@ sh /tmp/elan-init.sh -y --default-toolchain none --no-modify-path
 export PATH="$HOME/.elan/bin:$PATH"
 ```
 
-From the checkout root:
+Clone the repository and fetch the cached Mathlib dependencies:
 
 ```sh
+git clone https://github.com/focs-lab/parikh-theorem.git
+cd parikh-theorem
 elan toolchain install "$(cat lean-toolchain)"
-lean --version
-lake --version
-lake exe cache get Mathlib.Algebra.Group.Submonoid.Finsupp Mathlib.Computability.ContextFreeGrammar Mathlib.Computability.RegularExpressions Mathlib.Computability.DFA Mathlib.Computability.NFA Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Defs Mathlib.Data.Nat.Log Mathlib.Data.Set.Finite.List Mathlib.Data.List.Sections
-LEAN_NUM_THREADS=4 lake build
-python3 scripts/check-contracts.py --final
-lake env lean scripts/SkeletonExamples.lean
-python3 scripts/test-cli.py
+lake exe cache get \
+  Mathlib.Algebra.Group.Submonoid.Finsupp \
+  Mathlib.Computability.ContextFreeGrammar \
+  Mathlib.Computability.RegularExpressions \
+  Mathlib.Computability.DFA Mathlib.Computability.NFA \
+  Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Defs \
+  Mathlib.Data.Nat.Log Mathlib.Data.Set.Finite.List Mathlib.Data.List.Sections
+lake build
 ```
 
-Lake fetches missing dependency checkouts from the exact manifest revisions.
-Four threads were appropriate for the onboarding cloud instance's four-CPU quota.
-Use the cache rather than rebuilding all of Mathlib. The current library builds
-without `sorry` warnings. CI uses final-mode checking to reject all project holes,
-axioms and transitive unresolved dependencies; its proof allowlists are empty.
-The public `compiler` value implements `Compiler` with exact-denotation and size
-proofs. The example script includes runtime assertions on its computed outputs.
-The CLI launcher `./bin/parikh examples/cli/unary.json` runs through the same
-Lean/Lake environment. See [compiler usage](COMPILER.md), [CLI usage](CLI.md) and
-the proof-status ledger for review status.
+Lake reads the pinned dependency revisions from the manifest. The cache supplies
+compiled Mathlib files, so the build only needs to compile the library itself.
 
-## This Codex Cloud instance
-
-Activate the retained tools before the same build/audit commands:
+Try the [command-line compiler](CLI.md):
 
 ```sh
-source /workspace/lean-setup/activate.sh
-cd /workspace/parikh-theorem
+./bin/parikh examples/cli/balanced.json
 ```
 
-The activation script sets elan's location, executable path and a writable cache
-directory. The installed toolchain was taken from the official GitHub Lean
-release archive and linked through elan. The existing Mathlib package cache was
-reused locally; a fresh checkout need not have that shared cache. CI uses elan
-and the manifest without the cloud-specific symlink.
+## Use in another Lean project
 
-Cloud tasks are already isolated; use the existing checkout. Do not create a
-worktree unless the owner asks. Preserve existing edits before changing branches.
-GitHub authentication may be supplied by the cloud HTTPS proxy rather than a
-normal `gh` login. Check Git access separately from API access:
+Use the same Lean version and add this dependency to your `lakefile.toml`:
 
-```sh
-git ls-remote origin HEAD
-git push --dry-run origin HEAD:refs/heads/codex/your-branch
-gh api repos/focs-lab/parikh-theorem --jq '{default_branch,permissions}'
-gh pr list --repo focs-lab/parikh-theorem
+```toml
+[[require]]
+name = "parikh"
+git = "https://github.com/focs-lab/parikh-theorem.git"
+rev = "main"
 ```
 
-Inspect credential presence only, never print tokens. A `gh auth status` failure
-does not establish that the proxy's repository access is missing. This task
-verified read, dry-run push and API access on the actual cloud instance. Required
-hosts include GitHub's Git/release endpoints, `api.github.com`, Lean's
-`release.lean-lang.org`, and Mathlib's `cache.mathlib.org` /
-`lakecache.blob.core.windows.net`. Review cloud network settings for a proxy
-denial rather than requesting a new token merely because the CLI reports an
-invalid placeholder.
+Then run `lake update` and import `Parikh`. To pin a particular version, replace
+`main` with a commit or release tag. The [Lean API](API.md) shows how to apply
+the theorems and compute a representation.
 
-The repository currently has no license metadata. This milestone does not choose
-a release license on the owner's behalf.
+Contributor checks are described in [maintenance/](../maintenance/README.md).

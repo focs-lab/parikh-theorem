@@ -30,5 +30,7 @@ jobs:
         run: python3 scripts/check-contracts.py --final
       - name: Check small semantic examples
         run: lake env lean tests/ProofExamples.lean
+      - name: Check compatibility policy
+        run: python3 tests/contracts.py
       - name: Check command-line input and output
         run: python3 tests/cli.py

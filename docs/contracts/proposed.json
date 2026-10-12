@@ -911,6 +911,592 @@
       "unsafe": false,
       "value": "9912cd426c803def6e5d6a2b26c2daef11bc2fc0eeafa915834fc827f78d7c84"
     },
+    "Parikh.Cli.CoordinateComponent": {
+      "instance": false,
+      "kind": "inductive",
+      "levels": [],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "b4611575b2b62eb57ff8b514cf96bf01666158b035ac2fcc89065136260d1e05",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.Cli.CoordinateComponent._sizeOf_1": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "f4a38cfd608d59f961d9208f9ea96ce2e62b236c8146a7bfa5d520e926a82516",
+      "unsafe": false,
+      "value": "c603348678fd7b214a083829c82178ac8283668617b0e2fcb11db381fe155c0d"
+    },
+    "Parikh.Cli.CoordinateComponent._sizeOf_inst": {
+      "instance": true,
+      "kind": "definition",
+      "levels": [],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "3f4e07b7e7bf9f0a1865901eaf8745452552ae7a3fd7110258fa7c60279adb15",
+      "unsafe": false,
+      "value": "cb15b101b7a8c9b916da1acb2b00e239471d6e983f99fd9d7dc5f34b894883e1"
+    },
+    "Parikh.Cli.CoordinateComponent.base": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "c3593657141ee41dda2e8b4a4553eece33a68072efc021e208ac7e57e50e1b83",
+      "unsafe": false,
+      "value": "a5bf927ce9314241c461cc4eaa90cb72d11e85ecd64ddd2af4fc3ec5b5ef7f3b"
+    },
+    "Parikh.Cli.CoordinateComponent.casesOn": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [
+        "u"
+      ],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "734dc98760556f1b657a9550c99aa69aa6589391d44d3c8b07760bdaa55e6980",
+      "unsafe": false,
+      "value": "a04300264855c8882e27e08d4f21ea7f28369dfc3845478042bcd003573a0514"
+    },
+    "Parikh.Cli.CoordinateComponent.ctorIdx": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [],
+      "partial": false,
+      "reducibility": "regular:1",
+      "type": "fb471a63837f0ef003d26c6c37c11af714459a290e3fddaa8ad8bca798e24afd",
+      "unsafe": false,
+      "value": "66465bb63f387a23c58515e39f6d690acec51b269acf84ef2a0011b96ea9cf96"
+    },
+    "Parikh.Cli.CoordinateComponent.mk": {
+      "instance": false,
+      "kind": "constructor",
+      "levels": [],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "fe1f76a6eefa92a33c7f810153cc42a12ab65e816133837e3bedf66e419ef10b",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.Cli.CoordinateComponent.mk._flat_ctor": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "fe1f76a6eefa92a33c7f810153cc42a12ab65e816133837e3bedf66e419ef10b",
+      "unsafe": false,
+      "value": "6fd671198b64f55f1eb7f61e01c3a781ba7033f05d6c7fb3666d99c4f323afce"
+    },
+    "Parikh.Cli.CoordinateComponent.mk.inj": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "a107895f0539195f5b32614557de15187e4cd609fe3abb830ea315ba275aa953",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.Cli.CoordinateComponent.mk.injEq": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "0899420581b0d222b645cec3e216788d7d8300e0eb4060ec8ba450d2ed6c7f35",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.Cli.CoordinateComponent.mk.noConfusion": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [
+        "u"
+      ],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "08e98e29603101c2fbc6cac43a0f49c518c93ebcbdf8014094500086cd20fe14",
+      "unsafe": false,
+      "value": "b9218a4f41298effad8af5d0a5ba002e32aae8bc9a292c8ba7c2cd28d0b76fa8"
+    },
+    "Parikh.Cli.CoordinateComponent.mk.sizeOf_spec": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "0f24d93b603a3e10bedffcdd82d09e10c5dfbd013ae1cabf558b08c92964cc0e",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.Cli.CoordinateComponent.noConfusion": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [
+        "u"
+      ],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "fac6796679adf152bb94a92d20cded85880b745cf64b6ac619f1a73ccf7065f8",
+      "unsafe": false,
+      "value": "82d24fbbd32531215c42ec888d6cb9f81af609b8f97d1dc5db43888681aabfae"
+    },
+    "Parikh.Cli.CoordinateComponent.noConfusionType": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [
+        "u"
+      ],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "fa7a610a1905cfa18c1f87f55a08015465b3af26f8214ffb0c8a72afee0bb0da",
+      "unsafe": false,
+      "value": "b5b85498a619fbec0b867e776a8ed12d7383e87b198d078b5a091c92d8804648"
+    },
+    "Parikh.Cli.CoordinateComponent.periods": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "2b07958d56d7e9f3d1b19ee80cf84fde3b2473121dc2981a24cd9a7c8ecf57f5",
+      "unsafe": false,
+      "value": "e428f780df035d6a5c37ac1ca9d0d8e9c4ff0fa3d9f17d8e4c55b03576eafc39"
+    },
+    "Parikh.Cli.CoordinateComponent.rec": {
+      "instance": false,
+      "kind": "recursor",
+      "levels": [
+        "u"
+      ],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "341a9408a514406cfc9c69f93ab85339420c93521509212496a5a2b4523831fa",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.Cli.CoordinateComponent.recOn": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [
+        "u"
+      ],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "734dc98760556f1b657a9550c99aa69aa6589391d44d3c8b07760bdaa55e6980",
+      "unsafe": false,
+      "value": "d36339a58b0a8f7ea111a92d16a159bb90e312251e6f88bbb332b52bca50bcfc"
+    },
+    "Parikh.Cli.checkFields": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [],
+      "partial": false,
+      "reducibility": "regular:11",
+      "type": "f7617e514fa53239c11d419d3940773c2dfe77994ce562f680be9ff39972cb7e",
+      "unsafe": false,
+      "value": "2e0509ec235225eda328598790d28fff57b96643bbfb663716677052d5ec3475"
+    },
+    "Parikh.Cli.checkFields.match_1": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "4cb9c1757e648d3113042a4a167a73ebafa72b953900d4b6a9dfa90fcdba90f8",
+      "unsafe": false,
+      "value": "fe37423af79c1aebf8dfef751074842311d19445131fbde35e4bdeb57c1d5446"
+    },
+    "Parikh.Cli.compileCoordinates": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [],
+      "partial": false,
+      "reducibility": "regular:15",
+      "type": "649266aee72dbb9c9728884b800de68bc80f6af77391085d3febc2eb41943c9e",
+      "unsafe": false,
+      "value": "9f5c6b41d8b09fb28e79da51e2cdf71f7938b25bfab48ba0b5bbdbf9a943f751"
+    },
+    "Parikh.Cli.compileCoordinates.eq_1": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "107692d6740f3ee334714f0c1d4bbe22eb273a42f58f4a96b2396382477d9b84",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.Cli.compileCoordinates_bounded": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "a26029d1d075e215b2f9699fa5da65fa2a92a220758e4faba73120ce2aad4112",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.Cli.compileCoordinates_correct": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "e1b208a98e0d03222d6ab2881520d11dadfc227a68d84cddc70ffe01354830fb",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.Cli.componentCoordinates": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [],
+      "partial": false,
+      "reducibility": "regular:7",
+      "type": "03a0e7ac4b502dd09417ff6bad9def1bf1e6f23cafcbaaeaeb2bbf4d3cdd4680",
+      "unsafe": false,
+      "value": "a53a3947a97cb618b7b779538d2209de17754b9a633369d3ddab7ce23a14f4c1"
+    },
+    "Parikh.Cli.componentCoordinates.eq_1": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "9429f63d940302db84a4c3b376960146076c71ebf78bd9c632bc8ae24f378d1c",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.Cli.componentJson": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [],
+      "partial": false,
+      "reducibility": "regular:13",
+      "type": "bfaa18c308e2b59465e139eac8f18e55b1af55893af499bc484ad8d5c26ac31b",
+      "unsafe": false,
+      "value": "478184f82f524d25ab5927bd01498c900c8e7fdf33b9d06bca1f3f1c88d76db7"
+    },
+    "Parikh.Cli.coordinatesComponent": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [],
+      "partial": false,
+      "reducibility": "regular:8",
+      "type": "71f606c2a2f4f4f45ddf777a8fd798430ae445027647645a274c38c37930c74e",
+      "unsafe": false,
+      "value": "5146119bfc6024a636a9edf9fca4b1d3dca12e83e6a2739337fe9521c5ea20d7"
+    },
+    "Parikh.Cli.coordinatesComponent.eq_1": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "3c0dea32ede519e822c06ad4575bb3f86bee05cbc9c225784a930e11bdae2ab7",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.Cli.coordinatesComponent_componentCoordinates": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "11ca734dfffe3050fa50bad8bccbae1f4209b9fe4a29315450c8de9ebb3b9a76",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.Cli.coordinatesVector": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [],
+      "partial": false,
+      "reducibility": "regular:7",
+      "type": "72d7ff682c714797d64386bfef488aa0d4833bed1684758b503597f3ac67f431",
+      "unsafe": false,
+      "value": "6beca57095d57807b14293d35f690d5ebf1a6adea90b3329eb88f3d883a4ddaa"
+    },
+    "Parikh.Cli.coordinatesVector.eq_1": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "da63baecc25b7c8b1c2417197e45c02be9e1e7e031b9b248d369a7d9027a2918",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.Cli.coordinatesVector_vectorCoordinates": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "f86ba379276a7acc36ab448519b244015cf314363b5f886f7eb29b8c4177bd0b",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.Cli.coordinatesWitness": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [],
+      "partial": false,
+      "reducibility": "regular:9",
+      "type": "0cc771f01d4747e5ac055291afb4d8701ed53ae8ecfc26c6525bbe9f92e37e09",
+      "unsafe": false,
+      "value": "a9019d7623e539aa044284ea3152e7c27f5a79bb3dd704e320b9fb4cd0001749"
+    },
+    "Parikh.Cli.coordinatesWitness.eq_1": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "53417d8ac632ea51a69718e79e64d028ae17e3295894a6dfd656232e7e35953a",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.Cli.coordinatesWitness_witnessCoordinates": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "6592ef3839516b3cb9bba2f1fab2b487d1cba7a7eacf9a97783eb0fab3137549",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.Cli.field": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [],
+      "partial": false,
+      "reducibility": "regular:8",
+      "type": "35e9986e96fdb67bc016d6453fce54918973e0fc8dcb7295d54b6835927987d5",
+      "unsafe": false,
+      "value": "6450bb8777f6e1e417f24bdf781fe4b3e19ee1f1ce375103afac5351e91c7514"
+    },
+    "Parikh.Cli.finiteLabel": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [],
+      "partial": false,
+      "reducibility": "regular:8",
+      "type": "4a6cccd2894f408fd6e8eac14f8eda3b9360d41a7c12558d2e1bf5891e54c927",
+      "unsafe": false,
+      "value": "82eed6553f071aa2d075b85523f458bdcc58117daf1cfdf006fb0261c43a4ee3"
+    },
+    "Parikh.Cli.natural": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [],
+      "partial": false,
+      "reducibility": "regular:7",
+      "type": "6926bb52e9c43321453066735038fa65c0f91b74e92c884d87734f9b28f6c262",
+      "unsafe": false,
+      "value": "6ffb1d8ff9a8f33802054bb25578bcfb550f36542a4e8c186f7d28d220d0be75"
+    },
+    "Parikh.Cli.outputJson": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [],
+      "partial": false,
+      "reducibility": "regular:16",
+      "type": "eafb0de11e3a2fc21930faaa1265320d3609610fe8c402a1a973bf89e2a2a221",
+      "unsafe": false,
+      "value": "140736eb903fb5b4634082314af591256c349af8db14e4d9fbb71b418318b730"
+    },
+    "Parikh.Cli.parseGrammar": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [],
+      "partial": false,
+      "reducibility": "regular:13",
+      "type": "b53133fc3a0905e703d1f284688e6e8ab8ba32be62c6dbb42b89b7b6c68d32ce",
+      "unsafe": false,
+      "value": "8418a32d9d31929e9cb68f8b1f8a259c01382a951de7dd6f8154552147f18632"
+    },
+    "Parikh.Cli.parseGrammar.match_1": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "a741c320115e4f15899c07feafe5ad4efc25df3ec34d5826b4cca583b76ee6b2",
+      "unsafe": false,
+      "value": "5c9c8456cf229576db5e7d363f5008c83326fbbb5ca32eaaf1e3a0d9fdd0e474"
+    },
+    "Parikh.Cli.parseIndex": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [],
+      "partial": false,
+      "reducibility": "regular:7",
+      "type": "f0e8983a5b29fc04d62b9af6da361d1a86bc1fb607e23a5f34305f1758f90d33",
+      "unsafe": false,
+      "value": "814a6f55caa72758a14d7983d1896d4fe339510407c60cd22615eb2020a5a31a"
+    },
+    "Parikh.Cli.parseIndex_value": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "ce468f7b62fc12e9a2579f8cc5948d33bafce92f628999bb1346ff5719329d92",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.Cli.parseRule": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [],
+      "partial": false,
+      "reducibility": "regular:12",
+      "type": "b065e7554585a75d51c67055d3a5a249d1ac532b8f72dbdf7cff908a32b1e0dd",
+      "unsafe": false,
+      "value": "3ea2b48dc88c2626d9792ed4f6af9a57e6980feb248d1d8b6b212a2c8af22762"
+    },
+    "Parikh.Cli.parseRule.match_1": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "2fd2f8b1c3965b959bec2cbafcd9b371bae7def1f3c9bff3aba69a0555617a78",
+      "unsafe": false,
+      "value": "7cf53ee7d63ad7314212f4725badf5a36b07ca8a11cbea1d5194267ad20004f3"
+    },
+    "Parikh.Cli.parseSymbol": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [],
+      "partial": false,
+      "reducibility": "regular:9",
+      "type": "c9e3ab91d7332cf008880b845fbf41ef247287e4a231298fccff2c03cd067def",
+      "unsafe": false,
+      "value": "b0b3a06323d0cc7ed9448a506080c71fe062551566ccbfe57c06bb1f723c0723"
+    },
+    "Parikh.Cli.parseSymbol._sparseCasesOn_1": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [
+        "u_1",
+        "u"
+      ],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "f38be10afd9d9a7e5ddf1a58cecd6057414c5b34585bfb68bd3b7b8fc3abfcc2",
+      "unsafe": false,
+      "value": "cad6eec8b2eda2090ca980ac725a291a6de443b728efc4953e2314114bf11aa0"
+    },
+    "Parikh.Cli.parseSymbol._sparseCasesOn_2": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [
+        "u_1",
+        "u"
+      ],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "648bb5128c35686672ae8e1002c0eb31c068eee055f5d58024c39a10ec250343",
+      "unsafe": false,
+      "value": "beec93a4003a5b219aea2be1589f3afe1e08cf535686cd539259bb9f8a36f4c4"
+    },
+    "Parikh.Cli.parseSymbol.match_1": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [
+        "u_1"
+      ],
+      "partial": false,
+      "reducibility": "abbrev",
+      "type": "596b82efc857f4f0328fa5e6e4571295ae71c151e9c872b619f29268ec779692",
+      "unsafe": false,
+      "value": "10d5add4945d9a84afd0433a9c91827b352cd7f152e36217ee86b01e547a2403"
+    },
+    "Parikh.Cli.runJson": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [],
+      "partial": false,
+      "reducibility": "regular:17",
+      "type": "74e7e5a5a89e858a61225e69a3a1e10f46669245bb1f0bb1569749fc7716e2e5",
+      "unsafe": false,
+      "value": "2359825b0e4d44007c0de3d427e69f421d26b40cfa9c88ae3ff0912c7f3fe50f"
+    },
+    "Parikh.Cli.runJson.eq_1": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "c5e798feeb29ee84025fe2fd4cf0a917a20f8551e926d9914d63dda0f0901677",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.Cli.runJson_of_parseGrammar": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "221d7e70533394c742702315f94cb0184244f7483d85e66ae0348e9d919530d7",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.Cli.vectorCoordinates": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [],
+      "partial": false,
+      "reducibility": "regular:6",
+      "type": "8d8d2d749c3b1f30a441380a463612fb0d90c15c70556db68d71ea04fe2c0c55",
+      "unsafe": false,
+      "value": "758f533ca28bfd4b52b5ed95d5f27f6b0f51ee499ed18ea20707349e368d1ac0"
+    },
+    "Parikh.Cli.vectorCoordinates.eq_1": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "e9bfbba42f015bc31e0d6210d35575ab23132bc3495994b3c7e9143b90e13035",
+      "unsafe": false,
+      "value": null
+    },
+    "Parikh.Cli.witnessCoordinates": {
+      "instance": false,
+      "kind": "definition",
+      "levels": [],
+      "partial": false,
+      "reducibility": "regular:8",
+      "type": "4e9d383a0d86e97d2f55b561a732f3a9c1396de6359365fda120b35ce284a673",
+      "unsafe": false,
+      "value": "013c864ea1b889efe1c44d871edff2dfbef2d0e46c653b40180d9de7df38bb54"
+    },
+    "Parikh.Cli.witnessCoordinates.eq_1": {
+      "instance": false,
+      "kind": "theorem",
+      "levels": [],
+      "partial": false,
+      "reducibility": "opaque",
+      "type": "ac35ee2bff41691d9532b0251f0698bea8627fa15e8cab502c65bc50e30f67c3",
+      "unsafe": false,
+      "value": null
+    },
     "Parikh.Compiler": {
       "instance": false,
       "kind": "inductive",

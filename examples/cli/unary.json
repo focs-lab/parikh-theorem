@@ -1,0 +1,9 @@
+{
+  "terminalCount": 1,
+  "nonterminalCount": 1,
+  "initial": 0,
+  "rules": [
+    {"input": 0, "output": []},
+    {"input": 0, "output": [{"terminal": 0}, {"nonterminal": 0}]}
+  ]
+}

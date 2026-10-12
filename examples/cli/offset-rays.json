@@ -1,0 +1,10 @@
+{
+  "terminalCount": 2,
+  "nonterminalCount": 1,
+  "initial": 0,
+  "rules": [
+    {"input": 0, "output": [{"terminal": 0}]},
+    {"input": 0, "output": [{"terminal": 1}]},
+    {"input": 0, "output": [{"terminal": 0}, {"terminal": 0}, {"nonterminal": 0}, {"terminal": 1}, {"terminal": 1}]}
+  ]
+}
